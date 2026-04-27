@@ -1,2 +1,2 @@
-// Stubs replaced by unit 13 (Code 2of5).
-export {};
+export { encodeInterleaved } from "./encoder.js";
+export type { InterleavedResult } from "./encoder.js";

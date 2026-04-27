@@ -1,2 +1,2 @@
-// Stubs replaced by unit 5 (Virtual printer).
-export {};
+export * from "./fs.js";
+export * from "./virtual.js";

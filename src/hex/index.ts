@@ -1,2 +1,1 @@
-// Stubs replaced by unit 2 (Hex + text encodings).
-export {};
+export { decodeEscapedString, decodeFontData, decodeGraphicFieldData } from "./decode.ts";

@@ -1,2 +1,1 @@
-// Stubs replaced by unit 2 (Hex + text encodings).
-export {};
+export { decodeCp437, decodeCp850, toUnicodeText } from "./decode.ts";

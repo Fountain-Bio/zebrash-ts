@@ -1,2 +1,36 @@
-// Stubs replaced by unit 11 (Code 128).
-export {};
+// Public surface for the Code 128 encoder unit.
+export {
+  appendPattern,
+  CIRCUMFLEX,
+  CODE_A,
+  CODE_B,
+  CODE_C,
+  CODE_PATTERNS,
+  code128ChooseCode,
+  code128CType_FNC_1,
+  code128CType_ONE_DIGIT,
+  code128CType_TWO_DIGITS,
+  code128CType_UNCODABLE,
+  code128FindCType,
+  DEL_B,
+  encode,
+  EncodeAuto,
+  EncodeNoMode,
+  ESCAPE_FNC_1,
+  ESCAPE_FNC_2,
+  ESCAPE_FNC_3,
+  ESCAPE_FNC_4,
+  FNC_1,
+  FNC_2,
+  FNC_3,
+  FNC_4_A,
+  FNC_4_B,
+  GREATER_THAN,
+  START_A,
+  START_B,
+  START_C,
+  STOP,
+  TILDE_B,
+} from "./encoder.ts";
+export type { Code128CType, EncodedCode128 } from "./encoder.ts";
+export { Code128, newCode128 } from "./code128.ts";
