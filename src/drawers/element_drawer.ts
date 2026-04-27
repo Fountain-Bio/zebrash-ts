@@ -149,3 +149,36 @@ export function rotateForOrientation(
 ): void {
   rotateImage(ctx, { width, height }, pos, orientation);
 }
+
+/**
+ * Rotate the context by `orientation` (one of 0/90/180/270) about `(x, y)`.
+ * Mirrors `gg.RotateAbout`.
+ */
+export function rotateAbout(
+  ctx: SKRSContext2D,
+  orientation: FieldOrientation,
+  x: number,
+  y: number,
+): void {
+  const degrees = getFieldOrientationDegrees(orientation);
+  if (degrees === 0) return;
+  const radians = (degrees * Math.PI) / 180;
+  ctx.translate(x, y);
+  ctx.rotate(radians);
+  ctx.translate(-x, -y);
+}
+
+/**
+ * Scale the context by `(sx, sy)` about `(x, y)`. Mirrors `gg.ScaleAbout`.
+ */
+export function scaleAbout(
+  ctx: SKRSContext2D,
+  sx: number,
+  sy: number,
+  x: number,
+  y: number,
+): void {
+  ctx.translate(x, y);
+  ctx.scale(sx, sy);
+  ctx.translate(-x, -y);
+}

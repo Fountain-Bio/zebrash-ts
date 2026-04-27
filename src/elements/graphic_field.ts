@@ -9,6 +9,11 @@ export const GraphicFieldFormat = {
 
 export type GraphicFieldFormat = (typeof GraphicFieldFormat)[keyof typeof GraphicFieldFormat];
 
+// Named-constant aliases for consumers that import them directly.
+export const GraphicFieldFormatHex = GraphicFieldFormat.Hex;
+export const GraphicFieldFormatRaw = GraphicFieldFormat.Raw;
+export const GraphicFieldFormatAR = GraphicFieldFormat.AR;
+
 export interface GraphicField {
   _kind: "GraphicField";
   reversePrint: ReversePrint;

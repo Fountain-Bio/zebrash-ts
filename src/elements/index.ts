@@ -46,3 +46,14 @@ export const DatamatrixRatioSquare = _DR.Square;
 export const DatamatrixRatioRectangular = _DR.Rectangular;
 // TextFieldLike alias
 export type { TextField as TextFieldLike } from "./text_field.ts";
+// TextAlignment / FieldAlignment named-constant aliases for direct imports.
+import { TextAlignment as _TA } from "./text_alignment.ts";
+export const TextAlignmentLeft = _TA.Left;
+export const TextAlignmentRight = _TA.Right;
+export const TextAlignmentCenter = _TA.Center;
+export const TextAlignmentJustified = _TA.Justified;
+
+import { FieldAlignment as _FA } from "./field_alignment.ts";
+export const FieldAlignmentLeft = _FA.Left;
+export const FieldAlignmentRight = _FA.Right;
+export const FieldAlignmentAuto = _FA.Auto;

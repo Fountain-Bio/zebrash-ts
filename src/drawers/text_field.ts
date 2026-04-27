@@ -32,16 +32,25 @@ import {
  * Draws a TextField (`^FD` after `^A`/`^FT`/`^FO` etc.) onto the canvas.
  * Mirrors `internal/drawers/text_field.go` in the Go reference.
  */
+function isTextField(value: unknown): value is TextField {
+  return (
+    typeof value === "object" &&
+    value !== null &&
+    (value as { _kind?: unknown })._kind === "TextField"
+  );
+}
+
 export function newTextFieldDrawer(): ElementDrawer<TextField> {
   registerEmbeddedFonts();
 
   return {
     draw(
       ctx: SKRSContext2D,
-      element: TextField,
+      element: unknown,
       _options: DrawerOptions,
       state: DrawerState,
     ): void {
+      if (!isTextField(element)) return;
       const text = adjustTextField(element);
 
       const scaleX = getFontScaleX(text.font);

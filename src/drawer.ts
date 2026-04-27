@@ -3,6 +3,7 @@ import { type SKRSContext2D, createCanvas } from "@napi-rs/canvas";
 import { type DrawerOptions, withDefaults } from "./drawer-options.ts";
 import { DrawerState } from "./drawers/drawer_state.ts";
 import type { ElementDrawer } from "./drawers/element_drawer.ts";
+import { defaultElementDrawers as defaultElementDrawersLazy } from "./drawers/index.ts";
 import type { LabelInfo } from "./elements/index.ts";
 import {
   colorWhite,
@@ -44,8 +45,8 @@ function fillWhite(ctx: SKRSContext2D, width: number, height: number): void {
 export class Drawer {
   private readonly elementDrawers: ElementDrawer[];
 
-  constructor(elementDrawers: ElementDrawer[] = []) {
-    this.elementDrawers = elementDrawers;
+  constructor(elementDrawers?: ElementDrawer[]) {
+    this.elementDrawers = elementDrawers ?? defaultElementDrawersLazy();
   }
 
   /**
