@@ -16,6 +16,7 @@ export function newBarcode128Parser(): CommandParser {
     commandCode: code,
     parse(command: string, printer: VirtualPrinter): unknown {
       const barcode: Barcode128 = {
+        _kind: "Barcode128",
         orientation: printer.defaultOrientation,
         height: printer.defaultBarcodeDimensions.height,
         line: true,

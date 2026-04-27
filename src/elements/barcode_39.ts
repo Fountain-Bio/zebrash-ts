@@ -4,18 +4,18 @@ import type { ReversePrint } from "./reverse_print.ts";
 
 export interface Barcode39 {
   _kind: "Barcode39";
-  Orientation: FieldOrientation;
-  Height: number;
-  Line: boolean;
-  LineAbove: boolean;
-  CheckDigit: boolean;
+  orientation: FieldOrientation;
+  height: number;
+  line: boolean;
+  lineAbove: boolean;
+  checkDigit: boolean;
 }
 
 export interface Barcode39WithData extends Omit<Barcode39, "_kind"> {
   _kind: "Barcode39WithData";
-  ReversePrint: ReversePrint;
-  Width: number;
-  WidthRatio: number;
-  Position: LabelPosition;
-  Data: string;
+  reversePrint: ReversePrint;
+  width: number;
+  widthRatio: number;
+  position: LabelPosition;
+  data: string;
 }

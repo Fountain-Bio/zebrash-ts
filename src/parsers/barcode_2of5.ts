@@ -15,6 +15,7 @@ export function newBarcode2of5Parser(): CommandParser {
     commandCode: code,
     parse(command: string, printer: VirtualPrinter): unknown {
       const barcode: Barcode2of5 = {
+        _kind: "Barcode2of5",
         orientation: printer.defaultOrientation,
         height: printer.defaultBarcodeDimensions.height,
         line: true,

@@ -13,3 +13,5 @@ export {
   sanitizeContent,
   withCheckDigit,
 } from "./encoder.ts";
+
+export { calculateGuardExtension as calculateEan13GuardExtension } from "./ean13.ts";

@@ -8,3 +8,5 @@ export { errorCorrection_encodeECC200 } from "./encoder/error_correction.js";
 export { SymbolInfo, symbolInfoLookup } from "./encoder/symbol_info.js";
 export { DefaultPlacement, newDefaultPlacement } from "./encoder/default_placement.js";
 export { ByteMatrix, newByteMatrix } from "./encoder/byte_matrix.js";
+
+export { encode as encodeDatamatrix } from "./datamatrix_writer.js";

@@ -1,6 +1,6 @@
 // Port of internal/barcodes/qrcode/encoder/matrix_util.go
 
-import { BitArray } from "../../utils/bit-array.ts";
+import { BitArray } from "../../utils/bit_array.ts";
 import type { ByteMatrix } from "./byte-matrix.ts";
 import {
   type ErrorCorrectionLevel,

@@ -10,22 +10,22 @@ export interface Maxicode {
   // The mode to use to encode the bar code data.
   // Valid values: 2 (numeric postal code), 3 (alphanumeric postal code), 4 (standard),
   // 5 (full EEC), 6 (reader programming). Default 2.
-  Mode: number;
+  mode: number;
 }
 
 export interface MaxicodeWithData {
   _kind: "MaxicodeWithData";
-  ReversePrint: ReversePrint;
-  Code: Maxicode;
-  Position: LabelPosition;
-  Data: string;
+  reversePrint: ReversePrint;
+  code: Maxicode;
+  position: LabelPosition;
+  data: string;
 }
 
 export function getMaxicodeInputData(barcode: MaxicodeWithData): string {
   const codeHeader = `[)>${RS}01${GS}`;
   const headerLen = 9;
 
-  const data = barcode.Data;
+  const data = barcode.data;
   const headerPos = data.indexOf(codeHeader);
 
   if (headerPos < 0 || data.length < headerPos + headerLen) {

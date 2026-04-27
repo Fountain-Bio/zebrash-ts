@@ -30,7 +30,7 @@ describe("splitCommand", () => {
 
   it("respects pos offset by skipping past `pos` chars after the prefix", () => {
     // ^B3 + 1 char of orientation, then 4 comma-separated args.
-    expect(splitCommand("^B3NY,50,Y,N", "^B3", 1)).toEqual(["Y", "50", "Y", "N"]);
+    expect(splitCommand("^B3NY,50,y,N", "^B3", 1)).toEqual(["Y", "50", "Y", "N"]);
   });
 });
 

@@ -6,31 +6,32 @@ export function newGraphicSymbolParser(): CommandParser {
   const code = "^GS";
 
   return {
-    CommandCode: code,
-    Parse(command: string, printer: VirtualPrinter): null {
+    commandCode: code,
+    parse(command: string, printer: VirtualPrinter): null {
       const symbol: GraphicSymbol = {
-        Width: printer.DefaultFont.Width,
-        Height: printer.DefaultFont.Height,
-        Orientation: printer.DefaultOrientation,
+        _kind: "GraphicSymbol",
+        width: printer.defaultFont.width,
+        height: printer.defaultFont.height,
+        orientation: printer.defaultOrientation,
       };
 
       const parts = splitCommand(command, code, 0);
 
       if (parts.length > 0 && (parts[0]?.length ?? 0) > 0) {
-        symbol.Orientation = toFieldOrientation(parts[0]?.[0] ?? "");
+        symbol.orientation = toFieldOrientation(parts[0]?.[0] ?? "");
       }
 
       if (parts.length > 1) {
         const v = Number.parseInt((parts[1] ?? "").trim(), 10);
-        if (!Number.isNaN(v)) symbol.Height = v;
+        if (!Number.isNaN(v)) symbol.height = v;
       }
 
       if (parts.length > 2) {
         const v = Number.parseInt((parts[2] ?? "").trim(), 10);
-        if (!Number.isNaN(v)) symbol.Width = v;
+        if (!Number.isNaN(v)) symbol.width = v;
       }
 
-      printer.NextElementFieldElement = symbol;
+      printer.nextElementFieldElement = symbol;
 
       return null;
     },

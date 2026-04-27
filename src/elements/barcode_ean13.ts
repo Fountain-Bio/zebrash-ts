@@ -4,16 +4,16 @@ import type { ReversePrint } from "./reverse_print.ts";
 
 export interface BarcodeEan13 {
   _kind: "BarcodeEan13";
-  Orientation: FieldOrientation;
-  Height: number;
-  Line: boolean;
-  LineAbove: boolean;
+  orientation: FieldOrientation;
+  height: number;
+  line: boolean;
+  lineAbove: boolean;
 }
 
 export interface BarcodeEan13WithData extends Omit<BarcodeEan13, "_kind"> {
   _kind: "BarcodeEan13WithData";
-  ReversePrint: ReversePrint;
-  Width: number;
-  Position: LabelPosition;
-  Data: string;
+  reversePrint: ReversePrint;
+  width: number;
+  position: LabelPosition;
+  data: string;
 }

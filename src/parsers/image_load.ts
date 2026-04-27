@@ -6,8 +6,8 @@ export function newImageLoadParser(): CommandParser {
   const code = "^IL";
 
   return {
-    CommandCode: code,
-    Parse(command: string, printer: VirtualPrinter): GraphicField | null {
+    commandCode: code,
+    parse(command: string, printer: VirtualPrinter): GraphicField | null {
       const parts = splitCommand(command, code, 0);
 
       let path = StoredGraphicsDefaultPath;
@@ -15,21 +15,21 @@ export function newImageLoadParser(): CommandParser {
         path = parts[0] ?? path;
       }
 
-      const stored = printer.StoredGraphics.get(path);
+      const stored = printer.storedGraphics.get(path);
       if (!stored) {
         return null;
       }
 
       return {
-        Position: { X: 0, Y: 0, CalculateFromBottom: false, AutomaticPosition: false },
-        Format: 0,
-        DataBytes: stored.TotalBytes,
-        TotalBytes: stored.TotalBytes,
-        RowBytes: stored.RowBytes,
-        Data: stored.Data,
-        MagnificationX: 1,
-        MagnificationY: 1,
-        ReversePrint: { Value: false },
+        position: { x: 0, y: 0, calculateFromBottom: false, automaticPosition: false },
+        format: 0,
+        DataBytes: stored.totalBytes,
+        totalBytes: stored.totalBytes,
+        rowBytes: stored.rowBytes,
+        data: stored.data,
+        magnificationX: 1,
+        magnificationY: 1,
+        reversePrint: { value: false },
       };
     },
   };

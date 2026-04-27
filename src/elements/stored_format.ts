@@ -16,82 +16,82 @@ import type { TextField } from "./text_field.ts";
 
 export interface StoredField {
   _kind: "StoredField";
-  Number: number;
-  Field: FieldInfo;
+  number: number;
+  field: FieldInfo;
 }
 
 export interface RecalledFieldData {
   _kind: "RecalledFieldData";
-  Number: number;
-  Data: string;
+  number: number;
+  data: string;
 }
 
 export interface RecalledField {
   _kind: "RecalledField";
   // Embeds StoredField — Number and Field are flat for parity with the Go layout.
   // Field is undefined when the recall arrived without a matching template.
-  Number: number;
-  Field: FieldInfo | undefined;
-  Data: string;
+  number: number;
+  field: FieldInfo | undefined;
+  data: string;
 }
 
 export interface StoredFormat {
-  Inverted: boolean;
-  Elements: unknown[];
+  inverted: boolean;
+  elements: unknown[];
 }
 
 export function newStoredFormat(inverted: boolean, elements: unknown[]): StoredFormat {
-  return { Inverted: inverted, Elements: elements };
+  return { inverted: inverted, elements: elements };
 }
 
 export function storedFormatToRecalled(sf: StoredFormat): RecalledFormat {
-  const res = new RecalledFormat(sf.Inverted);
-  for (const el of sf.Elements) {
-    res.AddElement(el);
+  const res = new RecalledFormat(sf.inverted);
+  for (const el of sf.elements) {
+    res.addElement(el);
   }
   return res;
 }
 
 export class RecalledFormat {
-  Inverted: boolean;
+  inverted: boolean;
   private elements: unknown[] = [];
   private fieldRefs = new Map<number, RecalledField[]>();
 
   constructor(inverted: boolean) {
-    this.Inverted = inverted;
+    this.inverted = inverted;
   }
 
-  AddElement(element: unknown): boolean {
+  addElement(element: unknown): boolean {
     if (isStoredField(element)) {
       // Convert field to recalled so it can be populated with data.
       const field: RecalledField = {
         _kind: "RecalledField",
-        Number: element.Number,
-        Field: element.Field,
-        Data: "",
+        number: element.number,
+        field: element.field,
+        data: "",
       };
 
       this.elements.push(field);
-      const existing = this.fieldRefs.get(field.Number) ?? [];
+      const existing = this.fieldRefs.get(field.number) ?? [];
       existing.push(field);
-      this.fieldRefs.set(field.Number, existing);
+      this.fieldRefs.set(field.number, existing);
       return true;
     }
 
     if (isRecalledFieldData(element)) {
-      const refs = this.fieldRefs.get(element.Number);
+      const refs = this.fieldRefs.get(element.number);
       if (refs !== undefined) {
         for (const ref of refs) {
-          ref.Data = element.Data;
+          ref.data = element.data;
         }
-        this.fieldRefs.delete(element.Number);
+        this.fieldRefs.delete(element.number);
       } else {
         // No template waiting for this number — add a standalone RecalledField with no Field.
         const orphan: RecalledField = {
           _kind: "RecalledField",
-          Number: 0,
-          Field: undefined,
-          Data: element.Data,
+          number: 0,
+          field: undefined,
+          data: element.data,
         };
         this.elements.push(orphan);
       }
@@ -102,7 +102,7 @@ export class RecalledFormat {
     return true;
   }
 
-  ResolveElements(): unknown[] {
+  resolveElements(): unknown[] {
     const res: unknown[] = [];
 
     for (const element of this.elements) {
@@ -134,120 +134,120 @@ const isRecalledFieldData = (v: unknown): v is RecalledFieldData =>
   getKind(v) === "RecalledFieldData";
 
 function resolveRecalledField(f: RecalledField): unknown {
-  const field = f.Field;
-  const text = f.Data;
+  const field = f.field;
+  const text = f.data;
 
   if (field === undefined) {
     return null;
   }
-  if (field.Element == null && text === "") {
+  if (field.element == null && text === "") {
     return null;
   }
 
-  const { ReversePrint, Position, Width, WidthRatio, Height } = field;
+  const { reversePrint, position, width, widthRatio, height } = field;
 
-  switch (getKind(field.Element)) {
+  switch (getKind(field.element)) {
     case "Maxicode": {
       const res: MaxicodeWithData = {
         _kind: "MaxicodeWithData",
-        ReversePrint,
-        Code: field.Element as Maxicode,
-        Position,
-        Data: text,
+        reversePrint,
+        code: field.element as Maxicode,
+        position,
+        data: text,
       };
       return res;
     }
     case "BarcodePdf417": {
       const res: BarcodePdf417WithData = {
-        ...(field.Element as BarcodePdf417),
+        ...(field.element as BarcodePdf417),
         _kind: "BarcodePdf417WithData",
-        ReversePrint,
-        Position,
-        Data: text,
+        reversePrint,
+        position,
+        data: text,
       };
       return res;
     }
     case "Barcode128": {
       const res: Barcode128WithData = {
-        ...(field.Element as Barcode128),
+        ...(field.element as Barcode128),
         _kind: "Barcode128WithData",
-        ReversePrint,
-        Width,
-        Position,
-        Data: text,
+        reversePrint,
+        width,
+        position,
+        data: text,
       };
       return res;
     }
     case "BarcodeEan13": {
       const res: BarcodeEan13WithData = {
-        ...(field.Element as BarcodeEan13),
+        ...(field.element as BarcodeEan13),
         _kind: "BarcodeEan13WithData",
-        ReversePrint,
-        Width,
-        Position,
-        Data: text,
+        reversePrint,
+        width,
+        position,
+        data: text,
       };
       return res;
     }
     case "Barcode2of5": {
       const res: Barcode2of5WithData = {
-        ...(field.Element as Barcode2of5),
+        ...(field.element as Barcode2of5),
         _kind: "Barcode2of5WithData",
-        ReversePrint,
-        Width,
-        WidthRatio,
-        Position,
-        Data: text,
+        reversePrint,
+        width,
+        widthRatio,
+        position,
+        data: text,
       };
       return res;
     }
     case "Barcode39": {
       const res: Barcode39WithData = {
-        ...(field.Element as Barcode39),
+        ...(field.element as Barcode39),
         _kind: "Barcode39WithData",
-        ReversePrint,
-        Width,
-        WidthRatio,
-        Position,
-        Data: text,
+        reversePrint,
+        width,
+        widthRatio,
+        position,
+        data: text,
       };
       return res;
     }
     case "BarcodeAztec": {
       const res: BarcodeAztecWithData = {
-        ...(field.Element as BarcodeAztec),
+        ...(field.element as BarcodeAztec),
         _kind: "BarcodeAztecWithData",
-        ReversePrint,
-        Position,
-        Data: text,
+        reversePrint,
+        position,
+        data: text,
       };
       return res;
     }
     case "BarcodeDatamatrix": {
       const res: BarcodeDatamatrixWithData = {
-        ...(field.Element as BarcodeDatamatrix),
+        ...(field.element as BarcodeDatamatrix),
         _kind: "BarcodeDatamatrixWithData",
-        ReversePrint,
-        Position,
-        Data: text,
+        reversePrint,
+        position,
+        data: text,
       };
       return res;
     }
     case "BarcodeQr": {
       const res: BarcodeQrWithData = {
-        ...(field.Element as BarcodeQr),
+        ...(field.element as BarcodeQr),
         _kind: "BarcodeQrWithData",
-        ReversePrint,
-        Height,
-        Position,
-        Data: text,
+        reversePrint,
+        height,
+        position,
+        data: text,
       };
       return res;
     }
     case "GraphicSymbol":
-      return toGraphicSymbolTextField(text, field, field.Element as GraphicSymbol);
+      return toGraphicSymbolTextField(text, field, field.element as GraphicSymbol);
     case "FieldBlock":
-      return toTextField(text, field, field.Element as FieldBlock);
+      return toTextField(text, field, field.element as FieldBlock);
     default:
       return toTextField(text, field, undefined);
   }
@@ -265,16 +265,16 @@ function toGraphicSymbolTextField(
 
   return {
     _kind: "TextField",
-    Font: fontWithAdjustedSizes({
-      Name: "GS",
-      Width: fe.Width,
-      Height: fe.Height,
-      Orientation: fe.Orientation,
+    font: fontWithAdjustedSizes({
+      name: "GS",
+      width: fe.width,
+      height: fe.height,
+      orientation: fe.orientation,
     }),
-    Position: field.Position,
-    Alignment: field.Alignment,
-    Text: out,
-    ReversePrint: field.ReversePrint,
+    position: field.position,
+    alignment: field.alignment,
+    text: out,
+    reversePrint: field.reversePrint,
   };
 }
 
@@ -299,15 +299,15 @@ function toGSText(text: string): string {
 
 function toTextField(text: string, field: FieldInfo, fe: FieldBlock | undefined): TextField {
   // \& = carriage return/line feed
-  const unicodeText = toUnicodeText(text.replaceAll("\\&", "\n"), field.CurrentCharset);
+  const unicodeText = toUnicodeText(text.replaceAll("\\&", "\n"), field.currentCharset);
 
   return {
     _kind: "TextField",
-    Font: fontWithAdjustedSizes(field.Font),
-    Position: field.Position,
-    Alignment: field.Alignment,
-    Text: unicodeText,
-    Block: fe,
-    ReversePrint: field.ReversePrint,
+    font: fontWithAdjustedSizes(field.font),
+    position: field.position,
+    alignment: field.alignment,
+    text: unicodeText,
+    block: fe,
+    reversePrint: field.reversePrint,
   };
 }

@@ -15,6 +15,7 @@ export function newBarcode39Parser(): CommandParser {
     commandCode: code,
     parse(command: string, printer: VirtualPrinter): unknown {
       const barcode: Barcode39 = {
+        _kind: "Barcode39",
         orientation: printer.defaultOrientation,
         height: printer.defaultBarcodeDimensions.height,
         line: true,

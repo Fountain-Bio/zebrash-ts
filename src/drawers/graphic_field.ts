@@ -7,7 +7,7 @@ function isGraphicField(value: unknown): value is GraphicField {
   return (
     typeof value === "object" &&
     value !== null &&
-    (value as { kind?: unknown }).kind === "graphic_field"
+    (value as { _kind?: unknown })._kind === "GraphicField"
   );
 }
 

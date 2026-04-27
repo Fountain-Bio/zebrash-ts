@@ -1,4 +1,4 @@
-import type { StoredGraphics } from "../elements/index.js";
+import type { storedGraphics } from "../elements/index.js";
 import { decodeGraphicFieldData } from "../hex/decode.js";
 import {
   StoredGraphicsDefaultPath,
@@ -11,14 +11,14 @@ export function newDownloadGraphicsParser(): CommandParser {
   const code = "~DG";
 
   return {
-    CommandCode: code,
-    Parse(command: string, printer: VirtualPrinter): null {
+    commandCode: code,
+    parse(command: string, printer: VirtualPrinter): null {
       const parts = splitN(commandText(command, code), ",", 4);
 
       const graphics: StoredGraphics = {
-        Data: new Uint8Array(0),
-        TotalBytes: 0,
-        RowBytes: 1,
+        data: new Uint8Array(0),
+        totalBytes: 0,
+        rowBytes: 1,
       };
 
       let path = StoredGraphicsDefaultPath;
@@ -28,17 +28,17 @@ export function newDownloadGraphicsParser(): CommandParser {
 
       if (parts.length > 1) {
         const v = Number.parseInt(parts[1] ?? "", 10);
-        if (!Number.isNaN(v)) graphics.TotalBytes = v;
+        if (!Number.isNaN(v)) graphics.totalBytes = v;
       }
 
       if (parts.length > 2) {
         const v = Number.parseInt(parts[2] ?? "", 10);
-        if (!Number.isNaN(v)) graphics.RowBytes = Math.min(v, 9999999);
+        if (!Number.isNaN(v)) graphics.rowBytes = Math.min(v, 9999999);
       }
 
       if (parts.length > 3) {
         try {
-          graphics.Data = decodeGraphicFieldData(parts[3] ?? "", graphics.RowBytes);
+          graphics.data = decodeGraphicFieldData(parts[3] ?? "", graphics.rowBytes);
         } catch (e) {
           throw new Error(
             `failed to decode embedded graphics: ${e instanceof Error ? e.message : String(e)}`,
@@ -47,7 +47,7 @@ export function newDownloadGraphicsParser(): CommandParser {
       }
 
       const finalPath = ensureExtensions(path, "GRF");
-      printer.StoredGraphics.set(finalPath, graphics);
+      printer.storedGraphics.set(finalPath, graphics);
 
       return null;
     },

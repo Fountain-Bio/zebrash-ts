@@ -21,7 +21,7 @@ export function newBarcode128Drawer(): ElementDrawer {
   return {
     draw(ctx, element): void {
       const barcode = element as Barcode128WithData | null;
-      if (!barcode || barcode.kind !== "barcode128") return;
+      if (!barcode || barcode._kind !== "Barcode128WithData") return;
 
       let content = barcode.data;
       let text = barcode.data;

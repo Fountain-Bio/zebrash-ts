@@ -7,10 +7,10 @@ const HEADER = `[)>${RS}01${GS}`;
 
 const wrap = (data: string): MaxicodeWithData => ({
   _kind: "MaxicodeWithData",
-  ReversePrint: { Value: false },
-  Code: { _kind: "Maxicode", Mode: 4 },
-  Position: { X: 0, Y: 0, CalculateFromBottom: false, AutomaticPosition: false },
-  Data: data,
+  reversePrint: { value: false },
+  code: { _kind: "Maxicode", mode: 4 },
+  position: { x: 0, y: 0, calculateFromBottom: false, automaticPosition: false },
+  data: data,
 });
 
 // The Maxicode SCM "header" is the 7-character envelope `[)>${RS}01${GS}` plus the 2-character

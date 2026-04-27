@@ -11,23 +11,23 @@ export type DatamatrixRatio = (typeof DatamatrixRatio)[keyof typeof DatamatrixRa
 
 export interface BarcodeDatamatrix {
   _kind: "BarcodeDatamatrix";
-  Orientation: FieldOrientation;
-  Height: number;
-  // Quality: 0, 50, 80, 100, 140, 200. Default 0; recommended 200.
-  Quality: number;
-  Columns: number;
-  Rows: number;
-  // Format: 1..6 (default 6). Ignored for ECC 200.
-  Format: number;
+  orientation: FieldOrientation;
+  height: number;
+  // quality: 0, 50, 80, 100, 140, 200. Default 0; recommended 200.
+  quality: number;
+  columns: number;
+  rows: number;
+  // format: 1..6 (default 6). Ignored for ECC 200.
+  format: number;
   // Escape character. Default "~".
-  Escape: number;
+  escape: number;
   // Aspect ratio: 1=square, 2=rectangular.
-  Ratio: DatamatrixRatio;
+  ratio: DatamatrixRatio;
 }
 
 export interface BarcodeDatamatrixWithData extends Omit<BarcodeDatamatrix, "_kind"> {
   _kind: "BarcodeDatamatrixWithData";
-  ReversePrint: ReversePrint;
-  Position: LabelPosition;
-  Data: string;
+  reversePrint: ReversePrint;
+  position: LabelPosition;
+  data: string;
 }

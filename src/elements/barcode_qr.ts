@@ -5,15 +5,15 @@ export interface BarcodeQr {
   _kind: "BarcodeQr";
   // The bar code magnification to use. Any number between 1 and 10 may be used.
   // The default value depends on the print density being used.
-  Magnification: number;
+  magnification: number;
 }
 
 export interface BarcodeQrWithData extends Omit<BarcodeQr, "_kind"> {
   _kind: "BarcodeQrWithData";
-  ReversePrint: ReversePrint;
-  Height: number;
-  Position: LabelPosition;
-  Data: string;
+  reversePrint: ReversePrint;
+  height: number;
+  position: LabelPosition;
+  data: string;
 }
 
 export const QrErrorCorrectionLevel = {
@@ -42,16 +42,16 @@ export interface QrInputData {
 }
 
 export function getQrInputData(barcode: BarcodeQrWithData): QrInputData {
-  if (barcode.Data.length < 4) {
+  if (barcode.data.length < 4) {
     throw new Error("invalid qr barcode data");
   }
 
-  let data = barcode.Data.slice(3);
+  let data = barcode.data.slice(3);
   let mode: QrCharacterMode = QrCharacterMode.Automatic;
-  const level: QrErrorCorrectionLevel = barcode.Data.charCodeAt(0);
+  const level: QrErrorCorrectionLevel = barcode.data.charCodeAt(0);
 
   // First character of the data in manual mode defines character mode.
-  if (barcode.Data.charCodeAt(1) === "M".charCodeAt(0) && data.length > 0) {
+  if (barcode.data.charCodeAt(1) === "M".charCodeAt(0) && data.length > 0) {
     mode = data.charCodeAt(0);
     data = data.slice(1);
   }

@@ -19,7 +19,7 @@ export function newMaxicodeDrawer(): ElementDrawer {
   return {
     draw(ctx, element, options): void {
       const barcode = element as MaxicodeWithData | null;
-      if (!barcode || barcode.kind !== "maxicode") return;
+      if (!barcode || barcode._kind !== "MaxicodeWithData") return;
 
       const inputData = getMaxicodeInputData(barcode);
       const grid = encodeMaxicode(barcode.code.mode, 0, inputData);

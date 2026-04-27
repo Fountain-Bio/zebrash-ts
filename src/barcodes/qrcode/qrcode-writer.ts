@@ -1,6 +1,6 @@
 // Port of internal/barcodes/qrcode/qrcode_writer.go
 
-import { BitMatrix } from "../utils/bit-matrix.ts";
+import { BitMatrix } from "../utils/bit_matrix.ts";
 import { Encoder_encode } from "./encoder/encoder.ts";
 import type { ErrorCorrectionLevel } from "./encoder/error-correction-level.ts";
 import type { Options } from "./encoder/options.ts";

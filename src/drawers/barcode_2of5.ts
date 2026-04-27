@@ -15,7 +15,7 @@ export function newBarcode2of5Drawer(): ElementDrawer {
   return {
     draw(ctx, element): void {
       const barcode = element as Barcode2of5WithData | null;
-      if (!barcode || barcode.kind !== "barcode2of5") return;
+      if (!barcode || barcode._kind !== "Barcode2of5WithData") return;
 
       const content = barcode.data.replace(NON_DIGIT, "");
       const moduleWidth = Math.max(barcode.width, 1);

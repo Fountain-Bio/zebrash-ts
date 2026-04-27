@@ -13,7 +13,7 @@ export function newBarcodePdf417Drawer(): ElementDrawer {
   return {
     draw(ctx, element): void {
       const barcode = element as BarcodePdf417WithData | null;
-      if (!barcode || barcode.kind !== "barcodePdf417") return;
+      if (!barcode || barcode._kind !== "BarcodePdf417WithData") return;
 
       const matrix = encodePdf417(
         barcode.data,

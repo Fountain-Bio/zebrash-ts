@@ -13,25 +13,26 @@ export function newGraphicFieldParser(): CommandParser {
   const code = "^GF";
 
   return {
-    CommandCode: code,
-    Parse(command: string, printer: VirtualPrinter): GraphicField {
+    commandCode: code,
+    parse(command: string, printer: VirtualPrinter): GraphicField {
       const result: GraphicField = {
-        Position: printer.NextElementPosition,
-        Format: 0,
+        _kind: "GraphicField",
+        position: printer.nextElementPosition,
+        format: 0,
         DataBytes: 0,
-        TotalBytes: 0,
-        RowBytes: 0,
-        Data: new Uint8Array(0),
-        MagnificationX: 1,
-        MagnificationY: 1,
-        ReversePrint: printer.GetReversePrint(),
+        totalBytes: 0,
+        rowBytes: 0,
+        data: new Uint8Array(0),
+        magnificationX: 1,
+        magnificationY: 1,
+        reversePrint: printer.getReversePrint(),
       };
 
       const parts = splitCommand(command, code, 0);
 
       if (parts.length > 0 && (parts[0]?.length ?? 0) > 0) {
         const f = parts[0]?.[0];
-        result.Format = formatFromChar(f);
+        result.format = formatFromChar(f);
       }
 
       if (parts.length > 1) {
@@ -41,21 +42,21 @@ export function newGraphicFieldParser(): CommandParser {
 
       if (parts.length > 2) {
         const v = Number.parseInt(parts[2] ?? "", 10);
-        if (!Number.isNaN(v)) result.TotalBytes = v;
+        if (!Number.isNaN(v)) result.totalBytes = v;
       }
 
       if (parts.length > 3) {
         const v = Number.parseInt(parts[3] ?? "", 10);
-        if (!Number.isNaN(v)) result.RowBytes = Math.min(v, 9999999);
+        if (!Number.isNaN(v)) result.rowBytes = Math.min(v, 9999999);
       }
 
       if (parts.length > 4) {
         const data = parts.slice(4).join(",").trim();
 
-        switch (result.Format) {
+        switch (result.format) {
           case GraphicFieldFormatHex: {
             try {
-              result.Data = decodeGraphicFieldData(data, result.RowBytes);
+              result.data = decodeGraphicFieldData(data, result.rowBytes);
             } catch (e) {
               throw new Error(
                 `failed to decode hex string: ${e instanceof Error ? e.message : String(e)}`,
@@ -64,7 +65,7 @@ export function newGraphicFieldParser(): CommandParser {
             break;
           }
           case GraphicFieldFormatRaw: {
-            result.Data = new TextEncoder().encode(data);
+            result.data = new TextEncoder().encode(data);
             break;
           }
           default:

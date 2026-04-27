@@ -26,4 +26,18 @@ export class AztecCode {
   getModule(x: number, y: number): boolean {
     return this.bits.getBit(x * this.size + y);
   }
+
+  /** Drawer-friendly aliases. */
+  get width(): number {
+    return this.size;
+  }
+
+  get height(): number {
+    return this.size;
+  }
+
+  /** BitMatrix-compatible read access. */
+  at(x: number, y: number): boolean {
+    return this.getModule(x, y);
+  }
 }

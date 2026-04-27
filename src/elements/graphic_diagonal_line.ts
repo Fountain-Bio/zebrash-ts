@@ -4,11 +4,11 @@ import type { ReversePrint } from "./reverse_print.ts";
 
 export interface GraphicDiagonalLine {
   _kind: "GraphicDiagonalLine";
-  ReversePrint: ReversePrint;
-  Position: LabelPosition;
-  Width: number;
-  Height: number;
-  BorderThickness: number;
-  LineColor: LineColor;
-  TopToBottom: boolean;
+  reversePrint: ReversePrint;
+  position: LabelPosition;
+  width: number;
+  height: number;
+  borderThickness: number;
+  lineColor: LineColor;
+  topToBottom: boolean;
 }

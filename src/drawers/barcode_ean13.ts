@@ -19,7 +19,7 @@ export function newBarcodeEan13Drawer(): ElementDrawer {
   return {
     draw(ctx, element): void {
       const barcode = element as BarcodeEan13WithData | null;
-      if (!barcode || barcode.kind !== "barcodeEan13") return;
+      if (!barcode || barcode._kind !== "BarcodeEan13WithData") return;
 
       const moduleWidth = Math.max(barcode.width, 1);
       const moduleHeight = Math.max(barcode.height, 1);

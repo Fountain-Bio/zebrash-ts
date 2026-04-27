@@ -59,7 +59,7 @@ export function toFieldOrientation(orientation: string): FieldOrientation {
  * `(FieldAlignment, bool)` return.
  */
 export function toFieldAlignment(alignment: string): {
-  alignment: FieldAlignment;
+  value: FieldAlignment;
   ok: boolean;
 } {
   // Go uses strconv.Atoi, which only accepts plain base-10 integers.
@@ -68,16 +68,16 @@ export function toFieldAlignment(alignment: string): {
     const v = Number.parseInt(trimmed, 10);
     switch (v) {
       case 0:
-        return { alignment: FieldAlignment.Left, ok: true };
+        return { value: FieldAlignment.Left, ok: true };
       case 1:
-        return { alignment: FieldAlignment.Right, ok: true };
+        return { value: FieldAlignment.Right, ok: true };
       case 2:
-        return { alignment: FieldAlignment.Auto, ok: true };
+        return { value: FieldAlignment.Auto, ok: true };
       default:
         break;
     }
   }
-  return { alignment: FieldAlignment.Left, ok: false };
+  return { value: FieldAlignment.Left, ok: false };
 }
 
 export function toTextAlignment(alignment: string): TextAlignment {
@@ -126,6 +126,65 @@ export function toPositiveIntField(value: string): { value: number; ok: boolean 
     return { value: 0, ok: false };
   }
   return { value: Math.abs(Math.round(v)), ok: true };
+}
+
+/**
+ * Strict integer parser used by unit-7 parsers. Returns {value, ok}.
+ * Mirrors Go's `strconv.Atoi`: only base-10, no whitespace, optional minus.
+ */
+export function parseStrictInt(value: string): { value: number; ok: boolean } {
+  if (!/^-?\d+$/.test(value)) {
+    return { value: 0, ok: false };
+  }
+  const v = Number.parseInt(value, 10);
+  if (!Number.isFinite(v)) {
+    return { value: 0, ok: false };
+  }
+  return { value: v, ok: true };
+}
+
+/**
+ * Trim-and-parse decimal int, returning `null` on failure. Used by unit-9 barcode
+ * parsers. Allows leading `+`/`-` and surrounding whitespace; rejects floats.
+ */
+export function parseInt10(value: string): number | null {
+  const trimmed = value.replace(/^[ \t]+|[ \t]+$/g, "");
+  if (!/^[+-]?\d+$/.test(trimmed)) return null;
+  const n = Number(trimmed);
+  return Number.isFinite(n) ? n : null;
+}
+
+/**
+ * Mirrors `strconv.ParseFloat(strings.Trim(s, " "), 32)`: returns `null` on
+ * failure, otherwise the parsed float.
+ */
+export function parseFloatTrimmed(value: string): number | null {
+  const trimmed = value.replace(/^[ \t]+|[ \t]+$/g, "");
+  if (trimmed.length === 0) return null;
+  if (!/^[+-]?(\d+\.?\d*|\.\d+)([eE][+-]?\d+)?$/.test(trimmed)) return null;
+  const n = Number(trimmed);
+  return Number.isFinite(n) ? n : null;
+}
+
+/**
+ * Splits `s` on `sep` into at most `n` parts (Go's `strings.SplitN` behavior).
+ * `n <= 0` returns the whole string in a single-element array.
+ */
+export function splitN(s: string, sep: string, n: number): string[] {
+  if (n <= 0) return [s];
+  const parts: string[] = [];
+  let rest = s;
+  for (let i = 0; i < n - 1; i++) {
+    const idx = rest.indexOf(sep);
+    if (idx < 0) {
+      parts.push(rest);
+      return parts;
+    }
+    parts.push(rest.slice(0, idx));
+    rest = rest.slice(idx + sep.length);
+  }
+  parts.push(rest);
+  return parts;
 }
 
 /**

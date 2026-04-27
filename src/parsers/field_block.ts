@@ -14,6 +14,7 @@ export function newFieldBlockParser(): CommandParser {
     commandCode: code,
     parse: (command: string, printer: VirtualPrinter) => {
       const block: FieldBlock = {
+        _kind: "FieldBlock",
         maxWidth: 0,
         maxLines: 1,
         lineSpacing: 0,

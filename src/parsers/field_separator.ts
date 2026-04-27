@@ -15,12 +15,12 @@ export function newFieldSeparatorParser(): CommandParser {
           // TODO(unit-1): once StoredField/RecalledField gain a real resolve()
           // method, return its result instead of the raw RecalledField.
           const stored: StoredField = {
-            kind: "StoredField",
+            _kind: "StoredField",
             number: printer.nextElementFieldNumber,
             field: getFieldInfo(printer),
           };
           const recalled: RecalledField = {
-            kind: "RecalledField",
+            _kind: "RecalledField",
             storedField: stored,
             data: printer.nextElementFieldData,
           };
@@ -29,7 +29,7 @@ export function newFieldSeparatorParser(): CommandParser {
 
         if (printer.nextDownloadFormatName === "") {
           const data: RecalledFieldData = {
-            kind: "RecalledFieldData",
+            _kind: "RecalledFieldData",
             number: printer.nextElementFieldNumber,
             data: printer.nextElementFieldData,
           };
@@ -37,7 +37,7 @@ export function newFieldSeparatorParser(): CommandParser {
         }
 
         const stored: StoredField = {
-          kind: "StoredField",
+          _kind: "StoredField",
           number: printer.nextElementFieldNumber,
           field: getFieldInfo(printer),
         };

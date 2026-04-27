@@ -26,3 +26,23 @@ export * from "./stored_format.ts";
 export * from "./stored_graphics.ts";
 export * from "./text_alignment.ts";
 export * from "./text_field.ts";
+
+// Named-constant aliases for cross-unit consumers that import them directly.
+import { BarcodeMode as _BM } from "./barcode_128.ts";
+export const BarcodeModeNo = _BM.No;
+export const BarcodeModeUcc = _BM.Ucc;
+export const BarcodeModeAutomatic = _BM.Automatic;
+export const BarcodeModeEan = _BM.Ean;
+
+// FieldOrientation named-constant aliases
+import { FieldOrientation as _FO } from "./field_orientation.ts";
+export const FieldOrientationNormal = _FO.Normal;
+export const FieldOrientation90 = _FO.Rotate90;
+export const FieldOrientation180 = _FO.Rotate180;
+export const FieldOrientation270 = _FO.Rotate270;
+// DatamatrixRatio named-constant aliases
+import { DatamatrixRatio as _DR } from "./barcode_datamatrix.ts";
+export const DatamatrixRatioSquare = _DR.Square;
+export const DatamatrixRatioRectangular = _DR.Rectangular;
+// TextFieldLike alias
+export type { TextField as TextFieldLike } from "./text_field.ts";

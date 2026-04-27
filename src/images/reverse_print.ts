@@ -6,7 +6,7 @@ const ALPHA_THRESHOLD = 30;
  * Apply a `^FR` reverse-print mask: wherever the source pixel is opaque enough
  * (alpha ≥ 30), invert the destination pixel's RGB channels.
  *
- * Mirrors Go `images.ReversePrint`: a black-on-transparent mask is XOR'd onto
+ * Mirrors Go `images.reversePrint`: a black-on-transparent mask is XOR'd onto
  * a destination so glyphs/barcodes covering already-drawn ink turn white.
  *
  * Both inputs must match in width and height. A `Canvas` destination is read

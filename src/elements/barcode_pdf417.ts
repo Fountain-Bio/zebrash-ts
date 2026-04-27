@@ -4,17 +4,17 @@ import type { ReversePrint } from "./reverse_print.ts";
 
 export interface BarcodePdf417 {
   _kind: "BarcodePdf417";
-  Orientation: FieldOrientation;
-  RowHeight: number;
-  Security: number;
-  Columns: number;
-  Rows: number;
-  Truncate: boolean;
+  orientation: FieldOrientation;
+  rowHeight: number;
+  security: number;
+  columns: number;
+  rows: number;
+  truncate: boolean;
 }
 
 export interface BarcodePdf417WithData extends Omit<BarcodePdf417, "_kind"> {
   _kind: "BarcodePdf417WithData";
-  ReversePrint: ReversePrint;
-  Position: LabelPosition;
-  Data: string;
+  reversePrint: ReversePrint;
+  position: LabelPosition;
+  data: string;
 }

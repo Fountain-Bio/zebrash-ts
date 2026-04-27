@@ -6,10 +6,10 @@ import type { ReversePrint } from "./reverse_print.ts";
 
 export interface TextField {
   _kind: "TextField";
-  ReversePrint: ReversePrint;
-  Font: FontInfo;
-  Position: LabelPosition;
-  Alignment: FieldAlignment;
-  Text: string;
-  Block?: FieldBlock | undefined;
+  reversePrint: ReversePrint;
+  font: FontInfo;
+  position: LabelPosition;
+  alignment: FieldAlignment;
+  text: string;
+  block?: FieldBlock | undefined;
 }

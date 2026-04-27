@@ -44,15 +44,15 @@ export function newTextFieldDrawer(): ElementDrawer<TextField> {
     ): void {
       const text = adjustTextField(element);
 
-      const scaleX = getFontScaleX(text.Font);
-      const family = getFontFamily(text.Font);
+      const scaleX = getFontScaleX(text.font);
+      const family = getFontFamily(text.font);
 
-      ctx.font = `${text.Font.Height}px "${family}"`;
+      ctx.font = `${text.font.height}px "${family}"`;
       ctx.textBaseline = "alphabetic";
       ctx.textAlign = "left";
       setLineColor(ctx, LineColorBlack);
 
-      const { width: rawW, fontHeight } = measure(ctx, text.Text);
+      const { width: rawW, fontHeight } = measure(ctx, text.text);
       const w = rawW * scaleX;
       const h = fontHeight;
 
@@ -63,28 +63,28 @@ export function newTextFieldDrawer(): ElementDrawer<TextField> {
 
       ctx.save();
       try {
-        rotateAbout(ctx, text.Font.Orientation, x, y);
+        rotateAbout(ctx, text.font.orientation, x, y);
         if (scaleX !== 1.0) {
           scaleAbout(ctx, scaleX, 1, x, y);
         }
 
-        if (text.Block) {
-          const maxWidth = text.Block.MaxWidth / scaleX;
-          const lineSpacing = h === 0 ? 1 : 1 + text.Block.LineSpacing / h;
+        if (text.block) {
+          const maxWidth = text.block.maxWidth / scaleX;
+          const lineSpacing = h === 0 ? 1 : 1 + text.block.lineSpacing / h;
           drawStringWrapped(
             ctx,
-            text.Text,
+            text.text,
             x,
             y - h,
             ax,
             ay,
             maxWidth,
             lineSpacing,
-            text.Block.Alignment,
+            text.block.alignment,
             h,
           );
         } else {
-          drawStringAnchored(ctx, text.Text, x, y, ax, ay);
+          drawStringAnchored(ctx, text.text, x, y, ax, ay);
         }
       } finally {
         ctx.restore();
@@ -99,17 +99,17 @@ export function newTextFieldDrawer(): ElementDrawer<TextField> {
 
 function adjustTextField(text: TextField): TextField {
   // Font B is the bold ZPL font; its glyph table only has uppercase forms.
-  if (text.Font.Name === "B") {
-    return { ...text, Text: text.Text.toUpperCase() };
+  if (text.font.name === "B") {
+    return { ...text, text: text.text.toUpperCase() };
   }
   return text;
 }
 
 function getFontFamily(font: FontInfo): string {
-  if (font.CustomFontFamily) {
-    return font.CustomFontFamily;
+  if (font.customFontFamily) {
+    return font.customFontFamily;
   }
-  switch (font.Name) {
+  switch (font.name) {
     case "0":
       return FONT_FAMILY_HELVETICA_BOLD;
     case "B":
@@ -122,14 +122,14 @@ function getFontFamily(font: FontInfo): string {
 }
 
 function getFontScaleX(font: FontInfo): number {
-  if (font.Height !== 0) {
-    return (widthToHeightRatio(font) * font.Width) / font.Height;
+  if (font.height !== 0) {
+    return (widthToHeightRatio(font) * font.width) / font.height;
   }
   return 1.0;
 }
 
 function widthToHeightRatio(font: FontInfo): number {
-  if (font.Name === "0" || font.Name === "GS" || font.CustomFontFamily) {
+  if (font.name === "0" || font.name === "GS" || font.customFontFamily) {
     return 1.0;
   }
   // Empirical adjustment for the bitmap-emulated TTF fonts (matches Go).
@@ -148,14 +148,14 @@ function getTextTopLeftPos(
   let spacing = 0;
   let blockW = w;
 
-  if (text.Block) {
-    lines = Math.max(text.Block.MaxLines, 1);
-    spacing = text.Block.LineSpacing;
-    blockW = text.Block.MaxWidth;
+  if (text.block) {
+    lines = Math.max(text.block.maxLines, 1);
+    spacing = text.block.lineSpacing;
+    blockW = text.block.maxWidth;
   }
 
-  if (!text.Position.CalculateFromBottom) {
-    switch (text.Font.Orientation) {
+  if (!text.position.calculateFromBottom) {
+    switch (text.font.orientation) {
       case FieldOrientation90:
         return [x + h / 4, y];
       case FieldOrientation180:
@@ -169,7 +169,7 @@ function getTextTopLeftPos(
 
   const offset = (lines - 1) * (h + spacing);
 
-  switch (text.Font.Orientation) {
+  switch (text.font.orientation) {
     case FieldOrientation90:
       return [x + offset, y];
     case FieldOrientation180:
@@ -182,7 +182,7 @@ function getTextTopLeftPos(
 }
 
 function getTextAxAy(text: TextField): [number, number] {
-  return [text.Alignment === FieldAlignmentRight ? 1 : 0, 0];
+  return [text.alignment === FieldAlignmentRight ? 1 : 0, 0];
 }
 
 interface Measurement {

@@ -16,6 +16,7 @@ export function newBarcodeDatamatrixParser(): CommandParser {
     commandCode: code,
     parse(command: string, printer: VirtualPrinter): unknown {
       const barcode: BarcodeDatamatrix = {
+        _kind: "BarcodeDatamatrix",
         orientation: printer.defaultOrientation,
         height: printer.defaultBarcodeDimensions.height,
         quality: 0,

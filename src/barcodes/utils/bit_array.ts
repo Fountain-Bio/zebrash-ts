@@ -11,7 +11,7 @@ export class BitArray {
   bits: Uint32Array;
   private _size: number;
 
-  constructor(size: number) {
+  constructor(size = 0) {
     this.bits = makeArray(Math.max(size, 0));
     this._size = size;
   }
@@ -24,6 +24,11 @@ export class BitArray {
   }
 
   getSize(): number {
+    return this._size;
+  }
+
+  /** Convenience getter mirroring `Array.length`; same value as `getSize()`. */
+  get length(): number {
     return this._size;
   }
 

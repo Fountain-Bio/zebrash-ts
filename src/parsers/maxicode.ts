@@ -6,17 +6,17 @@ export function newMaxicodeParser(): CommandParser {
   const code = "^BD";
 
   return {
-    CommandCode: code,
-    Parse(command: string, printer: VirtualPrinter): null {
-      const barcode: Maxicode = { Mode: 0 };
+    commandCode: code,
+    parse(command: string, printer: VirtualPrinter): null {
+      const barcode: Maxicode = { mode: 0 };
 
       const parts = splitCommand(command, code, 0);
       if (parts.length > 0) {
         const v = Number.parseInt(parts[0] ?? "", 10);
-        if (!Number.isNaN(v)) barcode.Mode = v;
+        if (!Number.isNaN(v)) barcode.mode = v;
       }
 
-      printer.NextElementFieldElement = barcode;
+      printer.nextElementFieldElement = barcode;
       return null;
     },
   };

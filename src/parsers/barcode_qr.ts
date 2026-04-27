@@ -10,6 +10,7 @@ export function newBarcodeQrParser(): CommandParser {
     commandCode: code,
     parse(command: string, printer: VirtualPrinter): unknown {
       const barcode: BarcodeQr = {
+        _kind: "BarcodeQr",
         magnification: 1,
       };
 

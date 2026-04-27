@@ -11,8 +11,8 @@ export function newRecallFormatParser(): CommandParser {
   const code = "^XF";
 
   return {
-    CommandCode: code,
-    Parse(command: string, printer: VirtualPrinter): RecalledFormat | null {
+    commandCode: code,
+    parse(command: string, printer: VirtualPrinter): RecalledFormat | null {
       const raw = commandText(command, code);
       const path = raw === "" ? StoredFormatDefaultPath : raw;
 
@@ -21,7 +21,7 @@ export function newRecallFormatParser(): CommandParser {
         throw err;
       }
 
-      const stored = printer.StoredFormats.get(ensureExtensions(path, "ZPL"));
+      const stored = printer.storedFormats.get(ensureExtensions(path, "ZPL"));
       if (stored) {
         return stored.ToRecalledFormat();
       }

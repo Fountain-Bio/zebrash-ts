@@ -13,7 +13,7 @@ export function newBarcode39Drawer(): ElementDrawer {
   return {
     draw(ctx, element): void {
       const barcode = element as Barcode39WithData | null;
-      if (!barcode || barcode.kind !== "barcode39") return;
+      if (!barcode || barcode._kind !== "Barcode39WithData") return;
 
       const content = barcode.data;
       const text = `*${barcode.data}*`;

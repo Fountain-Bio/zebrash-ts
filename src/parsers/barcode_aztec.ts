@@ -14,6 +14,7 @@ export function newBarcodeAztecParser(): CommandParser {
     commandCode: code,
     parse(command: string, printer: VirtualPrinter): unknown {
       const barcode: BarcodeAztec = {
+        _kind: "BarcodeAztec",
         orientation: printer.defaultOrientation,
         magnification: 0,
         size: 0,

@@ -2,24 +2,32 @@
 
 import type { SKRSContext2D } from "@napi-rs/canvas";
 import { FONT0_NAME, FONT1_NAME, registerEmbeddedFonts } from "../assets/index.js";
-import type { BitArray, BitMatrix } from "../barcodes/utils/index.js";
+import type { BitMatrix } from "../barcodes/utils/index.js";
 import type { LabelPosition } from "../elements/index.js";
+
+/** Minimal shape for any 1D bit sequence painter input. */
+export interface BitSequence {
+  readonly length: number;
+  at(i: number): boolean | undefined;
+}
 
 /**
  * Walk a 1D bit pattern and paint vertical bars `moduleWidth` wide and
- * `barHeight` tall, starting at `pos`. Mirrors the inner loop of
- * `gCtx.DrawImage(img, ...)` after a 1D encoder produces a single-row image.
+ * `barHeight` tall, starting at `pos`. Accepts any object exposing `length`
+ * and `at(i): boolean` (BitArray, BitList, boolean[], EncodedCode128, ...).
  */
 export function paintBitArrayBars(
   ctx: SKRSContext2D,
-  bits: BitArray,
+  bits: BitSequence | readonly boolean[],
   pos: LabelPosition,
   moduleWidth: number,
   barHeight: number,
 ): void {
   ctx.fillStyle = "#000000";
-  for (let i = 0; i < bits.length; i++) {
-    if (!bits.at(i)) continue;
+  const len = bits.length;
+  for (let i = 0; i < len; i++) {
+    const on = (bits as BitSequence).at(i);
+    if (!on) continue;
     ctx.fillRect(pos.x + i * moduleWidth, pos.y, moduleWidth, barHeight);
   }
 }

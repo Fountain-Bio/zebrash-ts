@@ -7,20 +7,35 @@ export interface ParsedFont {
 }
 
 export interface FontInfo {
-  Name: string;
-  Width: number;
-  Height: number;
-  Orientation: FieldOrientation;
-  CustomFont?: ParsedFont | undefined;
+  name: string;
+  width: number;
+  height: number;
+  orientation: FieldOrientation;
+  customFont?: ParsedFont | undefined;
+  /** Optional canvas font-family alias when the font is a downloaded TTF (`~DU`). */
+  customFontFamily?: string | undefined;
 }
 
 export function getFontSize(font: FontInfo): number {
-  return font.Height;
+  return font.height;
+}
+
+/** Factory mirroring Go's `elements.FontInfo{}` literals. */
+export function newFontInfo(
+  init: Partial<FontInfo> & { name: string } = { name: "A" },
+): FontInfo {
+  return {
+    name: init.name,
+    width: init.width ?? 0,
+    height: init.height ?? 0,
+    orientation: init.orientation ?? 0,
+    customFont: init.customFont,
+  };
 }
 
 export function getFontScaleX(font: FontInfo): number {
-  if (font.Height !== 0) {
-    return (getWidthToHeightRatio(font) * font.Width) / font.Height;
+  if (font.height !== 0) {
+    return (getWidthToHeightRatio(font) * font.width) / font.height;
   }
   return 1.0;
 }
@@ -42,11 +57,11 @@ export function fontExists(font: FontInfo): boolean {
 }
 
 export function isCustomFont(font: FontInfo): boolean {
-  return font.CustomFont != null;
+  return font.customFont != null;
 }
 
 export function isStandardFont(font: FontInfo): boolean {
-  return font.Name === "0" || Object.hasOwn(bitmapFontSizes, font.Name);
+  return font.name === "0" || Object.hasOwn(bitmapFontSizes, font.name);
 }
 
 // Bitmap fonts (everything other than font 0) cannot be freely scaled.
@@ -56,14 +71,14 @@ export function isStandardFont(font: FontInfo): boolean {
 // NOTE: in order to emulate Zebra fonts 0, A-H we use only 2 different TTF
 // fonts so don't confuse Zebra and our fonts, they are not the same thing.
 export function fontWithAdjustedSizes(font: FontInfo): FontInfo {
-  const orgSize = bitmapFontSizes[font.Name];
+  const orgSize = bitmapFontSizes[font.name];
   const isCustom = isCustomFont(font);
 
   // Scalable font.
   // Just set width and height to the same value if one of them is zero.
   if (isCustom || orgSize === undefined) {
-    let width = font.Width;
-    let height = font.Height;
+    let width = font.width;
+    let height = font.height;
 
     if (width === 0) {
       width = height;
@@ -76,14 +91,14 @@ export function fontWithAdjustedSizes(font: FontInfo): FontInfo {
     width = Math.max(width, 10);
     height = Math.max(height, 10);
 
-    return { ...font, Width: width, Height: height };
+    return { ...font, width: width, height: height };
   }
 
-  let width = font.Width;
-  let height = font.Height;
+  let width = font.width;
+  let height = font.height;
 
   if (width === 0 && height === 0) {
-    return { ...font, Width: orgSize[1], Height: orgSize[0] };
+    return { ...font, width: orgSize[1], height: orgSize[0] };
   }
 
   if (width === 0) {
@@ -98,11 +113,11 @@ export function fontWithAdjustedSizes(font: FontInfo): FontInfo {
     height = orgSize[0] * Math.max(Math.round(height / orgSize[0]), 1);
   }
 
-  return { ...font, Width: width, Height: height };
+  return { ...font, width: width, height: height };
 }
 
 function getWidthToHeightRatio(font: FontInfo): number {
-  if (font.Name === "0" || font.Name === "GS" || isCustomFont(font)) {
+  if (font.name === "0" || font.name === "GS" || isCustomFont(font)) {
     return 1.0;
   }
 

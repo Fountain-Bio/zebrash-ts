@@ -13,8 +13,8 @@ export function newDownloadUnboundedTtfParser(): CommandParser {
   const code = "~DU";
 
   return {
-    CommandCode: code,
-    Parse(command: string, printer: VirtualPrinter): null {
+    commandCode: code,
+    parse(command: string, printer: VirtualPrinter): null {
       const parts = splitN(commandText(command, code), ",", 3);
 
       let path = StoredFontDefaultPath;
@@ -53,7 +53,7 @@ export function newDownloadUnboundedTtfParser(): CommandParser {
       // hence we only need to track raw bytes plus a stable family name.
       const finalPath = ensureExtensions(path, "TTF", "FNT");
       const family = `zebrash-ttf-${++fontCounter}`;
-      printer.StoredFonts.set(finalPath, { family, data: fontData });
+      printer.storedFonts.set(finalPath, { family, data: fontData });
 
       return null;
     },

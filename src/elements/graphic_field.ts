@@ -11,20 +11,20 @@ export type GraphicFieldFormat = (typeof GraphicFieldFormat)[keyof typeof Graphi
 
 export interface GraphicField {
   _kind: "GraphicField";
-  ReversePrint: ReversePrint;
-  Position: LabelPosition;
+  reversePrint: ReversePrint;
+  position: LabelPosition;
   // A (hexadecimal), B (raw binary), C (AR compressed). No default.
-  Format: GraphicFieldFormat;
+  format: GraphicFieldFormat;
   // Total number of data bytes in the fifth parameter.
   DataBytes: number;
   // Total number of bytes in the image (pixels / 8).
-  TotalBytes: number;
+  totalBytes: number;
   // Bytes per pixel row (pixel width / 8).
-  RowBytes: number;
+  rowBytes: number;
   // Image data, in the format specified.
-  Data: Uint8Array;
+  data: Uint8Array;
   // Horizontal magnification 1..10. Default 1.
-  MagnificationX: number;
+  magnificationX: number;
   // Vertical magnification 1..10. Default 1.
-  MagnificationY: number;
+  magnificationY: number;
 }

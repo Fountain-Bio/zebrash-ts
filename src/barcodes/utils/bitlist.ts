@@ -8,7 +8,7 @@ export class BitList {
   data: Int32Array;
 
   // Constructs a BitList with capacity for `capacity` bits, all initialized to false.
-  constructor(capacity: number) {
+  constructor(capacity = 0) {
     this.count = 0;
     const x = capacity % 32 !== 0 ? 1 : 0;
     this.data = new Int32Array(Math.floor(capacity / 32) + x);
@@ -55,6 +55,12 @@ export class BitList {
     }
   }
 
+  // Drawer-friendly alias for `getBit`.
+  at(index: number): boolean | undefined {
+    if (index < 0 || index >= this.count) return undefined;
+    return this.getBit(index);
+  }
+
   // Returns the bit at the given index.
   getBit(index: number): boolean {
     const itmIndex = Math.floor(index / 32);
@@ -88,6 +94,29 @@ export class BitList {
       result[i] = (this.data[Math.floor(i / 4)]! >> shift) & 0xff;
     }
     return result;
+  }
+
+  // Returns the bits as a string of "0"/"1" (used by tests to assert patterns).
+  toBitString(): string {
+    let s = "";
+    for (let i = 0; i < this.count; i++) {
+      s += this.getBit(i) ? "1" : "0";
+    }
+    return s;
+  }
+
+  // Returns the bits as a boolean array.
+  toArray(): boolean[] {
+    const arr: boolean[] = new Array(this.count);
+    for (let i = 0; i < this.count; i++) {
+      arr[i] = this.getBit(i);
+    }
+    return arr;
+  }
+
+  // Convenience alias matching some unit-stub APIs.
+  get length(): number {
+    return this.count;
   }
 
   // Yields all bytes contained in the BitList (analogous to Go's IterateBytes channel).

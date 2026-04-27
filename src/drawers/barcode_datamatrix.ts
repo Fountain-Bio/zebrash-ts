@@ -15,7 +15,7 @@ export function newBarcodeDatamatrixDrawer(): ElementDrawer {
   return {
     draw(ctx, element): void {
       const barcode = element as BarcodeDatamatrixWithData | null;
-      if (!barcode || barcode.kind !== "barcodeDatamatrix") return;
+      if (!barcode || barcode._kind !== "BarcodeDatamatrixWithData") return;
 
       const columns = Math.max(barcode.columns, 1);
       const rows = Math.max(barcode.rows, 1);

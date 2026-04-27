@@ -19,7 +19,7 @@ export function newBarcodeAztecDrawer(): ElementDrawer {
   return {
     draw(ctx, element): void {
       const barcode = element as BarcodeAztecWithData | null;
-      if (!barcode || barcode.kind !== "barcodeAztec") return;
+      if (!barcode || barcode._kind !== "BarcodeAztecWithData") return;
 
       let layers = AZTEC_DEFAULT_LAYERS;
       let minECCPercent = AZTEC_DEFAULT_EC_PERCENT;

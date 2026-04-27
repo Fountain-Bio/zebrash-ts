@@ -9,3 +9,5 @@ export {
 export type { SecurityLevel } from "./errorcorrection.js";
 export { calcDimensions, minCols, maxCols, minRows, maxRows } from "./dimensions.js";
 export { codewords, getCodeword, START_WORD, STOP_WORD } from "./codewords.js";
+
+export { encode as encodePdf417 } from "./encoder.js";

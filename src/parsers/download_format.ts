@@ -10,8 +10,8 @@ export function newDownloadFormatParser(): CommandParser {
   const code = "^DF";
 
   return {
-    CommandCode: code,
-    Parse(command: string, printer: VirtualPrinter): null {
+    commandCode: code,
+    parse(command: string, printer: VirtualPrinter): null {
       const raw = commandText(command, code);
       const path = raw === "" ? StoredFormatDefaultPath : raw;
 
@@ -20,7 +20,7 @@ export function newDownloadFormatParser(): CommandParser {
         throw err;
       }
 
-      printer.NextDownloadFormatName = ensureExtensions(path, "ZPL");
+      printer.nextDownloadFormatName = ensureExtensions(path, "ZPL");
       return null;
     },
   };

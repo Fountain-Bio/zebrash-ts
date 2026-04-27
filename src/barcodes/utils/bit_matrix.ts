@@ -7,9 +7,9 @@ import { BitArray } from "./bit_array.ts";
 import { reverse32 } from "./bitops.ts";
 
 export class BitMatrix {
-  private width: number;
-  private height: number;
-  private rowSize: number;
+  width: number;
+  height: number;
+  rowSize: number;
   bits: Uint32Array;
 
   constructor(width: number, height: number) {
@@ -32,6 +32,11 @@ export class BitMatrix {
     }
     const offset = y * this.rowSize + Math.floor(x / 32);
     return ((this.bits[offset]! >>> (x % 32)) & 1) >>> 0 !== 0;
+  }
+
+  /** Drawer-friendly alias for `get(x, y)`. */
+  at(x: number, y: number): boolean {
+    return this.get(x, y);
   }
 
   set(x: number, y: number): void {

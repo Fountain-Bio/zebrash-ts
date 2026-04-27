@@ -33,4 +33,5 @@ export {
   TILDE_B,
 } from "./encoder.ts";
 export type { Code128CType, EncodedCode128 } from "./encoder.ts";
+export { EncodeAuto as encodeCode128Auto, EncodeNoMode as encodeCode128NoMode } from "./encoder.ts";
 export { Code128, newCode128 } from "./code128.ts";

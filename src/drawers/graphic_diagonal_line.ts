@@ -7,7 +7,7 @@ function isGraphicDiagonalLine(value: unknown): value is GraphicDiagonalLine {
   return (
     typeof value === "object" &&
     value !== null &&
-    (value as { kind?: unknown }).kind === "graphic_diagonal_line"
+    (value as { _kind?: unknown })._kind === "GraphicDiagonalLine"
   );
 }
 

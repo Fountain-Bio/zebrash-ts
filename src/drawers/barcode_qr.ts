@@ -13,7 +13,7 @@ export function newBarcodeQrDrawer(): ElementDrawer {
   return {
     draw(ctx, element): void {
       const barcode = element as BarcodeQrWithData | null;
-      if (!barcode || barcode.kind !== "barcodeQr") return;
+      if (!barcode || barcode._kind !== "BarcodeQrWithData") return;
 
       const { data, level } = getQrInputData(barcode);
       const matrix = encodeQr(data, 1, 1, mapQrErrorCorrectionLevel(level), { quietZone: 0 });
@@ -38,12 +38,12 @@ export function newBarcodeQrDrawer(): ElementDrawer {
 function mapQrErrorCorrectionLevel(level: QrErrorCorrectionLevel): QrEncoderErrorCorrectionLevel {
   switch (level) {
     case "L":
-      return "L";
+      return 0x01 as QrEncoderErrorCorrectionLevel;
     case "Q":
-      return "Q";
+      return 0x03 as QrEncoderErrorCorrectionLevel;
     case "H":
-      return "H";
+      return 0x02 as QrEncoderErrorCorrectionLevel;
     default:
-      return "M";
+      return 0x00 as QrEncoderErrorCorrectionLevel;
   }
 }

@@ -87,7 +87,7 @@ export class Drawer {
         if (reverseCtx === null) {
           reverseCtx = createCanvas(imageWidth, imageHeight).getContext("2d");
         } else {
-          zerofill(reverseCtx);
+          zerofill(reverseCtx.canvas);
         }
         targetCtx = reverseCtx;
       }
@@ -97,7 +97,7 @@ export class Drawer {
       }
 
       if (reverse && reverseCtx !== null) {
-        reversePrint(reverseCtx, ctx);
+        reversePrint(reverseCtx.canvas, ctx.canvas);
       }
     }
 
@@ -119,6 +119,8 @@ export class Drawer {
       finalCtx = wCtx;
     }
 
-    return opts.grayscaleOutput ? encodeGrayscale(finalCtx) : encodeMonochrome(finalCtx);
+    return opts.grayscaleOutput
+      ? encodeGrayscale(finalCtx.canvas)
+      : encodeMonochrome(finalCtx.canvas);
   }
 }

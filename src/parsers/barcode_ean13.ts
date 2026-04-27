@@ -15,6 +15,7 @@ export function newBarcodeEan13Parser(): CommandParser {
     commandCode: code,
     parse(command: string, printer: VirtualPrinter): unknown {
       const barcode: BarcodeEan13 = {
+        _kind: "BarcodeEan13",
         orientation: printer.defaultOrientation,
         height: printer.defaultBarcodeDimensions.height,
         line: true,

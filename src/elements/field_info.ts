@@ -4,13 +4,13 @@ import type { LabelPosition } from "./label_position.ts";
 import type { ReversePrint } from "./reverse_print.ts";
 
 export interface FieldInfo {
-  ReversePrint: ReversePrint;
-  Element: unknown;
-  Font: FontInfo;
-  Position: LabelPosition;
-  Alignment: FieldAlignment;
-  Width: number;
-  WidthRatio: number;
-  Height: number;
-  CurrentCharset: number;
+  reversePrint: ReversePrint;
+  element: unknown;
+  font: FontInfo;
+  position: LabelPosition;
+  alignment: FieldAlignment;
+  width: number;
+  widthRatio: number;
+  height: number;
+  currentCharset: number;
 }

@@ -6,7 +6,7 @@ function isGraphicCircle(value: unknown): value is GraphicCircle {
   return (
     typeof value === "object" &&
     value !== null &&
-    (value as { kind?: unknown }).kind === "graphic_circle"
+    (value as { _kind?: unknown })._kind === "GraphicCircle"
   );
 }
 

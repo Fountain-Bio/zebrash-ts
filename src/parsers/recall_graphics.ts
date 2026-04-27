@@ -6,20 +6,21 @@ export function newRecallGraphicsParser(): CommandParser {
   const code = "^XG";
 
   return {
-    CommandCode: code,
-    Parse(command: string, printer: VirtualPrinter): GraphicField | null {
+    commandCode: code,
+    parse(command: string, printer: VirtualPrinter): GraphicField | null {
       const parts = splitCommand(command, code, 0);
 
       const result: GraphicField = {
-        Position: printer.NextElementPosition,
-        Format: 0,
+        _kind: "GraphicField",
+        position: printer.nextElementPosition,
+        format: 0,
         DataBytes: 0,
-        TotalBytes: 0,
-        RowBytes: 0,
-        Data: new Uint8Array(0),
-        MagnificationX: 1,
-        MagnificationY: 1,
-        ReversePrint: printer.GetReversePrint(),
+        totalBytes: 0,
+        rowBytes: 0,
+        data: new Uint8Array(0),
+        magnificationX: 1,
+        magnificationY: 1,
+        reversePrint: printer.getReversePrint(),
       };
 
       let path = StoredGraphicsDefaultPath;
@@ -30,26 +31,26 @@ export function newRecallGraphicsParser(): CommandParser {
       if (parts.length > 1) {
         const v = Number.parseInt(parts[1] ?? "", 10);
         if (!Number.isNaN(v) && v >= 0 && v <= 10) {
-          result.MagnificationX = v;
+          result.magnificationX = v;
         }
       }
 
       if (parts.length > 2) {
         const v = Number.parseInt(parts[2] ?? "", 10);
         if (!Number.isNaN(v) && v >= 0 && v <= 10) {
-          result.MagnificationY = v;
+          result.magnificationY = v;
         }
       }
 
-      const stored = printer.StoredGraphics.get(path);
+      const stored = printer.storedGraphics.get(path);
       if (!stored) {
         return null;
       }
 
-      result.Data = stored.Data;
-      result.DataBytes = stored.TotalBytes;
-      result.TotalBytes = stored.TotalBytes;
-      result.RowBytes = stored.RowBytes;
+      result.data = stored.data;
+      result.DataBytes = stored.totalBytes;
+      result.totalBytes = stored.totalBytes;
+      result.rowBytes = stored.rowBytes;
 
       return result;
     },

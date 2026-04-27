@@ -15,6 +15,7 @@ export function newBarcodePdf417Parser(): CommandParser {
     commandCode: code,
     parse(command: string, printer: VirtualPrinter): unknown {
       const barcode: BarcodePdf417 = {
+        _kind: "BarcodePdf417",
         orientation: printer.defaultOrientation,
         rowHeight: 0,
         security: 0,
