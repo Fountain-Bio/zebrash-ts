@@ -1,4 +1,9 @@
-import type { RecalledField, RecalledFieldData, StoredField } from "../elements/index.js";
+import {
+  type RecalledField,
+  type RecalledFieldData,
+  type StoredField,
+  resolveRecalledField,
+} from "../elements/index.js";
 import { type VirtualPrinter, getFieldInfo, resetFieldState } from "../printers/index.js";
 import type { CommandParser } from "./command_parser.js";
 
@@ -10,19 +15,16 @@ export function newFieldSeparatorParser(): CommandParser {
     parse: (_command: string, printer: VirtualPrinter) => {
       try {
         if (printer.nextElementFieldNumber < 0) {
-          // No template field number → emit a recalled field that the renderer
-          // can resolve immediately.
-          // TODO(unit-1): once StoredField/RecalledField gain a real resolve()
-          // method, return its result instead of the raw RecalledField.
-          // RecalledField embeds StoredField's fields flat (number + field) per
-          // the Go layout, plus its own `data` payload.
+          // No template field number → resolve the field immediately into its
+          // concrete drawable element. Mirrors Go's `f.Resolve()` at
+          // field_separator.go:26.
           const recalled: RecalledField = {
             _kind: "RecalledField",
             number: printer.nextElementFieldNumber,
             field: getFieldInfo(printer),
             data: printer.nextElementFieldData,
           };
-          return recalled;
+          return resolveRecalledField(recalled);
         }
 
         if (printer.nextDownloadFormatName === "") {

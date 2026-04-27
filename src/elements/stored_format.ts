@@ -142,7 +142,7 @@ export function storedFormatToRecalledFormat(sf: StoredFormat): RecalledFormat {
   return storedFormatToRecalled(sf);
 }
 
-function resolveRecalledField(f: RecalledField): unknown {
+export function resolveRecalledField(f: RecalledField): unknown {
   const field = f.field;
   const text = f.data;
 
