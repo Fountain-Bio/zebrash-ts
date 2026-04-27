@@ -16,7 +16,7 @@ export function newBarcodeQrDrawer(): ElementDrawer {
       if (!barcode || barcode._kind !== "BarcodeQrWithData") return;
 
       const { data, level } = getQrInputData(barcode);
-      const matrix = encodeQr(data, 1, 1, mapQrErrorCorrectionLevel(level), { quietZone: 0 });
+      const matrix = encodeQr(data, 1, 1, mapQrErrorCorrectionLevel(level), { QuietZone: 0 });
 
       const magnification = Math.max(barcode.magnification, 1);
       const cellsHeight = matrix.height * magnification;
@@ -36,12 +36,14 @@ export function newBarcodeQrDrawer(): ElementDrawer {
 }
 
 function mapQrErrorCorrectionLevel(level: QrErrorCorrectionLevel): QrEncoderErrorCorrectionLevel {
+  // The element's QrErrorCorrectionLevel is the ASCII code of "L"/"M"/"Q"/"H".
+  // Map to the QR encoder's numeric ECL constants (L=01, M=00, Q=03, H=02).
   switch (level) {
-    case "L":
+    case "L".charCodeAt(0):
       return 0x01 as QrEncoderErrorCorrectionLevel;
-    case "Q":
+    case "Q".charCodeAt(0):
       return 0x03 as QrEncoderErrorCorrectionLevel;
-    case "H":
+    case "H".charCodeAt(0):
       return 0x02 as QrEncoderErrorCorrectionLevel;
     default:
       return 0x00 as QrEncoderErrorCorrectionLevel;

@@ -21,7 +21,7 @@ export function newBarcode39Drawer(): ElementDrawer {
       const moduleWidth = Math.max(barcode.width, 1);
       const moduleHeight = Math.max(barcode.height, 1);
 
-      const bits = encodeCode39(content, moduleWidth, moduleHeight, barcode.widthRatio);
+      const bits = encodeCode39(content);
       const width = bits.length * moduleWidth;
       const height = moduleHeight;
       const pos = adjustImageTypeSetPosition(width, height, barcode.position, barcode.orientation);

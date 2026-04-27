@@ -24,7 +24,9 @@ export function newBarcodeEan13Drawer(): ElementDrawer {
       const moduleWidth = Math.max(barcode.width, 1);
       const moduleHeight = Math.max(barcode.height, 1);
 
-      const { bits, text } = encodeEan13(barcode.data, moduleHeight, moduleWidth);
+      const bits = encodeEan13(barcode.data);
+      if (bits === null) return;
+      const text = barcode.data;
       const width = bits.length * moduleWidth;
       const height = moduleHeight;
       const guardExtension = calculateEan13GuardExtension(moduleWidth);

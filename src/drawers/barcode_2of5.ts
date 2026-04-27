@@ -21,13 +21,9 @@ export function newBarcode2of5Drawer(): ElementDrawer {
       const moduleWidth = Math.max(barcode.width, 1);
       const moduleHeight = Math.max(barcode.height, 1);
 
-      const { bits, text } = encodeInterleaved2of5(
-        content,
-        moduleWidth,
-        moduleHeight,
-        barcode.widthRatio,
-        barcode.checkDigit,
-      );
+      const result = encodeInterleaved2of5(content, barcode.checkDigit);
+      const bits = result.bits;
+      const text = result.content;
 
       const width = bits.length * moduleWidth;
       const height = moduleHeight;

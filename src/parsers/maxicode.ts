@@ -8,7 +8,7 @@ export function newMaxicodeParser(): CommandParser {
   return {
     commandCode: code,
     parse(command: string, printer: VirtualPrinter): null {
-      const barcode: Maxicode = { mode: 0 };
+      const barcode: Maxicode = { _kind: "Maxicode", mode: 0 };
 
       const parts = splitCommand(command, code, 0);
       if (parts.length > 0) {

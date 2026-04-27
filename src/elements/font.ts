@@ -21,9 +21,7 @@ export function getFontSize(font: FontInfo): number {
 }
 
 /** Factory mirroring Go's `elements.FontInfo{}` literals. */
-export function newFontInfo(
-  init: Partial<FontInfo> & { name: string } = { name: "A" },
-): FontInfo {
+export function newFontInfo(init: Partial<FontInfo> & { name: string } = { name: "A" }): FontInfo {
   return {
     name: init.name,
     width: init.width ?? 0,

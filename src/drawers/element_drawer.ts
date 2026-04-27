@@ -171,13 +171,7 @@ export function rotateAbout(
 /**
  * Scale the context by `(sx, sy)` about `(x, y)`. Mirrors `gg.ScaleAbout`.
  */
-export function scaleAbout(
-  ctx: SKRSContext2D,
-  sx: number,
-  sy: number,
-  x: number,
-  y: number,
-): void {
+export function scaleAbout(ctx: SKRSContext2D, sx: number, sy: number, x: number, y: number): void {
   ctx.translate(x, y);
   ctx.scale(sx, sy);
   ctx.translate(-x, -y);

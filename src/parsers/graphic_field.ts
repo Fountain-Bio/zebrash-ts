@@ -18,7 +18,7 @@ export function newGraphicFieldParser(): CommandParser {
       const result: GraphicField = {
         _kind: "GraphicField",
         position: printer.nextElementPosition,
-        format: 0,
+        format: GraphicFieldFormatHex,
         DataBytes: 0,
         totalBytes: 0,
         rowBytes: 0,
@@ -79,7 +79,7 @@ export function newGraphicFieldParser(): CommandParser {
   };
 }
 
-function formatFromChar(ch: string | undefined): GraphicFieldFormat | 0 {
+function formatFromChar(ch: string | undefined): GraphicFieldFormat {
   switch (ch) {
     case "A":
       return GraphicFieldFormatHex;
@@ -88,6 +88,6 @@ function formatFromChar(ch: string | undefined): GraphicFieldFormat | 0 {
     case "C":
       return GraphicFieldFormatAR;
     default:
-      return 0;
+      return GraphicFieldFormatHex;
   }
 }

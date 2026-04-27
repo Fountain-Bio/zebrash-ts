@@ -1,7 +1,6 @@
 // Port of /Users/alancohen/fountain-bio/zebrash/internal/drawers/barcode_128.go.
 
 import { ESCAPE_FNC_1, encodeCode128Auto, encodeCode128NoMode } from "../barcodes/code128/index.js";
-import type { BitArray } from "../barcodes/utils/index.js";
 import {
   type Barcode128WithData,
   BarcodeModeEan,
@@ -39,13 +38,14 @@ export function newBarcode128Drawer(): ElementDrawer {
       const moduleWidth = Math.max(barcode.width, 1);
       const moduleHeight = Math.max(barcode.height, 1);
 
-      let bits: BitArray;
+      let bits: boolean[];
       if (barcode.mode === BarcodeModeNo) {
-        const out = encodeCode128NoMode(content, moduleHeight, moduleWidth);
-        bits = out.bits;
-        text = out.text;
+        const out = encodeCode128NoMode(content);
+        bits = [...out.bits];
+        text = out.humanReadable;
       } else {
-        bits = encodeCode128Auto(content, moduleHeight, moduleWidth);
+        const out = encodeCode128Auto(content);
+        bits = [...out.bits];
       }
 
       const width = bits.length * moduleWidth;

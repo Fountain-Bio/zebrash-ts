@@ -17,6 +17,11 @@ export class SymbolGrid {
     this.modules[SYMBOL_GRID_WIDTH * row + column] = value ? 1 : 0;
   }
 
+  /** Drawer-friendly alias for `getModule`. */
+  get(row: number, column: number): boolean {
+    return this.modules[SYMBOL_GRID_WIDTH * row + column] === 1;
+  }
+
   getModule(row: number, column: number): boolean {
     return this.modules[SYMBOL_GRID_WIDTH * row + column] === 1;
   }

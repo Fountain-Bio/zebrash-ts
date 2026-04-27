@@ -1,5 +1,6 @@
 // Port of /Users/alancohen/fountain-bio/zebrash/internal/drawers/barcode_datamatrix.go.
 
+import { SymbolShapeHint } from "../barcodes/datamatrix/encoder/symbol_shape_hint.js";
 import { encodeDatamatrix } from "../barcodes/datamatrix/index.js";
 import { type BarcodeDatamatrixWithData, DatamatrixRatioRectangular } from "../elements/index.js";
 import { paintBitMatrixCells } from "./barcode_paint.js";
@@ -19,8 +20,10 @@ export function newBarcodeDatamatrixDrawer(): ElementDrawer {
 
       const columns = Math.max(barcode.columns, 1);
       const rows = Math.max(barcode.rows, 1);
-      const shape: "rectangle" | "square" =
-        barcode.ratio === DatamatrixRatioRectangular ? "rectangle" : "square";
+      const shape: SymbolShapeHint =
+        barcode.ratio === DatamatrixRatioRectangular
+          ? SymbolShapeHint.FORCE_RECTANGLE
+          : SymbolShapeHint.FORCE_SQUARE;
 
       let data = barcode.data;
       const fnc1 = `${barcode.escape}1`;
@@ -33,8 +36,6 @@ export function newBarcodeDatamatrixDrawer(): ElementDrawer {
 
       const matrix = encodeDatamatrix(data, columns, rows, {
         shape,
-        minColumns: columns,
-        minRows: rows,
         gs1,
       });
 

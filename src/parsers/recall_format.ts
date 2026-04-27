@@ -1,4 +1,4 @@
-import type { RecalledFormat } from "../elements/index.js";
+import { type RecalledFormat, storedFormatToRecalled } from "../elements/index.js";
 import {
   StoredFormatDefaultPath,
   type VirtualPrinter,
@@ -16,14 +16,11 @@ export function newRecallFormatParser(): CommandParser {
       const raw = commandText(command, code);
       const path = raw === "" ? StoredFormatDefaultPath : raw;
 
-      const err = validateDevice(path);
-      if (err) {
-        throw err;
-      }
+      validateDevice(path);
 
       const stored = printer.storedFormats.get(ensureExtensions(path, "ZPL"));
       if (stored) {
-        return stored.ToRecalledFormat();
+        return storedFormatToRecalled(stored);
       }
 
       return null;

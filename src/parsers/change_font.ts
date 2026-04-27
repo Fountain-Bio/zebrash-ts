@@ -46,7 +46,7 @@ export function newChangeFontParser(): CommandParser {
       let font: FontInfo = newFontInfo({
         name: fontName,
         orientation: printer.defaultFont.orientation,
-        customFont,
+        customFont: customFont ?? undefined,
       });
 
       if (!fontExists(font)) {

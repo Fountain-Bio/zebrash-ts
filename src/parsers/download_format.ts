@@ -15,10 +15,7 @@ export function newDownloadFormatParser(): CommandParser {
       const raw = commandText(command, code);
       const path = raw === "" ? StoredFormatDefaultPath : raw;
 
-      const err = validateDevice(path);
-      if (err) {
-        throw err;
-      }
+      validateDevice(path);
 
       printer.nextDownloadFormatName = ensureExtensions(path, "ZPL");
       return null;

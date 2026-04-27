@@ -1,4 +1,8 @@
-import type { BarcodeDatamatrix, DatamatrixRatio } from "../elements/index.js";
+import {
+  type BarcodeDatamatrix,
+  type DatamatrixRatio,
+  DatamatrixRatioSquare,
+} from "../elements/index.js";
 import type { VirtualPrinter } from "../printers/virtual.js";
 import {
   type CommandParser,
@@ -24,7 +28,7 @@ export function newBarcodeDatamatrixParser(): CommandParser {
         rows: 0,
         format: 6,
         escape: escapeTilde,
-        ratio: 0,
+        ratio: DatamatrixRatioSquare,
       };
 
       const parts = splitCommand(command, code, 0);

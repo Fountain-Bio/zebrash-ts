@@ -66,10 +66,10 @@ export class Parser {
             elements: resultElements,
           });
         } else {
-          this.printer.storedFormats[this.printer.nextDownloadFormatName] = {
+          this.printer.storedFormats.set(this.printer.nextDownloadFormatName, {
             inverted: this.printer.labelInverted,
             elements: resultElements,
-          };
+          });
         }
 
         resultElements = [];

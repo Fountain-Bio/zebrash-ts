@@ -57,3 +57,5 @@ import { FieldAlignment as _FA } from "./field_alignment.ts";
 export const FieldAlignmentLeft = _FA.Left;
 export const FieldAlignmentRight = _FA.Right;
 export const FieldAlignmentAuto = _FA.Auto;
+
+export type { ParsedFont as CustomFontHandle } from "./font.ts";

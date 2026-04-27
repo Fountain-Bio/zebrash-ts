@@ -1,6 +1,6 @@
 // Port of /Users/alancohen/fountain-bio/zebrash/internal/drawers/barcode_pdf417.go.
 
-import { encodePdf417 } from "../barcodes/pdf417/index.js";
+import { encodePdf417, toMatrix as pdf417ToMatrix } from "../barcodes/pdf417/index.js";
 import type { BarcodePdf417WithData } from "../elements/index.js";
 import { paintBitMatrixCells } from "./barcode_paint.js";
 import {
@@ -9,19 +9,32 @@ import {
   rotateForOrientation,
 } from "./element_drawer.js";
 
+/** Tiny adapter that exposes a `boolean[][]` matrix as a BitMatrix-shaped view. */
+function asBitMatrix(rows: boolean[][]): {
+  width: number;
+  height: number;
+  at(x: number, y: number): boolean;
+} {
+  const height = rows.length;
+  const width = height > 0 ? rows[0]!.length : 0;
+  return {
+    width,
+    height,
+    at(x: number, y: number): boolean {
+      return rows[y]?.[x] ?? false;
+    },
+  };
+}
+
 export function newBarcodePdf417Drawer(): ElementDrawer {
   return {
     draw(ctx, element): void {
       const barcode = element as BarcodePdf417WithData | null;
       if (!barcode || barcode._kind !== "BarcodePdf417WithData") return;
 
-      const matrix = encodePdf417(
-        barcode.data,
-        barcode.security,
-        barcode.rowHeight,
-        barcode.columns,
-      );
-      const moduleSize = 1;
+      const result = encodePdf417(barcode.data, barcode.security, barcode.columns);
+      const matrix = asBitMatrix(pdf417ToMatrix(result));
+      const moduleSize = Math.max(barcode.rowHeight, 1);
       const width = matrix.width * moduleSize;
       const height = matrix.height * moduleSize;
       const pos = adjustImageTypeSetPosition(width, height, barcode.position, barcode.orientation);
@@ -29,7 +42,13 @@ export function newBarcodePdf417Drawer(): ElementDrawer {
       ctx.save();
       try {
         rotateForOrientation(ctx, width, height, pos, barcode.orientation);
-        paintBitMatrixCells(ctx, matrix, pos, moduleSize);
+        // The adapter shape matches BitMatrix duck-type for paintBitMatrixCells.
+        paintBitMatrixCells(
+          ctx,
+          matrix as unknown as import("../barcodes/utils/index.js").BitMatrix,
+          pos,
+          moduleSize,
+        );
       } finally {
         ctx.restore();
       }

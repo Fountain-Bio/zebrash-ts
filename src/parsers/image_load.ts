@@ -1,3 +1,4 @@
+import { GraphicFieldFormatHex } from "../elements/index.js";
 import type { GraphicField } from "../elements/index.js";
 import { StoredGraphicsDefaultPath, type VirtualPrinter } from "../printers/index.js";
 import { type CommandParser, splitCommand } from "./command_parser.js";
@@ -21,8 +22,9 @@ export function newImageLoadParser(): CommandParser {
       }
 
       return {
+        _kind: "GraphicField",
         position: { x: 0, y: 0, calculateFromBottom: false, automaticPosition: false },
-        format: 0,
+        format: GraphicFieldFormatHex,
         DataBytes: stored.totalBytes,
         totalBytes: stored.totalBytes,
         rowBytes: stored.rowBytes,

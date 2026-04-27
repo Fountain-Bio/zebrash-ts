@@ -1,3 +1,4 @@
+import { GraphicFieldFormatHex } from "../elements/index.js";
 import type { GraphicField } from "../elements/index.js";
 import { StoredGraphicsDefaultPath, type VirtualPrinter } from "../printers/index.js";
 import { type CommandParser, splitCommand } from "./command_parser.js";
@@ -13,7 +14,7 @@ export function newRecallGraphicsParser(): CommandParser {
       const result: GraphicField = {
         _kind: "GraphicField",
         position: printer.nextElementPosition,
-        format: 0,
+        format: GraphicFieldFormatHex,
         DataBytes: 0,
         totalBytes: 0,
         rowBytes: 0,

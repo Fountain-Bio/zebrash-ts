@@ -14,14 +14,12 @@ export function newFieldSeparatorParser(): CommandParser {
           // can resolve immediately.
           // TODO(unit-1): once StoredField/RecalledField gain a real resolve()
           // method, return its result instead of the raw RecalledField.
-          const stored: StoredField = {
-            _kind: "StoredField",
-            number: printer.nextElementFieldNumber,
-            field: getFieldInfo(printer),
-          };
+          // RecalledField embeds StoredField's fields flat (number + field) per
+          // the Go layout, plus its own `data` payload.
           const recalled: RecalledField = {
             _kind: "RecalledField",
-            storedField: stored,
+            number: printer.nextElementFieldNumber,
+            field: getFieldInfo(printer),
             data: printer.nextElementFieldData,
           };
           return recalled;

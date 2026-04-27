@@ -22,10 +22,7 @@ export function newDownloadUnboundedTtfParser(): CommandParser {
         path = parts[0] ?? path;
       }
 
-      const err = validateDevice(path);
-      if (err) {
-        throw err;
-      }
+      validateDevice(path);
 
       let totalBytes = 0;
       if (parts.length > 1) {
@@ -53,7 +50,7 @@ export function newDownloadUnboundedTtfParser(): CommandParser {
       // hence we only need to track raw bytes plus a stable family name.
       const finalPath = ensureExtensions(path, "TTF", "FNT");
       const family = `zebrash-ttf-${++fontCounter}`;
-      printer.storedFonts.set(finalPath, { family, data: fontData });
+      printer.storedFonts.set(finalPath, { name: family, data: fontData });
 
       return null;
     },

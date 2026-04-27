@@ -6,6 +6,7 @@ import {
   FONT_FAMILY_ZPL_GS,
   registerEmbeddedFonts,
 } from "../assets/index.ts";
+import type { DrawerOptions } from "../drawer-options.ts";
 import {
   FieldAlignmentRight,
   FieldOrientation90,
@@ -20,7 +21,6 @@ import {
   type TextField,
 } from "../elements/index.ts";
 import {
-  type DrawerOptions,
   type DrawerState,
   type ElementDrawer,
   rotateAbout,
@@ -40,16 +40,11 @@ function isTextField(value: unknown): value is TextField {
   );
 }
 
-export function newTextFieldDrawer(): ElementDrawer<TextField> {
+export function newTextFieldDrawer(): ElementDrawer {
   registerEmbeddedFonts();
 
   return {
-    draw(
-      ctx: SKRSContext2D,
-      element: unknown,
-      _options: DrawerOptions,
-      state: DrawerState,
-    ): void {
+    draw(ctx: SKRSContext2D, element: unknown, _options: DrawerOptions, state: DrawerState): void {
       if (!isTextField(element)) return;
       const text = adjustTextField(element);
 

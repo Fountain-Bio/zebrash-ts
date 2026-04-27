@@ -37,12 +37,10 @@ export function newBarcodeAztecDrawer(): ElementDrawer {
       }
 
       const magnification = Math.max(barcode.magnification, 1);
-      const matrix = encodeAztec(
-        new TextEncoder().encode(barcode.data),
+      const matrix = encodeAztec(new TextEncoder().encode(barcode.data), {
         minECCPercent,
-        layers,
-        magnification,
-      );
+        userSpecifiedLayers: layers,
+      });
 
       const width = matrix.width * magnification;
       const height = matrix.height * magnification;
@@ -51,7 +49,12 @@ export function newBarcodeAztecDrawer(): ElementDrawer {
       ctx.save();
       try {
         rotateForOrientation(ctx, width, height, pos, barcode.orientation);
-        paintBitMatrixCells(ctx, matrix, pos, magnification);
+        paintBitMatrixCells(
+          ctx,
+          matrix as unknown as import("../barcodes/utils/index.js").BitMatrix,
+          pos,
+          magnification,
+        );
       } finally {
         ctx.restore();
       }

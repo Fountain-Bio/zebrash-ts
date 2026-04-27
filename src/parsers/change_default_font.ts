@@ -20,7 +20,7 @@ export function newChangeDefaultFontParser(): CommandParser {
       const font: FontInfo = newFontInfo({
         name: fontName,
         orientation: printer.defaultOrientation,
-        customFont: customFont ?? null,
+        customFont: customFont ?? undefined,
       });
 
       const parts = splitCommand(command, code, 0);

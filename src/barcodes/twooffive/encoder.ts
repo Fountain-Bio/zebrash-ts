@@ -84,7 +84,7 @@ function addCheckDigit(content: string): string {
     if (!encodingTable[ch]) {
       throw new Error(`can not encode ${JSON.stringify(content)}`);
     }
-    const value = runeToInt(ch);
+    const value = runeToInt(ch.charCodeAt(0));
     sum += even ? value * 3 : value;
     even = !even;
   }
@@ -94,5 +94,5 @@ function addCheckDigit(content: string): string {
     remainder = 10 - remainder;
   }
 
-  return content + intToRune(remainder);
+  return content + String.fromCharCode(intToRune(remainder));
 }
