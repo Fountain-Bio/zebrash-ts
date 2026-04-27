@@ -11,10 +11,7 @@ export function newFieldDataParser(): CommandParser {
       let text = commandText(command, code);
 
       if (printer.nextHexEscapeChar !== 0) {
-        // TODO(unit-2): hex.decodeEscapedString currently returns the input
-        // unchanged. Once unit 2 lands the real decoder this will properly
-        // honour the ^FH escape character.
-        text = decodeEscapedString(text, printer.nextHexEscapeChar);
+        text = decodeEscapedString(text, String.fromCharCode(printer.nextHexEscapeChar));
       }
 
       printer.nextElementFieldData = text;

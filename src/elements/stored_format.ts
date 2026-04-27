@@ -133,6 +133,15 @@ const isRecalledField = (v: unknown): v is RecalledField => getKind(v) === "Reca
 const isRecalledFieldData = (v: unknown): v is RecalledFieldData =>
   getKind(v) === "RecalledFieldData";
 
+export function isRecalledFormat(v: unknown): v is RecalledFormat {
+  return v instanceof RecalledFormat;
+}
+
+/** Method alias used by some parsers. */
+export function storedFormatToRecalledFormat(sf: StoredFormat): RecalledFormat {
+  return storedFormatToRecalled(sf);
+}
+
 function resolveRecalledField(f: RecalledField): unknown {
   const field = f.field;
   const text = f.data;

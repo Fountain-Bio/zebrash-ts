@@ -69,8 +69,9 @@ describe("Parser.parse", () => {
 
   it("ignores commands when no command parsers are registered", () => {
     // With no parsers, even a real ZPL fragment yields no labels because
-    // nothing accumulates resultElements.
-    const parser = new Parser();
+    // nothing accumulates resultElements. (Pass an explicit empty list to
+    // bypass the default-parsers wiring.)
+    const parser = new Parser([]);
     expect(parser.parse("^XA^FO10,10^FDhello^FS^XZ")).toEqual([]);
   });
 

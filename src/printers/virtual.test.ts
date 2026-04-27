@@ -16,7 +16,7 @@ describe("newVirtualPrinter", () => {
     expect(p.defaultFont.width).toBe(0);
     expect(p.defaultFont.height).toBe(0);
     expect(p.defaultFont.orientation).toBe(FieldOrientation.Normal);
-    expect(p.defaultFont.customFont).toBeNull();
+    expect(p.defaultFont.customFont).toBeUndefined();
 
     expect(p.defaultAlignment).toBe(FieldAlignment.Left);
     expect(p.defaultOrientation).toBe(FieldOrientation.Normal);

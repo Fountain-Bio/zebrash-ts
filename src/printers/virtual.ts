@@ -103,3 +103,18 @@ export class VirtualPrinter {
 export function newVirtualPrinter(): VirtualPrinter {
   return new VirtualPrinter();
 }
+
+// Free-function aliases — some parsers call these as standalone functions
+// rather than methods (matching Go's package-level helper style).
+export const setDefaultOrientation = (
+  p: VirtualPrinter,
+  o: import("../elements/index.ts").FieldOrientation,
+): void => p.setDefaultOrientation(o);
+
+export const resetFieldState = (p: VirtualPrinter): void => p.resetFieldState();
+export const resetLabelState = (p: VirtualPrinter): void => p.resetLabelState();
+export const getReversePrint = (p: VirtualPrinter) => p.getReversePrint();
+export const getFieldInfo = (p: VirtualPrinter) => p.getFieldInfo();
+export const getNextFontOrDefault = (p: VirtualPrinter) => p.getNextFontOrDefault();
+export const getNextElementAlignmentOrDefault = (p: VirtualPrinter) =>
+  p.getNextElementAlignmentOrDefault();

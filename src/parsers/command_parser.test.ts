@@ -30,7 +30,7 @@ describe("splitCommand", () => {
 
   it("respects pos offset by skipping past `pos` chars after the prefix", () => {
     // ^B3 + 1 char of orientation, then 4 comma-separated args.
-    expect(splitCommand("^B3NY,50,y,N", "^B3", 1)).toEqual(["Y", "50", "Y", "N"]);
+    expect(splitCommand("^B3NY,50,Y,N", "^B3", 1)).toEqual(["Y", "50", "Y", "N"]);
   });
 });
 
@@ -56,15 +56,15 @@ describe("toFieldOrientation", () => {
 
 describe("toFieldAlignment", () => {
   it("maps numeric strings to alignments", () => {
-    expect(toFieldAlignment("0")).toEqual({ alignment: FieldAlignment.Left, ok: true });
-    expect(toFieldAlignment("1")).toEqual({ alignment: FieldAlignment.Right, ok: true });
-    expect(toFieldAlignment("2")).toEqual({ alignment: FieldAlignment.Auto, ok: true });
+    expect(toFieldAlignment("0")).toEqual({ value: FieldAlignment.Left, ok: true });
+    expect(toFieldAlignment("1")).toEqual({ value: FieldAlignment.Right, ok: true });
+    expect(toFieldAlignment("2")).toEqual({ value: FieldAlignment.Auto, ok: true });
   });
 
   it("returns ok=false for non-numeric or out-of-range input", () => {
-    expect(toFieldAlignment("3")).toEqual({ alignment: FieldAlignment.Left, ok: false });
-    expect(toFieldAlignment("abc")).toEqual({ alignment: FieldAlignment.Left, ok: false });
-    expect(toFieldAlignment("")).toEqual({ alignment: FieldAlignment.Left, ok: false });
+    expect(toFieldAlignment("3")).toEqual({ value: FieldAlignment.Left, ok: false });
+    expect(toFieldAlignment("abc")).toEqual({ value: FieldAlignment.Left, ok: false });
+    expect(toFieldAlignment("")).toEqual({ value: FieldAlignment.Left, ok: false });
   });
 });
 

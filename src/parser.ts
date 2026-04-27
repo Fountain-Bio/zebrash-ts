@@ -3,6 +3,7 @@
 import { type LabelInfo, type RecalledFormat, isRecalledFormat } from "./elements/index.ts";
 import type { CommandParser } from "./parsers/command_parser.ts";
 import { canParse } from "./parsers/command_parser.ts";
+import { defaultCommandParsers as defaultCommandParsersLazy } from "./parsers/index.ts";
 import { type VirtualPrinter, newVirtualPrinter } from "./printers/index.ts";
 
 const START_CODE = "^XA";
@@ -24,9 +25,11 @@ export class Parser {
   private readonly printer: VirtualPrinter;
   private readonly commandParsers: readonly CommandParser[];
 
-  constructor(commandParsers: readonly CommandParser[] = []) {
+  constructor(commandParsers?: readonly CommandParser[]) {
     this.printer = newVirtualPrinter();
-    this.commandParsers = commandParsers;
+    // Lazy import via module-level default to avoid a circular dependency
+    // between parser.ts and parsers/index.ts.
+    this.commandParsers = commandParsers ?? defaultCommandParsersLazy();
   }
 
   parse(zplData: Uint8Array | string): LabelInfo[] {
