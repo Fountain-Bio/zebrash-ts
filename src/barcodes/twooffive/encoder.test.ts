@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+
 import { encodeInterleaved } from "./encoder.js";
 
 const bitsToString = (bits: boolean[]): string => bits.map((b) => (b ? "1" : "0")).join("");

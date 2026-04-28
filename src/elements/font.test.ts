@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+
 import { FieldOrientation } from "./field_orientation.ts";
 import {
   type FontInfo,

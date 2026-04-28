@@ -4,6 +4,7 @@
 // per realm, so no explicit lock is needed.
 
 import type { GaloisField } from "./galoisfield.ts";
+
 import { type GFPoly, newGFPoly } from "./gfpoly.ts";
 
 export class ReedSolomonEncoder {

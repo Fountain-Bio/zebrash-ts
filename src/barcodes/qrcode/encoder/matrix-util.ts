@@ -1,14 +1,15 @@
 // Port of internal/barcodes/qrcode/encoder/matrix_util.go
 
-import { BitArray } from "../../utils/bit_array.ts";
 import type { ByteMatrix } from "./byte-matrix.ts";
+import type { Version } from "./version.ts";
+
+import { BitArray } from "../../utils/bit_array.ts";
 import {
   type ErrorCorrectionLevel,
   ErrorCorrectionLevel_GetBits,
 } from "./error-correction-level.ts";
 import { MaskUtil_getDataMaskBit } from "./mask-util.ts";
 import { QRCode_IsValidMaskPattern } from "./qrcode.ts";
-import type { Version } from "./version.ts";
 
 const matrixUtil_POSITION_DETECTION_PATTERN: ReadonlyArray<readonly number[]> = [
   [1, 1, 1, 1, 1, 1, 1],

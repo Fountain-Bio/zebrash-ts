@@ -1,5 +1,6 @@
 import type { Maxicode } from "../elements/index.js";
 import type { VirtualPrinter } from "../printers/index.js";
+
 import { type CommandParser, splitCommand } from "./command_parser.js";
 
 export function newMaxicodeParser(): CommandParser {

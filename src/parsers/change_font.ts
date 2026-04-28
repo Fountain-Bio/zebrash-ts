@@ -1,10 +1,11 @@
+import type { VirtualPrinter } from "../printers/index.js";
+
 import {
   type CustomFontHandle,
   type FontInfo,
   fontExists,
   newFontInfo,
 } from "../elements/index.js";
-import type { VirtualPrinter } from "../printers/index.js";
 import {
   type CommandParser,
   parseStrictInt,

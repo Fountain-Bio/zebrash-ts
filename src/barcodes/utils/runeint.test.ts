@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+
 import { intToRune, runeToInt } from "./runeint.ts";
 
 describe("runeToInt", () => {

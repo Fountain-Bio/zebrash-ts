@@ -1,9 +1,11 @@
 // Shared painting helpers for the unit-23 barcode drawers.
 
 import type { SKRSContext2D } from "@napi-rs/canvas";
-import { FONT0_NAME, FONT1_NAME, registerEmbeddedFonts } from "../assets/index.js";
+
 import type { BitMatrix } from "../barcodes/utils/index.js";
 import type { LabelPosition } from "../elements/index.js";
+
+import { FONT0_NAME, FONT1_NAME, registerEmbeddedFonts } from "../assets/index.js";
 
 /** Minimal shape for any 1D bit sequence painter input. */
 export interface BitSequence {

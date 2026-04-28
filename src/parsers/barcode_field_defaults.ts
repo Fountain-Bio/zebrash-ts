@@ -1,4 +1,5 @@
 import type { VirtualPrinter } from "../printers/virtual.js";
+
 import {
   type CommandParser,
   parseFloatTrimmed,

@@ -1,5 +1,6 @@
 import type { Dimension } from "./dimension.js";
 import type { Options } from "./options.js";
+
 import { type SymbolInfo, symbolInfoLookup } from "./symbol_info.js";
 import { SymbolShapeHint } from "./symbol_shape_hint.js";
 

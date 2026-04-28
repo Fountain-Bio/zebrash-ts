@@ -147,7 +147,7 @@ zebrash-ts/
   matches Go's `images.NewScaled(barcode, 2, scaleY)`. Use the
   `paintBitMatrixCells(ctx, matrix, pos, moduleWidth, moduleHeight)` 2-size
   variant.
-- **`^FH` hex escape** stores the escape *byte* as a number on
+- **`^FH` hex escape** stores the escape _byte_ as a number on
   `printer.nextHexEscapeChar`; `field_data.ts` converts to a single-char
   string before passing to `decodeEscapedString`.
 - **Non-template `^FS`** (no `^XF` active) **must** call

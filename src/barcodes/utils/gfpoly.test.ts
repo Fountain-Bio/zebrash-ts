@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+
 import { newGaloisField } from "./galoisfield.ts";
 import { newGFPoly, newMonominalPoly } from "./gfpoly.ts";
 

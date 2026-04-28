@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+
 import { newBitList } from "./bitlist.ts";
 import { bitListToImageRow } from "./bitlist_image.ts";
 

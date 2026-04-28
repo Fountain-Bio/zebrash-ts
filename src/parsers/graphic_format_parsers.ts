@@ -1,4 +1,5 @@
 import type { CommandParser } from "./command_parser.js";
+
 import { newDownloadFormatParser } from "./download_format.js";
 import { newDownloadGraphicsParser } from "./download_graphics.js";
 import { newDownloadUnboundedTtfParser } from "./download_unbounded_ttf.js";

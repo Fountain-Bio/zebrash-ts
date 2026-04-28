@@ -2,6 +2,7 @@
 // (and the embedded SymbolGrid.Draw() routine from the upstream maxicode lib).
 
 import type { SKRSContext2D } from "@napi-rs/canvas";
+
 import {
   MAXICODE_COLS,
   MAXICODE_ROWS,

@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+
 import { encode } from "./encoder.ts";
 
 // The `*` start/stop guard pattern (0x094) renders as these 12 bits.

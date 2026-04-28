@@ -1,4 +1,5 @@
 import type { Dimension } from "./dimension.js";
+
 import { SymbolShapeHint } from "./symbol_shape_hint.js";
 
 export interface Options {

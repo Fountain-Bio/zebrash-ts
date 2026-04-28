@@ -1,6 +1,8 @@
 // Mirrors internal/drawers/graphic_box.go
 import type { SKRSContext2D } from "@napi-rs/canvas";
+
 import type { GraphicBox } from "../elements/graphic_box.ts";
+
 import { type ElementDrawer, setLineColor } from "./element_drawer.ts";
 
 function isGraphicBox(value: unknown): value is GraphicBox {

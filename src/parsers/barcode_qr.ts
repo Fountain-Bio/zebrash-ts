@@ -1,5 +1,6 @@
 import type { BarcodeQr } from "../elements/index.js";
 import type { VirtualPrinter } from "../printers/virtual.js";
+
 import { type CommandParser, parseInt10, splitCommand } from "./command_parser.js";
 
 // ^BQ orientation, model, magnification, errorCorrection, mask

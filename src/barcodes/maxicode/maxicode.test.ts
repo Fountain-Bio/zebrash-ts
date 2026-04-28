@@ -1,5 +1,6 @@
 import { createHash } from "node:crypto";
 import { describe, expect, test } from "vitest";
+
 import { EOT, GS, RS, encode } from "./maxicode.js";
 import { SYMBOL_GRID_HEIGHT, SYMBOL_GRID_WIDTH } from "./symbolgrid.js";
 

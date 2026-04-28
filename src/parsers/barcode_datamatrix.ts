@@ -1,9 +1,10 @@
+import type { VirtualPrinter } from "../printers/virtual.js";
+
 import {
   type BarcodeDatamatrix,
   type DatamatrixRatio,
   DatamatrixRatioSquare,
 } from "../elements/index.js";
-import type { VirtualPrinter } from "../printers/virtual.js";
 import {
   type CommandParser,
   parseFloatTrimmed,

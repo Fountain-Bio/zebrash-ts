@@ -1,9 +1,10 @@
+import type { Options } from "./encoder/options.js";
+
 import { BitMatrix } from "../utils/index.js";
 import { type ByteMatrix, newByteMatrix } from "./encoder/byte_matrix.js";
 import { type DefaultPlacement, newDefaultPlacement } from "./encoder/default_placement.js";
 import { errorCorrection_encodeECC200 } from "./encoder/error_correction.js";
 import { encodeHighLevel } from "./encoder/high_level_encoder.js";
-import type { Options } from "./encoder/options.js";
 import { type SymbolInfo, symbolInfoLookup } from "./encoder/symbol_info.js";
 
 export function encode(contents: string, width: number, height: number, opts: Options): BitMatrix {

@@ -1,0 +1,15 @@
+{
+  "$schema": "https://raw.githubusercontent.com/oxc-project/oxc/main/npm/oxlint/configuration_schema.json",
+  "ignorePatterns": [".worktrees", "dist", "node_modules", "test/fixtures"],
+  "categories": {
+    "correctness": "error"
+  },
+  "rules": {
+    "typescript/no-explicit-any": "error",
+    "typescript/consistent-type-imports": "error",
+    "typescript/no-non-null-assertion": "off",
+    "typescript/no-this-alias": "off",
+    "unicorn/no-new-array": "off",
+    "oxc/erasing-op": "off"
+  }
+}

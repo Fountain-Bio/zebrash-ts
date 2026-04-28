@@ -1,5 +1,6 @@
 import { ImageData } from "@napi-rs/canvas";
 import { describe, expect, it } from "vitest";
+
 import { scaled } from "./scaled.ts";
 
 function makeImage(width: number, height: number, pixels: ReadonlyArray<readonly number[]>) {

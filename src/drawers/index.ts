@@ -13,6 +13,8 @@ export { DrawerState } from "./drawer_state.ts";
 import { DrawerState as _DS } from "./drawer_state.ts";
 export const newDrawerState = (): _DS => new _DS();
 
+import type { ElementDrawer } from "./element_drawer.ts";
+
 import { newBarcode2of5Drawer } from "./barcode_2of5.ts";
 import { newBarcode39Drawer } from "./barcode_39.ts";
 import { newBarcode128Drawer } from "./barcode_128.ts";
@@ -21,7 +23,6 @@ import { newBarcodeDatamatrixDrawer } from "./barcode_datamatrix.ts";
 import { newBarcodeEan13Drawer } from "./barcode_ean13.ts";
 import { newBarcodePdf417Drawer } from "./barcode_pdf417.ts";
 import { newBarcodeQrDrawer } from "./barcode_qr.ts";
-import type { ElementDrawer } from "./element_drawer.ts";
 import { newGraphicBoxDrawer } from "./graphic_box.ts";
 import { newGraphicCircleDrawer } from "./graphic_circle.ts";
 import { newGraphicDiagonalLineDrawer } from "./graphic_diagonal_line.ts";

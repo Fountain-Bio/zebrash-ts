@@ -1,4 +1,7 @@
 import type { SKRSContext2D } from "@napi-rs/canvas";
+
+import type { DrawerOptions } from "../drawer-options.ts";
+
 import {
   FONT_FAMILY_DEJAVU_MONO,
   FONT_FAMILY_DEJAVU_MONO_BOLD,
@@ -6,7 +9,6 @@ import {
   FONT_FAMILY_ZPL_GS,
   registerEmbeddedFonts,
 } from "../assets/index.ts";
-import type { DrawerOptions } from "../drawer-options.ts";
 import {
   FieldAlignmentRight,
   FieldOrientation90,

@@ -24,6 +24,8 @@ export {
 
 import type { CommandParser } from "./command_parser.ts";
 
+// Barcode parsers (unit 9).
+import { barcodeParsers } from "./barcode_parsers.ts";
 // Field and label parsers (unit 7).
 import { newChangeCharsetParser } from "./change_charset.ts";
 import { newChangeDefaultFontParser } from "./change_default_font.ts";
@@ -38,17 +40,13 @@ import { newFieldReversePrintParser } from "./field_reverse_print.ts";
 import { newFieldSeparatorParser } from "./field_separator.ts";
 import { newFieldTypesetParser } from "./field_typeset.ts";
 import { newFieldValueParser } from "./field_value.ts";
+// Graphic and format parsers (unit 8).
+import { graphicAndFormatParsers } from "./graphic_format_parsers.ts";
 import { newHexEscapeParser } from "./hex_escape.ts";
 import { newLabelHomeParser } from "./label_home.ts";
 import { newLabelReversePrintParser } from "./label_reverse_print.ts";
 import { newPrintOrientationParser } from "./print_orientation.ts";
 import { newPrintWidthParser } from "./print_width.ts";
-
-// Graphic and format parsers (unit 8).
-import { graphicAndFormatParsers } from "./graphic_format_parsers.ts";
-
-// Barcode parsers (unit 9).
-import { barcodeParsers } from "./barcode_parsers.ts";
 
 /**
  * Returns the full set of command parsers in the order Go's `NewParser`

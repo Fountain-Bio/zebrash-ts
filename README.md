@@ -40,9 +40,9 @@ const zpl = await readFile("./label.zpl");
 const labels = new Parser().parse(zpl);
 
 const png = await new Drawer().drawLabelAsPng(labels[0], {
-  labelWidthMm: 101.6,    // 4 inches
-  labelHeightMm: 203.2,   // 8 inches
-  dpmm: 8,                // 203 dpi
+  labelWidthMm: 101.6, // 4 inches
+  labelHeightMm: 203.2, // 8 inches
+  dpmm: 8, // 203 dpi
   enableInvertedLabels: true,
   grayscaleOutput: false,
 });
@@ -56,16 +56,16 @@ render each.
 
 ## Supported ZPL surface
 
-| Category | Commands |
-|---|---|
-| Field positioning | `^FO`, `^FT`, `^FB`, `^FS`, `^FW`, `^FN`, `^FR`, `^FH`, `^FV`, `^FD` |
-| Label setup | `^XA`, `^XZ`, `^LH`, `^LR`, `^PW`, `^PO`, `^CC`, `~CT` |
-| Fonts | `^A`, `^CF`, `^CW`, `^CI` (charsets 0–13, 27) |
-| Graphics | `^GB`, `^GC`, `^GD`, `^GF`, `^GS` |
-| Templating | `^DF`, `^XF`, `~DG`, `^XG`, `^IL` |
-| Custom fonts | `~DU`, font alias via `^CW` |
-| Barcodes | `^BC` (Code 128), `^B2`/`^BI` (2 of 5), `^B3` (Code 39), `^B7` (PDF417), `^BC` (Code 128), `^BD`/`^MC` (Maxicode), `^BE` (EAN-13), `^BO` (Aztec), `^BQ` (QR), `^BX` (Data Matrix), `^BY` (defaults) |
-| Output | Monochrome PNG (default), 8-bit grayscale, inverted-label compositing, `^FR` reverse-print |
+| Category          | Commands                                                                                                                                                                                            |
+| ----------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Field positioning | `^FO`, `^FT`, `^FB`, `^FS`, `^FW`, `^FN`, `^FR`, `^FH`, `^FV`, `^FD`                                                                                                                                |
+| Label setup       | `^XA`, `^XZ`, `^LH`, `^LR`, `^PW`, `^PO`, `^CC`, `~CT`                                                                                                                                              |
+| Fonts             | `^A`, `^CF`, `^CW`, `^CI` (charsets 0–13, 27)                                                                                                                                                       |
+| Graphics          | `^GB`, `^GC`, `^GD`, `^GF`, `^GS`                                                                                                                                                                   |
+| Templating        | `^DF`, `^XF`, `~DG`, `^XG`, `^IL`                                                                                                                                                                   |
+| Custom fonts      | `~DU`, font alias via `^CW`                                                                                                                                                                         |
+| Barcodes          | `^BC` (Code 128), `^B2`/`^BI` (2 of 5), `^B3` (Code 39), `^B7` (PDF417), `^BC` (Code 128), `^BD`/`^MC` (Maxicode), `^BE` (EAN-13), `^BO` (Aztec), `^BQ` (QR), `^BX` (Data Matrix), `^BY` (defaults) |
+| Output            | Monochrome PNG (default), 8-bit grayscale, inverted-label compositing, `^FR` reverse-print                                                                                                          |
 
 ## Architecture
 
@@ -88,7 +88,8 @@ ZPL bytes ──► Parser ──► [elements]  ──► Drawer ──► PNG 
 ```bash
 bun install
 bun run typecheck   # tsc --noEmit
-bun run lint        # biome
+bun run lint        # oxlint
+bun run format      # oxfmt (use format:check in CI)
 bun run test        # vitest: 391 unit + 60 golden = 451 tests
 bun run build       # emits dist/
 ```

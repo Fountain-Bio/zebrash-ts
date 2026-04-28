@@ -1,5 +1,6 @@
 import { ImageData, createCanvas } from "@napi-rs/canvas";
 import { describe, expect, it } from "vitest";
+
 import { reversePrint } from "./reverse_print.ts";
 
 function solidImage(w: number, h: number, rgba: readonly [number, number, number, number]) {

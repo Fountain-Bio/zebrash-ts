@@ -1,6 +1,7 @@
 // Port of /Users/alancohen/fountain-bio/zebrash/internal/drawers/barcode_ean13.go.
 
 import type { SKRSContext2D } from "@napi-rs/canvas";
+
 import {
   calculateEan13GuardExtension,
   encodeEan13,

@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+
 import { newBitList } from "./bitlist.ts";
 import { toWideNarrowList } from "./bitlist_widenarrow.ts";
 

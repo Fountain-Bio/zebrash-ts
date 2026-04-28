@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+
 import { Ean13, calculateGuardExtension, isGuardBar, newEan13 } from "./ean13.ts";
 import { encodeEan13 } from "./encoder.ts";
 

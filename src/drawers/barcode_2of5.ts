@@ -1,7 +1,8 @@
 // Port of /Users/alancohen/fountain-bio/zebrash/internal/drawers/barcode_2of5.go.
 
-import { encodeInterleaved2of5 } from "../barcodes/twooffive/index.js";
 import type { Barcode2of5WithData } from "../elements/index.js";
+
+import { encodeInterleaved2of5 } from "../barcodes/twooffive/index.js";
 import { paintBitArrayBars, paintHumanReadableText } from "./barcode_paint.js";
 import {
   type ElementDrawer,

@@ -1,4 +1,5 @@
 import type { VirtualPrinter } from "../printers/index.js";
+
 import { type CommandParser, commandText, parseStrictInt } from "./command_parser.js";
 
 export function newFieldNumberParser(): CommandParser {

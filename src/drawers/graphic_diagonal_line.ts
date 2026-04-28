@@ -1,6 +1,8 @@
 // Mirrors internal/drawers/graphic_diagonal_line.go
 import type { SKRSContext2D } from "@napi-rs/canvas";
+
 import type { GraphicDiagonalLine } from "../elements/graphic_diagonal_line.ts";
+
 import { type ElementDrawer, setLineColor } from "./element_drawer.ts";
 
 function isGraphicDiagonalLine(value: unknown): value is GraphicDiagonalLine {

@@ -1,6 +1,7 @@
-import { c40WriteNextTriplet } from "./c40_encoder.js";
 import type { Encoder } from "./encoder.js";
 import type { EncoderContext } from "./encoder_context.js";
+
+import { c40WriteNextTriplet } from "./c40_encoder.js";
 import {
   HighLevelEncoder_ASCII_ENCODATION,
   HighLevelEncoder_X12_ENCODATION,

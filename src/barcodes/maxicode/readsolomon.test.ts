@@ -1,4 +1,5 @@
 import { describe, expect, test } from "vitest";
+
 import { Encoder, newEncoder } from "./readsolomon.js";
 
 describe("readsolomon Encoder", () => {

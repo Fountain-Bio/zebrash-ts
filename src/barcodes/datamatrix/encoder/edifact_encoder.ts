@@ -1,5 +1,6 @@
 import type { Encoder } from "./encoder.js";
 import type { EncoderContext } from "./encoder_context.js";
+
 import {
   HighLevelEncoder_ASCII_ENCODATION,
   HighLevelEncoder_EDIFACT_ENCODATION,

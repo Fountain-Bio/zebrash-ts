@@ -1,4 +1,3 @@
-import { toUnicodeText } from "../encodings/index.ts";
 import type { Barcode2of5, Barcode2of5WithData } from "./barcode_2of5.ts";
 import type { Barcode39, Barcode39WithData } from "./barcode_39.ts";
 import type { Barcode128, Barcode128WithData } from "./barcode_128.ts";
@@ -9,10 +8,12 @@ import type { BarcodePdf417, BarcodePdf417WithData } from "./barcode_pdf417.ts";
 import type { BarcodeQr, BarcodeQrWithData } from "./barcode_qr.ts";
 import type { FieldBlock } from "./field_block.ts";
 import type { FieldInfo } from "./field_info.ts";
-import { fontWithAdjustedSizes } from "./font.ts";
 import type { GraphicSymbol } from "./graphic_symbol.ts";
 import type { Maxicode, MaxicodeWithData } from "./maxicode.ts";
 import type { TextField } from "./text_field.ts";
+
+import { toUnicodeText } from "../encodings/index.ts";
+import { fontWithAdjustedSizes } from "./font.ts";
 
 export interface StoredField {
   _kind: "StoredField";

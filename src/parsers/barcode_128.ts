@@ -1,5 +1,6 @@
-import { type Barcode128, BarcodeMode } from "../elements/index.js";
 import type { VirtualPrinter } from "../printers/virtual.js";
+
+import { type Barcode128, BarcodeMode } from "../elements/index.js";
 import {
   type CommandParser,
   parseFloatTrimmed,

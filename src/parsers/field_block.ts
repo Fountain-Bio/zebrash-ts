@@ -1,5 +1,6 @@
-import { type FieldBlock, TextAlignment } from "../elements/index.js";
 import type { VirtualPrinter } from "../printers/index.js";
+
+import { type FieldBlock, TextAlignment } from "../elements/index.js";
 import {
   type CommandParser,
   parseStrictInt,

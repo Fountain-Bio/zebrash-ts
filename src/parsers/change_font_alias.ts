@@ -1,4 +1,5 @@
 import type { VirtualPrinter } from "../printers/index.js";
+
 import { type CommandParser, splitCommand, toValidFontName } from "./command_parser.js";
 
 export function newChangeFontAliasParser(): CommandParser {

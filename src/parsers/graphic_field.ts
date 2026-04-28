@@ -1,3 +1,5 @@
+import type { VirtualPrinter } from "../printers/index.js";
+
 import {
   type GraphicField,
   type GraphicFieldFormat,
@@ -6,7 +8,6 @@ import {
   GraphicFieldFormatRaw,
 } from "../elements/index.js";
 import { decodeGraphicFieldData } from "../hex/decode.js";
-import type { VirtualPrinter } from "../printers/index.js";
 import { type CommandParser, splitCommand } from "./command_parser.js";
 
 export function newGraphicFieldParser(): CommandParser {

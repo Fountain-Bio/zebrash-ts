@@ -1,5 +1,7 @@
 // Port of /Users/alancohen/fountain-bio/zebrash/internal/drawers/barcode_qr.go.
 
+import type { ElementDrawer } from "./element_drawer.js";
+
 import { type QrEncoderErrorCorrectionLevel, encodeQr } from "../barcodes/qrcode/index.js";
 import {
   type BarcodeQrWithData,
@@ -7,7 +9,6 @@ import {
   getQrInputData,
 } from "../elements/index.js";
 import { paintBitMatrixCells } from "./barcode_paint.js";
-import type { ElementDrawer } from "./element_drawer.js";
 
 export function newBarcodeQrDrawer(): ElementDrawer {
   return {

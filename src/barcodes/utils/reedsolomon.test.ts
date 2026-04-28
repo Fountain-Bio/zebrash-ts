@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+
 import { newGaloisField } from "./galoisfield.ts";
 import { newGFPoly } from "./gfpoly.ts";
 import { newReedSolomonEncoder } from "./reedsolomon.ts";

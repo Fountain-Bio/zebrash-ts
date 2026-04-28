@@ -1,5 +1,6 @@
 // Mirrors internal/drawers/graphic_field.go
 import { createCanvas } from "@napi-rs/canvas";
+
 import type { GraphicField } from "../elements/graphic_field.ts";
 import type { ElementDrawer } from "./element_drawer.ts";
 

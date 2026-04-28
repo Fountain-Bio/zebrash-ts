@@ -9,10 +9,10 @@
  * type-only fallbacks in this file can be tightened to direct imports.
  */
 
+import { createCanvas, loadImage } from "@napi-rs/canvas";
 import { readFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import { createCanvas, loadImage } from "@napi-rs/canvas";
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 

@@ -1,5 +1,7 @@
 import { describe, expect, it } from "vitest";
+
 import type { BitList } from "../utils/index.ts";
+
 import { calcCheckNum, encode, encodeEan13, sanitizeContent, withCheckDigit } from "./encoder.ts";
 
 function bitsToString(bits: BitList): string {

@@ -1,7 +1,8 @@
 // Port of /Users/alancohen/fountain-bio/zebrash/internal/drawers/barcode_39.go.
 
-import { encodeCode39 } from "../barcodes/code39/index.js";
 import type { Barcode39WithData } from "../elements/index.js";
+
+import { encodeCode39 } from "../barcodes/code39/index.js";
 import { paintBitArrayBars, paintHumanReadableText } from "./barcode_paint.js";
 import {
   type ElementDrawer,

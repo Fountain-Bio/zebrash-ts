@@ -1,3 +1,5 @@
+import type { CommandParser } from "./command_parser.js";
+
 import {
   type RecalledField,
   type RecalledFieldData,
@@ -5,7 +7,6 @@ import {
   resolveRecalledField,
 } from "../elements/index.js";
 import { type VirtualPrinter, getFieldInfo, resetFieldState } from "../printers/index.js";
-import type { CommandParser } from "./command_parser.js";
 
 export function newFieldSeparatorParser(): CommandParser {
   const code = "^FS";

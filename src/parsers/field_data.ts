@@ -1,5 +1,6 @@
-import { decodeEscapedString } from "../hex/index.js";
 import type { VirtualPrinter } from "../printers/index.js";
+
+import { decodeEscapedString } from "../hex/index.js";
 import { type CommandParser, commandText } from "./command_parser.js";
 
 export function newFieldDataParser(): CommandParser {

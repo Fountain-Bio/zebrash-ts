@@ -1,6 +1,8 @@
 import type { SKRSContext2D } from "@napi-rs/canvas";
 
 import type { DrawerOptions } from "../drawer-options.ts";
+import type { DrawerState } from "./drawer_state.ts";
+
 import {
   FieldOrientation,
   type LabelPosition,
@@ -8,7 +10,6 @@ import {
   getFieldOrientationDegrees,
 } from "../elements/index.ts";
 import { colorBlack, colorWhite } from "../images/index.ts";
-import type { DrawerState } from "./drawer_state.ts";
 
 /**
  * Draws a single ZPL element onto the canvas. Each per-element drawer

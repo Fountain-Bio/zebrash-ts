@@ -1,9 +1,12 @@
 import { describe, expect, it } from "vitest";
+
 import type { Barcode128 } from "./barcode_128.ts";
-import { FieldAlignment } from "./field_alignment.ts";
 import type { FieldInfo } from "./field_info.ts";
-import { FieldOrientation } from "./field_orientation.ts";
 import type { FontInfo } from "./font.ts";
+import type { TextField } from "./text_field.ts";
+
+import { FieldAlignment } from "./field_alignment.ts";
+import { FieldOrientation } from "./field_orientation.ts";
 import {
   type RecalledFieldData,
   RecalledFormat,
@@ -12,7 +15,6 @@ import {
   newStoredFormat,
   storedFormatToRecalled,
 } from "./stored_format.ts";
-import type { TextField } from "./text_field.ts";
 
 const font: FontInfo = {
   name: "0",

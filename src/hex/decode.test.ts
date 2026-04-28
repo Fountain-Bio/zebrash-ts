@@ -1,6 +1,7 @@
 import { Buffer } from "node:buffer";
 import { deflateSync } from "node:zlib";
 import { describe, expect, it } from "vitest";
+
 import { decodeEscapedString, decodeFontData, decodeGraphicFieldData } from "./decode.ts";
 
 describe("decodeGraphicFieldData", () => {

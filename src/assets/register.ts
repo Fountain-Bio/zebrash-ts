@@ -1,4 +1,5 @@
 import { GlobalFonts } from "@napi-rs/canvas";
+
 import {
   FontDejavuSansMono,
   FontDejavuSansMonoBold,

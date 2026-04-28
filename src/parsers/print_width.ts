@@ -1,4 +1,5 @@
 import type { VirtualPrinter } from "../printers/index.js";
+
 import { type CommandParser, parseStrictInt, splitCommand } from "./command_parser.js";
 
 export function newPrintWidthParser(): CommandParser {

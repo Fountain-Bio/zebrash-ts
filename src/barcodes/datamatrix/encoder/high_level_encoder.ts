@@ -1,10 +1,11 @@
+import type { Encoder } from "./encoder.js";
+import type { Options } from "./options.js";
+
 import { newASCIIEncoder } from "./ascii_encoder.js";
 import { newBase256Encoder } from "./base256_encoder.js";
 import { newC40Encoder } from "./c40_encoder.js";
 import { newEdifactEncoder } from "./edifact_encoder.js";
-import type { Encoder } from "./encoder.js";
 import { newEncoderContext } from "./encoder_context.js";
-import type { Options } from "./options.js";
 import { newTextEncoder } from "./text_encoder.js";
 import { newX12Encoder } from "./x12_encoder.js";
 

@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+
 import { FieldAlignment, FieldOrientation, newFontInfo } from "../elements/index.js";
 import { VirtualPrinter, newVirtualPrinter } from "./virtual.js";
 

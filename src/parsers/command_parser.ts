@@ -1,7 +1,8 @@
 // Port of zebrash/internal/parsers/command_parser.go.
 
-import { BarcodeMode, FieldAlignment, FieldOrientation, TextAlignment } from "../elements/index.ts";
 import type { VirtualPrinter } from "../printers/index.ts";
+
+import { BarcodeMode, FieldAlignment, FieldOrientation, TextAlignment } from "../elements/index.ts";
 
 /**
  * A handler for a single ZPL command (e.g. `^FO`, `^FD`).

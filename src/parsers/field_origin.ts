@@ -1,5 +1,6 @@
-import { addLabelPositions, newLabelPosition } from "../elements/index.js";
 import type { VirtualPrinter } from "../printers/index.js";
+
+import { addLabelPositions, newLabelPosition } from "../elements/index.js";
 import {
   type CommandParser,
   splitCommand,

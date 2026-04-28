@@ -1,5 +1,6 @@
-import { type FontInfo, newFontInfo } from "../elements/index.js";
 import type { VirtualPrinter } from "../printers/index.js";
+
+import { type FontInfo, newFontInfo } from "../elements/index.js";
 import {
   type CommandParser,
   parseStrictInt,

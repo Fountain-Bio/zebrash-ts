@@ -1,5 +1,8 @@
 // Port of internal/barcodes/qrcode/encoder/encoder.go
 
+import type { ErrorCorrectionLevel } from "./error-correction-level.ts";
+import type { Options } from "./options.ts";
+
 import { BitArray, GaloisField, ReedSolomonEncoder } from "../../utils/index.ts";
 import { BlockPair } from "./block-pair.ts";
 import { ByteMatrix } from "./byte-matrix.ts";
@@ -9,7 +12,6 @@ import {
   GetCharacterSetECIByName,
   encodeBytes,
 } from "./character-set-eci.ts";
-import type { ErrorCorrectionLevel } from "./error-correction-level.ts";
 import {
   MaskUtil_applyMaskPenaltyRule1,
   MaskUtil_applyMaskPenaltyRule2,
@@ -26,7 +28,6 @@ import {
   Mode_KANJI,
   Mode_NUMERIC,
 } from "./mode.ts";
-import type { Options } from "./options.ts";
 import { QRCode, QRCode_IsValidMaskPattern } from "./qrcode.ts";
 import { StringUtils_SHIFT_JIS_CHARSET } from "./string-utils.ts";
 import { type Version, Version_GetVersionForNumber } from "./version.ts";

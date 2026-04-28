@@ -1,5 +1,6 @@
 import { createCanvas, loadImage } from "@napi-rs/canvas";
 import { describe, expect, it } from "vitest";
+
 import { encodeGrayscale, encodeMonochrome } from "./encode.ts";
 
 describe("encodeMonochrome", () => {

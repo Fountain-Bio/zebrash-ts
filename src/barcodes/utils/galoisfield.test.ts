@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+
 import { newGaloisField } from "./galoisfield.ts";
 
 describe("GaloisField (QR-style GF(256), primitive 0x011D)", () => {

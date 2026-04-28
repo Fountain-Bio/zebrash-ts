@@ -1,5 +1,6 @@
 import type { BarcodeAztec } from "../elements/index.js";
 import type { VirtualPrinter } from "../printers/virtual.js";
+
 import {
   type CommandParser,
   parseInt10,

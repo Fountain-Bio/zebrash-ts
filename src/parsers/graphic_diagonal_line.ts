@@ -1,5 +1,6 @@
-import { type GraphicDiagonalLine, LineColorBlack, LineColorWhite } from "../elements/index.js";
 import type { VirtualPrinter } from "../printers/index.js";
+
+import { type GraphicDiagonalLine, LineColorBlack, LineColorWhite } from "../elements/index.js";
 import { type CommandParser, splitCommand } from "./command_parser.js";
 
 export function newGraphicDiagonalLineParser(): CommandParser {

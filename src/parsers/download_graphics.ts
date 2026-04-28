@@ -1,4 +1,5 @@
 import type { StoredGraphics } from "../elements/index.js";
+
 import { decodeGraphicFieldData } from "../hex/decode.js";
 import {
   StoredGraphicsDefaultPath,

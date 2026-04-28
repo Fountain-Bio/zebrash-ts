@@ -7,6 +7,7 @@
 
 import { readdirSync } from "node:fs";
 import { describe, expect, it } from "vitest";
+
 import { FIXTURES_DIR, loadFixture, loadRenderApi, pngDimensions, renderZpl } from "./helpers.js";
 
 const ZPL_FIXTURES = readdirSync(FIXTURES_DIR)

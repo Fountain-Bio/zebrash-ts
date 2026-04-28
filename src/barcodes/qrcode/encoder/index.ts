@@ -10,10 +10,7 @@ export {
   GetCharacterSetECIByValue,
   setShiftJISTable,
 } from "./character-set-eci.ts";
-export {
-  Encoder_DEFAULT_BYTE_MODE_ENCODING,
-  Encoder_encode,
-} from "./encoder.ts";
+export { Encoder_DEFAULT_BYTE_MODE_ENCODING, Encoder_encode } from "./encoder.ts";
 export {
   ErrorCorrectionLevel,
   ErrorCorrectionLevel_ForBits,
@@ -48,11 +45,7 @@ export {
   ModeForBits,
 } from "./mode.ts";
 export type { Options } from "./options.ts";
-export {
-  QRCode,
-  QRCode_IsValidMaskPattern,
-  QRCode_NUM_MASK_PATERNS,
-} from "./qrcode.ts";
+export { QRCode, QRCode_IsValidMaskPattern, QRCode_NUM_MASK_PATERNS } from "./qrcode.ts";
 export {
   StringUtils_ASSUME_SHIFT_JIS,
   StringUtils_EUC_JP,

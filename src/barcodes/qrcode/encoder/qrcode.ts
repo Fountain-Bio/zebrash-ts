@@ -1,12 +1,13 @@
 // Port of internal/barcodes/qrcode/encoder/qrcode.go
 
 import type { ByteMatrix } from "./byte-matrix.ts";
+import type { Mode } from "./mode.ts";
+import type { Version } from "./version.ts";
+
 import {
   type ErrorCorrectionLevel,
   ErrorCorrectionLevel_String,
 } from "./error-correction-level.ts";
-import type { Mode } from "./mode.ts";
-import type { Version } from "./version.ts";
 
 export const QRCode_NUM_MASK_PATERNS = 8;
 

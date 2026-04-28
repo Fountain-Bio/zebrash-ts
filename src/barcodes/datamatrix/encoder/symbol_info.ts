@@ -1,5 +1,6 @@
-import { newDataMatrixSymbolInfo144 } from "./datamatrix_symbol_info_144.js";
 import type { Options } from "./options.js";
+
+import { newDataMatrixSymbolInfo144 } from "./datamatrix_symbol_info_144.js";
 import { SymbolShapeHint } from "./symbol_shape_hint.js";
 
 // Symbol info table for DataMatrix.

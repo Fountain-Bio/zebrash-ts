@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+
 import { ColorBlack, ColorTransparent, ColorWhite, rgbaToCss } from "./colors.ts";
 
 describe("colors", () => {

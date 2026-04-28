@@ -5,6 +5,7 @@
 // height. The image module (unit 3) lifts the row to a full image.
 
 import type { BitList } from "./bitlist.ts";
+
 import { toWideNarrowList } from "./bitlist_widenarrow.ts";
 
 export interface BitListImageRow {

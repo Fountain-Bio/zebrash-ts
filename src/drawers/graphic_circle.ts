@@ -1,5 +1,6 @@
 // Mirrors internal/drawers/graphic_circle.go
 import type { GraphicCircle } from "../elements/graphic_circle.ts";
+
 import { type ElementDrawer, setLineColor } from "./element_drawer.ts";
 
 function isGraphicCircle(value: unknown): value is GraphicCircle {

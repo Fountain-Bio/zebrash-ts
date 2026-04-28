@@ -1,7 +1,7 @@
 import { describe, expect, it } from "vitest";
+
 import { Code128, newCode128 } from "./code128.ts";
 import {
-  CODE_A,
   CODE_B,
   CODE_C,
   CODE_PATTERNS,

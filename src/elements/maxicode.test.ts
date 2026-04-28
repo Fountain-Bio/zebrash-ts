@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+
 import { type MaxicodeWithData, getMaxicodeInputData } from "./maxicode.ts";
 
 const RS = "\x1e";

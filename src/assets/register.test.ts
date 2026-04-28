@@ -1,5 +1,6 @@
 import { GlobalFonts, createCanvas } from "@napi-rs/canvas";
 import { describe, expect, it } from "vitest";
+
 import { EmbeddedFontFamilies, registerEmbeddedFonts } from "./register.ts";
 
 describe("registerEmbeddedFonts", () => {

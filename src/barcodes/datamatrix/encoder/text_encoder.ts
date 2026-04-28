@@ -1,5 +1,6 @@
-import { C40Encoder } from "./c40_encoder.js";
 import type { Encoder } from "./encoder.js";
+
+import { C40Encoder } from "./c40_encoder.js";
 import { HighLevelEncoder_TEXT_ENCODATION } from "./high_level_encoder.js";
 
 export function newTextEncoder(): Encoder {

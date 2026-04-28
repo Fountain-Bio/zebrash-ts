@@ -1,7 +1,8 @@
 // Port of zebrash/parser.go.
 
-import { type LabelInfo, type RecalledFormat, isRecalledFormat } from "./elements/index.ts";
 import type { CommandParser } from "./parsers/command_parser.ts";
+
+import { type LabelInfo, type RecalledFormat, isRecalledFormat } from "./elements/index.ts";
 import { canParse } from "./parsers/command_parser.ts";
 import { defaultCommandParsers as defaultCommandParsersLazy } from "./parsers/index.ts";
 import { type VirtualPrinter, newVirtualPrinter } from "./printers/index.ts";

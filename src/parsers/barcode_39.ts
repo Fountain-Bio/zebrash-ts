@@ -1,5 +1,6 @@
 import type { Barcode39 } from "../elements/index.js";
 import type { VirtualPrinter } from "../printers/virtual.js";
+
 import {
   type CommandParser,
   parseFloatTrimmed,

@@ -1,8 +1,10 @@
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
-import { BitList } from "../utils/bitlist.js";
+
 import type { AztecCode } from "./azteccode.js";
+
+import { BitList } from "../utils/bitlist.js";
 import { encode, generateModeMessage, stuffBits } from "./encoder.js";
 import { highlevelEncode } from "./highlevel.js";
 
@@ -64,7 +66,7 @@ describe("Aztec encoder", () => {
     const text = readFileSync(fixture, "utf8");
     // The ^FD payload; multiple identical fields exist but they all carry
     // the same content, so any one suffices.
-    const match = text.match(/\^FD([^\^]+)\^FS/);
+    const match = text.match(/\^FD([^^]+)\^FS/);
     expect(match).not.toBeNull();
     const payload = match?.[1] ?? "";
     expect(payload.length).toBeGreaterThan(0);

@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+
 import { decodeCp437, decodeCp850, toUnicodeText } from "./decode.ts";
 
 /** Helper: build a "byte-string" (each char's code unit is the raw byte). */

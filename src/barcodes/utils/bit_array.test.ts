@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+
 import { BitArray, newBitArray, newEmptyBitArray } from "./bit_array.ts";
 
 describe("BitArray", () => {

@@ -1,5 +1,6 @@
-import { type GraphicBox, LineColorBlack, LineColorWhite } from "../elements/index.js";
 import type { VirtualPrinter } from "../printers/index.js";
+
+import { type GraphicBox, LineColorBlack, LineColorWhite } from "../elements/index.js";
 import { type CommandParser, splitCommand, toPositiveIntField } from "./command_parser.js";
 
 export function newGraphicBoxParser(): CommandParser {

@@ -1,7 +1,9 @@
 // Port of /Users/alancohen/fountain-bio/zebrash/internal/drawers/barcode_pdf417.go.
 
-import { encodePdf417, toMatrix as pdf417ToMatrix } from "../barcodes/pdf417/index.js";
 import type { BarcodePdf417WithData } from "../elements/index.js";
+import type { BitMatrix } from "../barcodes/utils/index.js";
+
+import { encodePdf417, toMatrix as pdf417ToMatrix } from "../barcodes/pdf417/index.js";
 import { paintBitMatrixCells } from "./barcode_paint.js";
 import {
   type ElementDrawer,
@@ -48,7 +50,7 @@ export function newBarcodePdf417Drawer(): ElementDrawer {
         // The adapter shape matches BitMatrix duck-type for paintBitMatrixCells.
         paintBitMatrixCells(
           ctx,
-          matrix as unknown as import("../barcodes/utils/index.js").BitMatrix,
+          matrix as unknown as BitMatrix,
           pos,
           moduleWidth,
           moduleHeight,
