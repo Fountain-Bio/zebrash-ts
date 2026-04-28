@@ -1,8 +1,10 @@
 // Port of /Users/alancohen/fountain-bio/zebrash/internal/drawers/barcode_ean13.go.
 
+import type { SKRSContext2D } from "@napi-rs/canvas";
 import {
   calculateEan13GuardExtension,
   encodeEan13,
+  isGuardBar,
   sanitizeContent,
 } from "../barcodes/ean13/index.js";
 import {
@@ -12,7 +14,7 @@ import {
   FieldOrientation180,
   type LabelPosition,
 } from "../elements/index.js";
-import { paintBitArrayBars, paintEan13Text } from "./barcode_paint.js";
+import { paintEan13Text } from "./barcode_paint.js";
 import {
   type ElementDrawer,
   adjustImageTypeSetPosition,
@@ -44,7 +46,7 @@ export function newBarcodeEan13Drawer(): ElementDrawer {
       ctx.save();
       try {
         rotateForOrientation(ctx, width, height, pos, barcode.orientation);
-        paintBitArrayBars(ctx, bits, pos, moduleWidth, height);
+        paintEan13Bars(ctx, bits, pos, moduleWidth, height, guardExtension);
         if (barcode.line) {
           paintEan13Text(
             ctx,
@@ -62,6 +64,30 @@ export function newBarcodeEan13Drawer(): ElementDrawer {
       }
     },
   };
+}
+
+/**
+ * EAN-13 bar painting: guard bars (start, middle, end groups) extend the
+ * full `barHeight + guardExtension` so they hang below the human-readable
+ * digits, while data bars stop at `barHeight` to leave white space for the
+ * digits to sit in.
+ */
+function paintEan13Bars(
+  ctx: SKRSContext2D,
+  bits: { length: number; at(i: number): boolean | undefined },
+  pos: LabelPosition,
+  moduleWidth: number,
+  barHeight: number,
+  guardExtension: number,
+): void {
+  ctx.fillStyle = "#000000";
+  const len = bits.length;
+  for (let i = 0; i < len; i++) {
+    if (!bits.at(i)) continue;
+    const x = pos.x + i * moduleWidth;
+    const h = isGuardBar(i) ? barHeight + guardExtension : barHeight;
+    ctx.fillRect(x, pos.y, moduleWidth, h);
+  }
 }
 
 function adjustEan13Position(
