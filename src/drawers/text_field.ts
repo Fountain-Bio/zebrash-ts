@@ -20,6 +20,7 @@ import {
   TextAlignmentRight,
   type TextField,
 } from "../elements/index.ts";
+import { platform } from "../platform.ts";
 import {
   type DrawerState,
   type ElementDrawer,
@@ -52,6 +53,14 @@ export function newTextFieldDrawer(): ElementDrawer {
       // Browser fonts are loaded lazily on first draw; on Node this is a
       // synchronous no-op after the first call.
       await registerEmbeddedFonts();
+      // If this field references a downloaded TTF (^A@..., R:CUSTOM.FNT), the
+      // parser stored the raw bytes plus a generated family alias. Register it
+      // with the active platform's font registry on first sight, then promote
+      // the alias onto the FontInfo so getFontFamily picks it up below.
+      if (element.font.customFont && !element.font.customFontFamily) {
+        await platform.registerFont(element.font.customFont.data, element.font.customFont.name);
+        element.font.customFontFamily = element.font.customFont.name;
+      }
       const text = adjustTextField(element);
 
       const scaleX = getFontScaleX(text.font);
