@@ -22,7 +22,7 @@ import {
 
 export function newBarcodeEan13Drawer(): ElementDrawer {
   return {
-    draw(ctx, element): void {
+    async draw(ctx, element): Promise<void> {
       const barcode = element as BarcodeEan13WithData | null;
       if (!barcode || barcode._kind !== "BarcodeEan13WithData") return;
 
@@ -47,7 +47,7 @@ export function newBarcodeEan13Drawer(): ElementDrawer {
         rotateForOrientation(ctx, width, height, pos, barcode.orientation);
         paintEan13Bars(ctx, bits, pos, moduleWidth, height, guardExtension);
         if (barcode.line) {
-          paintEan13Text(
+          await paintEan13Text(
             ctx,
             text,
             pos,

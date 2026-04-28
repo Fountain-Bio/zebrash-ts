@@ -12,7 +12,7 @@ import {
 
 export function newBarcode39Drawer(): ElementDrawer {
   return {
-    draw(ctx, element): void {
+    async draw(ctx, element): Promise<void> {
       const barcode = element as Barcode39WithData | null;
       if (!barcode || barcode._kind !== "Barcode39WithData") return;
 
@@ -32,7 +32,15 @@ export function newBarcode39Drawer(): ElementDrawer {
         rotateForOrientation(ctx, width, height, pos, barcode.orientation);
         paintBitArrayBars(ctx, bits, pos, moduleWidth, height);
         if (barcode.line) {
-          paintHumanReadableText(ctx, text, pos, barcode.lineAbove, moduleWidth, width, height);
+          await paintHumanReadableText(
+            ctx,
+            text,
+            pos,
+            barcode.lineAbove,
+            moduleWidth,
+            width,
+            height,
+          );
         }
       } finally {
         ctx.restore();

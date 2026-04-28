@@ -18,7 +18,7 @@ const PARENS_AND_SPACES = /[()\s]+/g;
 
 export function newBarcode128Drawer(): ElementDrawer {
   return {
-    draw(ctx, element): void {
+    async draw(ctx, element): Promise<void> {
       const barcode = element as Barcode128WithData | null;
       if (!barcode || barcode._kind !== "Barcode128WithData") return;
 
@@ -57,7 +57,15 @@ export function newBarcode128Drawer(): ElementDrawer {
         rotateForOrientation(ctx, width, height, pos, barcode.orientation);
         paintBitArrayBars(ctx, bits, pos, moduleWidth, height);
         if (barcode.line) {
-          paintHumanReadableText(ctx, text, pos, barcode.lineAbove, moduleWidth, width, height);
+          await paintHumanReadableText(
+            ctx,
+            text,
+            pos,
+            barcode.lineAbove,
+            moduleWidth,
+            width,
+            height,
+          );
         }
       } finally {
         ctx.restore();

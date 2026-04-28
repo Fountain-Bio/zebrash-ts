@@ -160,11 +160,20 @@ inflate). Don't import directly from `@napi-rs/canvas` or `node:*`.
   `test/fixtures/*.zpl`. Per-fixture options live in `FIXTURE_OPTIONS` (mirrors
   Go's `parser_test.go`). Per-fixture diff overrides live in
   `FIXTURE_OVERRIDES` (default 5 %). The browser suite mirrors both maps.
-- **Why two suites:** Node and browser pixel diffs against the Go reference
-  match within ~0.2 % per fixture (Skia and browser canvas use different
-  rasterizers, but both are close to FreeType). A regression on either path
-  fails its own suite. Without the browser suite, browser-only bugs
-  (font-fetch failures, OffscreenCanvas semantics drift) ship silently.
+- **Why two suites:** Node and browser have *separate* failure modes. Skia
+  (Node) handles compositing, font registration, and timing differently
+  from the browser canvas. The browser suite catches bugs that look fine on
+  the Node path — most notably the async-await trap in barcode drawers
+  (see "Async-await traps" above) and reverse-print compositing.
+- **Two thresholds per fixture, both must pass:**
+  - `ratio` (default 5 %) — fraction of all pixels that differ. Same as
+    the Node suite.
+  - `inkDeltaRatio` (default 2 %) — symmetric ink-count delta:
+    `|inkA - inkB| / max(inkA, inkB)`. Catches *missing structure*. The
+    classic `ratio` metric is dominated by white-on-white matches and only
+    moves ~0.3 % when an entire block of text is missing — well below any
+    sane threshold. `inkDeltaRatio` jumps to 5–80 % in those cases because
+    the actual rendered "ink" count diverges from the reference.
 - **Adding a new fixture**: drop the `.zpl` and Go-rendered `.png` into
   `test/fixtures/`. The golden suite picks it up on the next run.
 - **Visual debugging**: `bun run scripts/render-fixture.ts test/fixtures/<name>.zpl --out /tmp/x.png`
@@ -205,6 +214,25 @@ The reference PNGs are static — they were generated **once** by the Go
 `ingridhq/zebrash` test suite and committed to `test/fixtures/`. We do not
 re-run Go anywhere in this repo. To regenerate or add a fixture, capture the
 Go output separately and drop the `.zpl` + `.png` pair into `test/fixtures/`.
+
+## Async-await traps in drawers (read this before editing drawers!)
+
+`paintHumanReadableText` and `paintEan13Text` in `barcode_paint.ts` are
+**async** because they `await registerEmbeddedFonts()` before the first
+`fillText`. **Every barcode drawer that calls them must be `async draw` and
+must `await` the call.**
+
+The fire-and-forget mistake is silent on Node — font registration there is
+synchronous, so the orphan promise resolves on the next microtask, before
+the canvas gets encoded. In the browser, `registerEmbeddedFonts` waits on a
+real CDN fetch. By the time the fetch resolves, the surrounding `ctx.save()
+/ ctx.restore()` has unrolled the rotation and the canvas has been encoded
+to PNG — text either never lands, or lands rotated incorrectly.
+
+Currently four drawers go through this path: `barcode_128.ts`,
+`barcode_2of5.ts`, `barcode_39.ts`, `barcode_ean13.ts`. The 2D barcode
+drawers (aztec, datamatrix, qr, pdf417, maxicode) don't render
+human-readable text, so they stay synchronous.
 
 ## Things that are subtle
 

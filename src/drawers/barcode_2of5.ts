@@ -14,7 +14,7 @@ const NON_DIGIT = /[^0-9]+/g;
 
 export function newBarcode2of5Drawer(): ElementDrawer {
   return {
-    draw(ctx, element): void {
+    async draw(ctx, element): Promise<void> {
       const barcode = element as Barcode2of5WithData | null;
       if (!barcode || barcode._kind !== "Barcode2of5WithData") return;
 
@@ -35,7 +35,15 @@ export function newBarcode2of5Drawer(): ElementDrawer {
         rotateForOrientation(ctx, width, height, pos, barcode.orientation);
         paintBitArrayBars(ctx, bits, pos, moduleWidth, height);
         if (barcode.line) {
-          paintHumanReadableText(ctx, text, pos, barcode.lineAbove, moduleWidth, width, height);
+          await paintHumanReadableText(
+            ctx,
+            text,
+            pos,
+            barcode.lineAbove,
+            moduleWidth,
+            width,
+            height,
+          );
         }
       } finally {
         ctx.restore();

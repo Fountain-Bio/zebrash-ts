@@ -5,3 +5,4 @@ coverage/
 *.log
 .DS_Store
 .vitest-cache/
+test/__screenshots__/

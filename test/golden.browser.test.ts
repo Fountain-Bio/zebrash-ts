@@ -45,23 +45,42 @@ interface GoldenCase {
   fixture: string;
   goldenName: string;
   options?: DrawerOptions;
-  maxRatio?: number;
+  override?: Override;
 }
-
-// Same overrides as `test/golden.test.ts` — the rasterizer drift between
-// Skia (Node) and the browser canvas may behave differently, so we may need
-// to widen these once the suite is green. Start with the same numbers.
-const FIXTURE_OVERRIDES: Record<string, number> = {
-  ups_grayscale: 0.06,
-  templating: 0.06,
-};
 
 const FIXTURE_OPTIONS: Record<string, DrawerOptions> = {
   text_fallback_default: { labelWidthMm: 160, labelHeightMm: 230 },
   custom_ttf_by_alias: { labelWidthMm: 160 },
 };
 
+// Two complementary thresholds; a fixture must satisfy both.
+//
+//   - DEFAULT_MAX_RATIO (5 %) — fraction of all pixels that differ. Matches
+//     the Node golden suite. Sensitive to wholesale wrongness (e.g. wrong
+//     dimensions, fully-blank canvas) but blind to missing text on
+//     mostly-white labels — that's what `inkDeltaRatio` is for.
+//   - DEFAULT_MAX_INK_DELTA_RATIO (2 %) — symmetric ink-count delta:
+//     |inkA - inkB| / max(inkA, inkB). Antialiasing drift pushes pixels
+//     symmetrically (ink-to-white ≈ white-to-ink), so this stays small.
+//     A missing chunk of text or reverse-print body is asymmetric and
+//     drives this above 2 %, even when the absolute pixel ratio is < 1 %.
+//
+// Per-fixture overrides cover legitimate rasterizer drift between FreeType
+// (Go reference) and the browser canvas.
 const DEFAULT_MAX_RATIO = 0.05;
+const DEFAULT_MAX_INK_DELTA_RATIO = 0.02;
+
+interface Override {
+  ratio?: number;
+  inkDeltaRatio?: number;
+}
+
+const FIXTURE_OVERRIDES: Record<string, Override> = {
+  // Grayscale antialiasing diverges from Go's freetype/gg slightly more.
+  ups_grayscale: { ratio: 0.06 },
+  // Multi-label templating fixture — large text, lots of glyph-edge drift.
+  templating: { ratio: 0.06 },
+};
 
 function discoverCases(): GoldenCase[] {
   const cases: GoldenCase[] = [];
@@ -76,7 +95,7 @@ function discoverCases(): GoldenCase[] {
       goldenName: fixture,
     };
     const override = FIXTURE_OVERRIDES[fixture];
-    if (override !== undefined) baseCase.maxRatio = override;
+    if (override !== undefined) baseCase.override = override;
     const opts = FIXTURE_OPTIONS[fixture];
     if (opts !== undefined) baseCase.options = opts;
     cases.push(baseCase);
@@ -90,7 +109,7 @@ function discoverCases(): GoldenCase[] {
       options: { grayscaleOutput: true },
     };
     const override = FIXTURE_OVERRIDES.ups_grayscale;
-    if (override !== undefined) c.maxRatio = override;
+    if (override !== undefined) c.override = override;
     cases.push(c);
   }
   return cases;
@@ -113,7 +132,8 @@ async function fetchPng(url: string): Promise<Uint8Array> {
 
 describe("browser golden: pixel diff vs Go reference", () => {
   for (const tc of CASES) {
-    const max = tc.maxRatio ?? DEFAULT_MAX_RATIO;
+    const maxRatio = tc.override?.ratio ?? DEFAULT_MAX_RATIO;
+    const maxInkDelta = tc.override?.inkDeltaRatio ?? DEFAULT_MAX_INK_DELTA_RATIO;
 
     it(tc.name, async () => {
       const zpl = await loadZpl(tc.fixture);
@@ -130,15 +150,17 @@ describe("browser golden: pixel diff vs Go reference", () => {
       const diff = await pixelDiff(actual, expected);
 
       expect(diff.totalPixels).toBeGreaterThan(0);
-      // Always log the diff % so a passing run still surfaces every fixture's
-      // delta — same convention as the Node golden suite.
       console.log(
-        `[browser-golden] ${tc.name}: ${(diff.ratio * 100).toFixed(2)}% (${diff.diffPixels}/${diff.totalPixels})`,
+        `[browser-golden] ${tc.name}: ratio=${(diff.ratio * 100).toFixed(2)}% inkDelta=${(diff.inkDeltaRatio * 100).toFixed(2)}% inkRatio=${(diff.inkRatio * 100).toFixed(2)}% (diff=${diff.diffPixels} inkA=${diff.inkA} inkB=${diff.inkB})`,
       );
       expect(
         diff.ratio,
-        `pixel diff ${diff.diffPixels}/${diff.totalPixels} (${(diff.ratio * 100).toFixed(2)}%) exceeded ${(max * 100).toFixed(0)}%`,
-      ).toBeLessThan(max);
+        `pixel ratio ${(diff.ratio * 100).toFixed(2)}% > ${(maxRatio * 100).toFixed(0)}%`,
+      ).toBeLessThan(maxRatio);
+      expect(
+        diff.inkDeltaRatio,
+        `ink delta ${(diff.inkDeltaRatio * 100).toFixed(2)}% > ${(maxInkDelta * 100).toFixed(0)}% — likely missing structure (text, reverse-print, etc.)`,
+      ).toBeLessThan(maxInkDelta);
     });
   }
 });
