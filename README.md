@@ -1,8 +1,12 @@
 # zebrash (TypeScript port)
 
-Pure-TypeScript port of [ingridhq/zebrash](https://github.com/ingridhq/zebrash) — a
+TypeScript port of [ingridhq/zebrash](https://github.com/ingridhq/zebrash) — a
 library that renders [ZPL II](https://en.wikipedia.org/wiki/Zebra_Programming_Language)
 (Zebra printer) labels as PNG images.
+
+The library code itself is pure TypeScript (no WASM, no Go subprocess, no
+CGo). 2D rasterization runs on [`@napi-rs/canvas`](https://github.com/Brooooooklyn/canvas),
+which is a native Skia binding with prebuilt binaries — `npm install` and go.
 
 > Think of [labelary.com/viewer.html](https://labelary.com/viewer.html), except
 > it's free for commercial use, runs locally, and doesn't ship your customer
@@ -22,9 +26,9 @@ npm install zebrash
 bun add zebrash
 ```
 
-Requires Node.js ≥ 20 (or Bun ≥ 1.0). Native `@napi-rs/canvas` ships prebuilt
-binaries for macOS / Linux / Windows on x64 and arm64 — no system Cairo/Skia
-deps to install.
+Requires Node.js ≥ 20 (or Bun ≥ 1.0). `@napi-rs/canvas` ships prebuilt Skia
+binaries for macOS / Linux / Windows on x64 and arm64 — no system Cairo or
+build toolchain required.
 
 ## Usage
 
