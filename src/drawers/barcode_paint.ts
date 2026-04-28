@@ -103,24 +103,28 @@ export async function paintEan13Text(
   const fontSize = Math.round(width / 13);
   ctx.fillStyle = "#000000";
   ctx.font = `${fontSize}px "${FONT0_NAME}"`;
-  ctx.textBaseline = "alphabetic";
+  // Match Go's `gg.DrawString*` semantics, where the y argument is the top
+  // of the text bounding box (anchor = 0). Canvas's default "alphabetic"
+  // would treat y as the baseline and shove the digits up onto the bars.
+  ctx.textBaseline = "top";
 
   if (text.length === 13 && !lineAbove) {
+    // Mirrors Go's `applyEan13TextToCtx`: text top sits below the data-bar
+    // baseline. With "top" baseline, fillText's `y` is the text top, so
+    // pos.y + height puts it right at the data bars; subtracting
+    // guardExtension and adding fontSize matches gg's anchored placement.
     const y = pos.y + height + fontSize - guardExtension;
     const first = text[0]!;
     const left = text.slice(1, 7);
     const right = text.slice(7, 13);
 
-    // First digit sits in the quiet zone to the left of the left guard.
     ctx.textAlign = "center";
     ctx.fillText(first, pos.x - barWidth * 2, y);
 
-    // 6 digits centered under modules 3..44 (42 modules wide, 7 per digit).
     for (let k = 0; k < 6; k++) {
       const cx = pos.x + (3 + k * 7 + 3.5) * barWidth;
       ctx.fillText(left[k]!, cx, y);
     }
-    // 6 digits centered under modules 50..91 (after 5-module center guard).
     for (let k = 0; k < 6; k++) {
       const cx = pos.x + (50 + k * 7 + 3.5) * barWidth;
       ctx.fillText(right[k]!, cx, y);
@@ -128,7 +132,7 @@ export async function paintEan13Text(
   } else {
     ctx.textAlign = "center";
     const x = pos.x + width / 2;
-    const y = pos.y - guardExtension / 2;
+    const y = pos.y - guardExtension / 2 - fontSize;
     ctx.fillText(text, x, y);
   }
 }

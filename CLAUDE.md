@@ -160,7 +160,7 @@ inflate). Don't import directly from `@napi-rs/canvas` or `node:*`.
   `test/fixtures/*.zpl`. Per-fixture options live in `FIXTURE_OPTIONS` (mirrors
   Go's `parser_test.go`). Per-fixture diff overrides live in
   `FIXTURE_OVERRIDES` (default 5 %). The browser suite mirrors both maps.
-- **Why two suites:** Node and browser have *separate* failure modes. Skia
+- **Why two suites:** Node and browser have _separate_ failure modes. Skia
   (Node) handles compositing, font registration, and timing differently
   from the browser canvas. The browser suite catches bugs that look fine on
   the Node path — most notably the async-await trap in barcode drawers
@@ -169,7 +169,7 @@ inflate). Don't import directly from `@napi-rs/canvas` or `node:*`.
   - `ratio` (default 5 %) — fraction of all pixels that differ. Same as
     the Node suite.
   - `inkDeltaRatio` (default 2 %) — symmetric ink-count delta:
-    `|inkA - inkB| / max(inkA, inkB)`. Catches *missing structure*. The
+    `|inkA - inkB| / max(inkA, inkB)`. Catches _missing structure_. The
     classic `ratio` metric is dominated by white-on-white matches and only
     moves ~0.3 % when an entire block of text is missing — well below any
     sane threshold. `inkDeltaRatio` jumps to 5–80 % in those cases because
