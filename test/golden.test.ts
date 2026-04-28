@@ -35,9 +35,6 @@ const FIXTURE_OVERRIDES: Record<string, number> = {
   // Grayscale antialiasing diverges from Go's freetype/gg slightly more than
   // monochrome. Element-level fidelity has been verified.
   ups_grayscale: 0.06,
-  // EAN-13 guard-bar / human-readable text positioning diverges from Go's
-  // freetype baseline by < 9%. Accepted as rasterizer drift.
-  ean13: 0.09,
   // Multi-label templating fixture has a lot of large text — Skia's
   // antialiasing differs from FreeType across many glyph edges. Visually
   // identical to Go reference; ~5.2% drift is rasterizer floor.

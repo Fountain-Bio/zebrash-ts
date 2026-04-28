@@ -1,6 +1,10 @@
 // Port of /Users/alancohen/fountain-bio/zebrash/internal/drawers/barcode_ean13.go.
 
-import { calculateEan13GuardExtension, encodeEan13 } from "../barcodes/ean13/index.js";
+import {
+  calculateEan13GuardExtension,
+  encodeEan13,
+  sanitizeContent,
+} from "../barcodes/ean13/index.js";
 import {
   type BarcodeEan13WithData,
   type FieldOrientation,
@@ -24,9 +28,12 @@ export function newBarcodeEan13Drawer(): ElementDrawer {
       const moduleWidth = Math.max(barcode.width, 1);
       const moduleHeight = Math.max(barcode.height, 1);
 
-      const bits = encodeEan13(barcode.data);
+      // Sanitize the input the same way the encoder does so the human-readable
+      // line (with check digit appended) matches the bars. Mirrors Go's
+      // `ean13.Encode` which returns both the image and the sanitized content.
+      const text = sanitizeContent(barcode.data);
+      const bits = encodeEan13(text);
       if (bits === null) return;
-      const text = barcode.data;
       const width = bits.length * moduleWidth;
       const height = moduleHeight;
       const guardExtension = calculateEan13GuardExtension(moduleWidth);

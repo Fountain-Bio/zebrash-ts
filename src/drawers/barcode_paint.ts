@@ -82,8 +82,12 @@ export function paintHumanReadableText(
 
 /**
  * EAN-13's specialized human-readable rendering. Mirrors `applyEan13TextToCtx`
- * in the Go drawer with simpler text justification — full justified rendering
- * (drawStringJustified) lands with unit 22.
+ * in the Go drawer.
+ *
+ * EAN-13 has 95 modules: left guard (3) + left half 6 digits (42) + center
+ * guard (5) + right half 6 digits (42) + right guard (3). The human-readable
+ * line places the first digit to the LEFT of the bars, then 6 digits centered
+ * under each half, with the guard bars hanging below them.
  */
 export function paintEan13Text(
   ctx: SKRSContext2D,
@@ -100,15 +104,30 @@ export function paintEan13Text(
   ctx.fillStyle = "#000000";
   ctx.font = `${fontSize}px "${FONT0_NAME}"`;
   ctx.textBaseline = "alphabetic";
-  ctx.textAlign = "left";
 
   if (text.length === 13 && !lineAbove) {
-    const formatted = `${text[0]}  ${text.slice(1, 7)}  ${text.slice(7, 13)}`;
-    const x = pos.x - barWidth * 10;
     const y = pos.y + height + fontSize - guardExtension;
-    ctx.fillText(formatted, x, y);
+    const first = text[0]!;
+    const left = text.slice(1, 7);
+    const right = text.slice(7, 13);
+
+    // First digit sits in the quiet zone to the left of the left guard.
+    ctx.textAlign = "center";
+    ctx.fillText(first, pos.x - barWidth * 2, y);
+
+    // 6 digits centered under modules 3..44 (42 modules wide, 7 per digit).
+    for (let k = 0; k < 6; k++) {
+      const cx = pos.x + (3 + k * 7 + 3.5) * barWidth;
+      ctx.fillText(left[k]!, cx, y);
+    }
+    // 6 digits centered under modules 50..91 (after 5-module center guard).
+    for (let k = 0; k < 6; k++) {
+      const cx = pos.x + (50 + k * 7 + 3.5) * barWidth;
+      ctx.fillText(right[k]!, cx, y);
+    }
   } else {
-    const x = pos.x + barWidth * 8;
+    ctx.textAlign = "center";
+    const x = pos.x + width / 2;
     const y = pos.y - guardExtension / 2;
     ctx.fillText(text, x, y);
   }
