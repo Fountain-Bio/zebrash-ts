@@ -33,20 +33,24 @@ export function paintBitArrayBars(
 }
 
 /**
- * Walk a 2D bit matrix and paint `moduleSize × moduleSize` cells where the bit
- * is on. Used for QR / Aztec / DataMatrix / PDF417.
+ * Walk a 2D bit matrix and paint cells. Accepts a single `moduleSize` (square
+ * cells, used by QR/Aztec/DataMatrix) or a `(moduleW, moduleH)` pair (used by
+ * PDF417, where each row is `rowHeight` tall but each column is 1 module wide).
  */
 export function paintBitMatrixCells(
   ctx: SKRSContext2D,
   matrix: BitMatrix,
   pos: LabelPosition,
   moduleSize: number,
+  moduleHeight: number = moduleSize,
 ): void {
+  const moduleW = moduleSize;
+  const moduleH = moduleHeight;
   ctx.fillStyle = "#000000";
   for (let r = 0; r < matrix.height; r++) {
     for (let c = 0; c < matrix.width; c++) {
       if (!matrix.at(c, r)) continue;
-      ctx.fillRect(pos.x + c * moduleSize, pos.y + r * moduleSize, moduleSize, moduleSize);
+      ctx.fillRect(pos.x + c * moduleW, pos.y + r * moduleH, moduleW, moduleH);
     }
   }
 }

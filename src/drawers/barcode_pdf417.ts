@@ -34,9 +34,12 @@ export function newBarcodePdf417Drawer(): ElementDrawer {
 
       const result = encodePdf417(barcode.data, barcode.security, barcode.columns);
       const matrix = asBitMatrix(pdf417ToMatrix(result));
-      const moduleSize = Math.max(barcode.rowHeight, 1);
-      const width = matrix.width * moduleSize;
-      const height = matrix.height * moduleSize;
+      // PDF417 modules are 2px wide × rowHeight px tall (matches Go's
+      // images.NewScaled(barcode, 2, scaleY) at encoder.go:scaleX=2).
+      const moduleWidth = 2;
+      const moduleHeight = Math.max(barcode.rowHeight, 1);
+      const width = matrix.width * moduleWidth;
+      const height = matrix.height * moduleHeight;
       const pos = adjustImageTypeSetPosition(width, height, barcode.position, barcode.orientation);
 
       ctx.save();
@@ -47,7 +50,8 @@ export function newBarcodePdf417Drawer(): ElementDrawer {
           ctx,
           matrix as unknown as import("../barcodes/utils/index.js").BitMatrix,
           pos,
-          moduleSize,
+          moduleWidth,
+          moduleHeight,
         );
       } finally {
         ctx.restore();

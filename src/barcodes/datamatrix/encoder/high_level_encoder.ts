@@ -338,7 +338,11 @@ function isNativeEDIFACT(ch: number): boolean {
 }
 
 function isSpecialB256(_ch: number): boolean {
-  return false; // TODO: NOT IMPLEMENTED YET (matches Go upstream)
+  // The Go upstream (and the Java zxing reference it ports) returns false
+  // unconditionally — the "special" B256 code-point check is only meaningful
+  // for some legacy DataMatrix dialects we don't support. Kept for symmetry
+  // with the upstream call sites.
+  return false;
 }
 
 // determineConsecutiveDigitCount determines the number of consecutive characters

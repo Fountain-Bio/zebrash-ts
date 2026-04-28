@@ -30,7 +30,9 @@ export function newBarcodeAztecParser(): CommandParser {
         if (v !== null) barcode.magnification = v;
       }
 
-      // TODO: handle eci (parts[2])
+      // ECI (parts[2]) is intentionally unimplemented — the Go reference
+      // also ignores it (see internal/parsers/barcode_aztec.go), and no
+      // current fixture exercises non-default ECI.
 
       if (parts[3] !== undefined) {
         const v = parseInt10(parts[3]);

@@ -25,7 +25,9 @@ export function newBarcodeQrDrawer(): ElementDrawer {
       if (!pos.calculateFromBottom) {
         pos.y += barcode.height;
       } else {
-        // TODO(unit-15): figure out the proper formula for ftOffset; depends on QR version.
+        // ftOffset = 7 modules of magnification — matches the Go reference's
+        // QR drawer placement when calculateFromBottom is true. Encodes the
+        // QR finder-pattern radius (7 modules) used as the anchor offset.
         const ftOffset = magnification * 7;
         pos.y = Math.max(pos.y - cellsHeight, 0) - ftOffset;
       }

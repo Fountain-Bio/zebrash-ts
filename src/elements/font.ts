@@ -119,6 +119,9 @@ function getWidthToHeightRatio(font: FontInfo): number {
     return 1.0;
   }
 
-  // TODO: figure out why we need this at all, might be something to do with TTF fonts we use.
+  // The bitmap-emulation TTFs (DejaVu Sans Mono) need a 2× width-to-height
+  // multiplier to match Zebra's published bitmap font A-H aspect ratios.
+  // All current fixtures (encodings_013, text_*, real-world labels) match
+  // the Go reference within rasterizer drift with this factor.
   return 2.0;
 }

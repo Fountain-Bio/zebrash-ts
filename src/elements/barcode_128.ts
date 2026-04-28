@@ -17,8 +17,10 @@ export interface Barcode128 {
   height: number;
   line: boolean;
   lineAbove: boolean;
-  // TODO: Figure out if it should be implemented, as it's part of the interface but reference
-  // libraries disregard this value.
+  // Part of the ZPL `^BC` interface; the Go reference and other Code 128
+  // libraries (boombuler/barcode, gozxing) disregard this flag because Code 128
+  // computes its own modulo-103 checksum, so it's effectively always on.
+  // We keep it for ^BC parameter parity but never branch on it.
   checkDigit: boolean;
   mode: BarcodeMode;
 }
