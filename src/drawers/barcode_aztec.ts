@@ -1,7 +1,7 @@
 // Port of /Users/alancohen/fountain-bio/zebrash/internal/drawers/barcode_aztec.go.
 
-import type { BarcodeAztecWithData } from "../elements/index.js";
 import type { BitMatrix } from "../barcodes/utils/index.js";
+import type { BarcodeAztecWithData } from "../elements/index.js";
 
 import {
   AZTEC_DEFAULT_EC_PERCENT,
@@ -51,12 +51,7 @@ export function newBarcodeAztecDrawer(): ElementDrawer {
       ctx.save();
       try {
         rotateForOrientation(ctx, width, height, pos, barcode.orientation);
-        paintBitMatrixCells(
-          ctx,
-          matrix as unknown as BitMatrix,
-          pos,
-          magnification,
-        );
+        paintBitMatrixCells(ctx, matrix as unknown as BitMatrix, pos, magnification);
       } finally {
         ctx.restore();
       }

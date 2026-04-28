@@ -6,10 +6,7 @@ export class ByteMatrix {
   constructor(width: number, height: number) {
     this.widthValue = width;
     this.heightValue = height;
-    this.bytesData = new Array<Int8Array>(height);
-    for (let i = 0; i < height; i++) {
-      this.bytesData[i] = new Int8Array(width);
-    }
+    this.bytesData = Array.from({ length: height }, () => new Int8Array(width));
   }
 
   getHeight(): number {

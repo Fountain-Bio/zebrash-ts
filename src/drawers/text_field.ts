@@ -289,7 +289,7 @@ function drawStringJustified(
     return;
   }
 
-  const wordsWidth: number[] = new Array(words.length);
+  const wordsWidth: number[] = Array.from({ length: words.length }, () => 0);
   let totalWordWidth = 0;
   for (let i = 0; i < words.length; i++) {
     const w = ctx.measureText(words[i] ?? "").width;

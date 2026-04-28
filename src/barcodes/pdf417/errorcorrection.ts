@@ -101,7 +101,7 @@ export function computeErrorCorrection(level: SecurityLevel, data: number[]): nu
   }
 
   const count = errorCorrectionWordCount(level);
-  const ecWords = new Array<number>(count).fill(0);
+  const ecWords: number[] = Array.from({ length: count }, () => 0);
 
   for (const value of data) {
     const temp = (value + (ecWords[0] ?? 0)) % 929;

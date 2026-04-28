@@ -70,7 +70,9 @@ export const shiftTable: ReadonlyArray<ReadonlyArray<number | null>> = [
  * 0/unused per the Aztec spec). Upper / Lower / Digit are derived from ranges.
  */
 export const charMap: ReadonlyArray<ReadonlyArray<number>> = (() => {
-  const map: number[][] = Array.from({ length: 5 }, () => new Array<number>(256).fill(0));
+  const map: number[][] = Array.from({ length: 5 }, () =>
+    Array.from({ length: 256 }, (): number => 0),
+  );
 
   const upper = map[Mode.Upper]!;
   const lower = map[Mode.Lower]!;

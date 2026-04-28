@@ -9,7 +9,6 @@
     "typescript/consistent-type-imports": "error",
     "typescript/no-non-null-assertion": "off",
     "typescript/no-this-alias": "off",
-    "unicorn/no-new-array": "off",
     "oxc/erasing-op": "off"
   }
 }

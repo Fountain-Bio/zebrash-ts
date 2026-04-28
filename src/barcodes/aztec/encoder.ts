@@ -194,7 +194,7 @@ export function encode(data: Uint8Array, options: EncodeOptions = {}): AztecCode
   const modeMessage = generateModeMessage(compact, layers, messageSizeInWords);
 
   const baseMatrixSize = compact ? 11 + layers * 4 : 14 + layers * 4;
-  const alignmentMap = new Array<number>(baseMatrixSize).fill(0);
+  const alignmentMap: number[] = Array.from({ length: baseMatrixSize }, () => 0);
   let matrixSize: number;
 
   if (compact) {

@@ -88,7 +88,7 @@ export function errorCorrection_encodeECC200(
   } else {
     // Note: getDataLengthForInterleavedBlock is computed in Go but unused there too;
     // omit it here. Only error sizes matter for the stride math below.
-    const errorSizes = new Array<number>(blockCount).fill(0);
+    const errorSizes: number[] = Array.from({ length: blockCount }, () => 0);
     for (let i = 0; i < blockCount; i++) {
       errorSizes[i] = symbolInfo.getErrorLengthForInterleavedBlock(i + 1);
     }

@@ -317,7 +317,7 @@ export function parseStringToBitMatrix(
     throw new Error("empty string representation");
   }
 
-  const bits: boolean[] = new Array(stringRepresentation.length).fill(false);
+  const bits: boolean[] = Array.from({ length: stringRepresentation.length }, () => false);
   let bitsPos = 0;
   let rowStartPos = 0;
   let rowLength = -1;

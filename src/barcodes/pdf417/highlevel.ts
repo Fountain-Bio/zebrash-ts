@@ -256,7 +256,7 @@ function encodeBinary(data: Uint8Array, startMode: EncodingMode): number[] {
   let idx = 0;
   // Encode sixpacks
   if (count >= 6) {
-    const words = new Array<number>(5);
+    const words: number[] = Array.from({ length: 5 }, () => 0);
     while (count - idx >= 6) {
       let t = 0n;
       for (let i = 0; i < 6; i++) {

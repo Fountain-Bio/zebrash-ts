@@ -8,7 +8,7 @@ describe("readsolomon Encoder", () => {
     const data = new Uint8Array(10);
     const ecc = new Uint8Array(10);
     enc.encode(10, data, ecc);
-    expect(Array.from(ecc)).toEqual(new Array(10).fill(0));
+    expect(Array.from(ecc)).toEqual(Array.from({ length: 10 }, () => 0));
   });
 
   test("encoding is deterministic", () => {

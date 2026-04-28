@@ -149,7 +149,7 @@ function getPadding(dataCount: number, ecCount: number, columns: number): number
   const mod = totalCount % columns;
   if (mod > 0) {
     const padCount = columns - mod;
-    return new Array<number>(padCount).fill(PADDING_CODEWORD);
+    return Array.from({ length: padCount }, (): number => PADDING_CODEWORD);
   }
   return [];
 }
@@ -176,7 +176,7 @@ export function toMatrix(result: PDF417Result): boolean[][] {
   const { code, width, height } = result;
   const matrix: boolean[][] = [];
   for (let y = 0; y < height; y++) {
-    const row = new Array<boolean>(width);
+    const row: boolean[] = Array.from({ length: width }, () => false);
     for (let x = 0; x < width; x++) {
       row[x] = code.getBit(y * width + x);
     }

@@ -495,7 +495,7 @@ const rsEncoder = new ReedSolomonEncoder(new GaloisField(0x011d, 256, 0));
 
 function generateECBytes(dataBytes: Uint8Array, numEcBytesInBlock: number): Uint8Array {
   const numDataBytes = dataBytes.length;
-  const toEncode = new Array<number>(numDataBytes);
+  const toEncode: number[] = Array.from({ length: numDataBytes }, () => 0);
   for (let i = 0; i < numDataBytes; i++) {
     toEncode[i] = (dataBytes[i] as number) & 0xff;
   }

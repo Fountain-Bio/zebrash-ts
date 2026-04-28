@@ -2,7 +2,7 @@ import { BitList, GaloisField, ReedSolomonEncoder } from "../utils/index.js";
 
 /** Pack `stuffedBits` into `wordCount` integer words of `wordSize` bits each. */
 export function bitsToWords(stuffedBits: BitList, wordSize: number, wordCount: number): number[] {
-  const message = new Array<number>(wordCount).fill(0);
+  const message: number[] = Array.from({ length: wordCount }, () => 0);
   for (let i = 0; i < wordCount; i++) {
     let value = 0;
     for (let j = 0; j < wordSize; j++) {

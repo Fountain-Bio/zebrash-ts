@@ -30,7 +30,7 @@ export class SymbolGrid {
   getCells(): boolean[][] {
     const cells: boolean[][] = [];
     for (let row = 0; row < this.height; row++) {
-      const r: boolean[] = new Array(this.width);
+      const r: boolean[] = Array.from({ length: this.width }, () => false);
       for (let column = 0; column < this.width; column++) {
         r[column] = this.modules[SYMBOL_GRID_WIDTH * row + column] === 1;
       }

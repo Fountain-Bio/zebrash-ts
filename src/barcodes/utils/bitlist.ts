@@ -107,7 +107,7 @@ export class BitList {
 
   // Returns the bits as a boolean array.
   toArray(): boolean[] {
-    const arr: boolean[] = new Array(this.count);
+    const arr: boolean[] = Array.from({ length: this.count }, () => false);
     for (let i = 0; i < this.count; i++) {
       arr[i] = this.getBit(i);
     }
