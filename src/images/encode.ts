@@ -1,4 +1,4 @@
-import type { Canvas } from "@napi-rs/canvas";
+import { type PlatformCanvas, platform } from "../platform.ts";
 
 const MONOCHROME_THRESHOLD = 128;
 
@@ -13,8 +13,9 @@ const MONOCHROME_THRESHOLD = 128;
  * `@napi-rs/canvas` does not expose a true 1-bit PNG encoder — RGB output with
  * `R=G=B` is visually identical and round-trips through `loadImage`.
  */
-export async function encodeMonochrome(canvas: Canvas): Promise<Buffer> {
+export async function encodeMonochrome(canvas: PlatformCanvas): Promise<Uint8Array> {
   const ctx = canvas.getContext("2d");
+  if (ctx === null) throw new Error("zebrash: failed to acquire 2D context for encode");
   const img = ctx.getImageData(0, 0, canvas.width, canvas.height);
   const pixels = img.data;
 
@@ -27,7 +28,7 @@ export async function encodeMonochrome(canvas: Canvas): Promise<Buffer> {
   }
 
   ctx.putImageData(img, 0, 0);
-  return canvas.encode("png");
+  return platform.encodePng(canvas);
 }
 
 /**
@@ -41,8 +42,9 @@ export async function encodeMonochrome(canvas: Canvas): Promise<Buffer> {
  * Emitted as RGB with `R=G=B=Y` because `@napi-rs/canvas` cannot natively
  * write 8-bit grayscale PNGs.
  */
-export async function encodeGrayscale(canvas: Canvas): Promise<Buffer> {
+export async function encodeGrayscale(canvas: PlatformCanvas): Promise<Uint8Array> {
   const ctx = canvas.getContext("2d");
+  if (ctx === null) throw new Error("zebrash: failed to acquire 2D context for encode");
   const img = ctx.getImageData(0, 0, canvas.width, canvas.height);
   const pixels = img.data;
 
@@ -54,5 +56,5 @@ export async function encodeGrayscale(canvas: Canvas): Promise<Buffer> {
   }
 
   ctx.putImageData(img, 0, 0);
-  return canvas.encode("png");
+  return platform.encodePng(canvas);
 }

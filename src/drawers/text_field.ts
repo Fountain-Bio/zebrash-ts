@@ -1,5 +1,3 @@
-import type { SKRSContext2D } from "@napi-rs/canvas";
-
 import type { DrawerOptions } from "../drawer-options.ts";
 
 import {
@@ -43,11 +41,17 @@ function isTextField(value: unknown): value is TextField {
 }
 
 export function newTextFieldDrawer(): ElementDrawer {
-  registerEmbeddedFonts();
-
   return {
-    draw(ctx: SKRSContext2D, element: unknown, _options: DrawerOptions, state: DrawerState): void {
+    async draw(
+      ctx: CanvasRenderingContext2D,
+      element: unknown,
+      _options: DrawerOptions,
+      state: DrawerState,
+    ): Promise<void> {
       if (!isTextField(element)) return;
+      // Browser fonts are loaded lazily on first draw; on Node this is a
+      // synchronous no-op after the first call.
+      await registerEmbeddedFonts();
       const text = adjustTextField(element);
 
       const scaleX = getFontScaleX(text.font);
@@ -196,7 +200,7 @@ interface Measurement {
   fontHeight: number;
 }
 
-function measure(ctx: SKRSContext2D, s: string): Measurement {
+function measure(ctx: CanvasRenderingContext2D, s: string): Measurement {
   const m = ctx.measureText(s);
   return {
     width: m.width,
@@ -209,7 +213,7 @@ function measure(ctx: SKRSContext2D, s: string): Measurement {
  * text bounding box at (x, y), where (0, 0) puts the baseline at y.
  */
 function drawStringAnchored(
-  ctx: SKRSContext2D,
+  ctx: CanvasRenderingContext2D,
   s: string,
   x: number,
   y: number,
@@ -225,7 +229,7 @@ function drawStringAnchored(
  * (matches Go zebrash's drawStringWrapped).
  */
 function drawStringWrapped(
-  ctx: SKRSContext2D,
+  ctx: CanvasRenderingContext2D,
   s: string,
   x: number,
   y: number,
@@ -275,7 +279,7 @@ function drawStringWrapped(
 }
 
 function drawStringJustified(
-  ctx: SKRSContext2D,
+  ctx: CanvasRenderingContext2D,
   line: string,
   x: number,
   y: number,
@@ -323,7 +327,7 @@ function splitFields(s: string): string[] {
  * newlines first, then each paragraph is greedily packed by word so each
  * resulting line has measured width <= `width`.
  */
-function wordWrap(ctx: SKRSContext2D, s: string, width: number): string[] {
+function wordWrap(ctx: CanvasRenderingContext2D, s: string, width: number): string[] {
   const result: string[] = [];
   for (const paragraph of s.split("\n")) {
     const words = splitFields(paragraph);

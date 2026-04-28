@@ -1,4 +1,5 @@
-import { ImageData, createCanvas } from "@napi-rs/canvas";
+import { platform } from "../platform.ts";
+const createCanvas = platform.createCanvas.bind(platform);
 import { describe, expect, it } from "vitest";
 
 import { zerofill } from "./zerofill.ts";
@@ -6,7 +7,7 @@ import { zerofill } from "./zerofill.ts";
 describe("zerofill", () => {
   it("zeros every channel on a canvas", () => {
     const canvas = createCanvas(4, 3);
-    const ctx = canvas.getContext("2d");
+    const ctx = canvas.getContext("2d")!;
     ctx.fillStyle = "rgba(255, 0, 0, 1)";
     ctx.fillRect(0, 0, 4, 3);
 
@@ -21,7 +22,7 @@ describe("zerofill", () => {
   it("zeros an ImageData buffer in place", () => {
     const data = new Uint8ClampedArray(2 * 2 * 4);
     data.fill(200);
-    const img = new ImageData(data, 2, 2);
+    const img = platform.createImageData(data, 2, 2);
 
     zerofill(img);
 

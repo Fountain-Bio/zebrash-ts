@@ -1,6 +1,4 @@
 // Mirrors internal/drawers/graphic_diagonal_line.go
-import type { SKRSContext2D } from "@napi-rs/canvas";
-
 import type { GraphicDiagonalLine } from "../elements/graphic_diagonal_line.ts";
 
 import { type ElementDrawer, setLineColor } from "./element_drawer.ts";
@@ -40,7 +38,7 @@ export function newGraphicDiagonalLineDrawer(): ElementDrawer {
 }
 
 function drawDiagonalLine(
-  ctx: SKRSContext2D,
+  ctx: CanvasRenderingContext2D,
   x: number,
   y: number,
   w: number,

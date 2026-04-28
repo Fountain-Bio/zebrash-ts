@@ -1,12 +1,26 @@
-import { createCanvas, loadImage } from "@napi-rs/canvas";
+import { loadImage } from "@napi-rs/canvas";
 import { describe, expect, it } from "vitest";
 
+import { platform } from "../platform.ts";
 import { encodeGrayscale, encodeMonochrome } from "./encode.ts";
+
+const createCanvas = platform.createCanvas.bind(platform);
+
+function isPng(bytes: Uint8Array): boolean {
+  // PNG magic: 89 50 4E 47 0D 0A 1A 0A
+  return (
+    bytes.length >= 8 &&
+    bytes[0] === 0x89 &&
+    bytes[1] === 0x50 &&
+    bytes[2] === 0x4e &&
+    bytes[3] === 0x47
+  );
+}
 
 describe("encodeMonochrome", () => {
   it("thresholds a mid-gray fill to white and round-trips through PNG", async () => {
     const canvas = createCanvas(8, 8);
-    const ctx = canvas.getContext("2d");
+    const ctx = canvas.getContext("2d")!;
     ctx.fillStyle = "rgb(200, 200, 200)";
     ctx.fillRect(0, 0, 8, 8);
     ctx.fillStyle = "rgb(50, 50, 50)";
@@ -14,12 +28,12 @@ describe("encodeMonochrome", () => {
 
     const png = await encodeMonochrome(canvas);
     expect(png.length).toBeGreaterThan(0);
-    expect(png.subarray(1, 4).toString("ascii")).toBe("PNG");
+    expect(isPng(png)).toBe(true);
 
-    const img = await loadImage(png);
+    const img = await loadImage(Buffer.from(png));
     const decoded = createCanvas(img.width, img.height);
-    const dctx = decoded.getContext("2d");
-    dctx.drawImage(img, 0, 0);
+    const dctx = decoded.getContext("2d")!;
+    dctx.drawImage(img as unknown as CanvasImageSource, 0, 0);
     const data = dctx.getImageData(0, 0, img.width, img.height).data;
 
     expect(data[0]).toBe(0);
@@ -35,17 +49,17 @@ describe("encodeMonochrome", () => {
 describe("encodeGrayscale", () => {
   it("preserves the red-channel intensity as luma and round-trips through PNG", async () => {
     const canvas = createCanvas(4, 4);
-    const ctx = canvas.getContext("2d");
+    const ctx = canvas.getContext("2d")!;
     ctx.fillStyle = "rgb(123, 200, 50)";
     ctx.fillRect(0, 0, 4, 4);
 
     const png = await encodeGrayscale(canvas);
     expect(png.length).toBeGreaterThan(0);
 
-    const img = await loadImage(png);
+    const img = await loadImage(Buffer.from(png));
     const decoded = createCanvas(img.width, img.height);
-    const dctx = decoded.getContext("2d");
-    dctx.drawImage(img, 0, 0);
+    const dctx = decoded.getContext("2d")!;
+    dctx.drawImage(img as unknown as CanvasImageSource, 0, 0);
     const data = dctx.getImageData(0, 0, img.width, img.height).data;
 
     // Red channel was 123; grayscale output should have R=G=B=123 (matching Go).

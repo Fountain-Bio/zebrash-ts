@@ -1,8 +1,8 @@
 // Mirrors internal/drawers/graphic_field.go
-import { createCanvas } from "@napi-rs/canvas";
-
 import type { GraphicField } from "../elements/graphic_field.ts";
 import type { ElementDrawer } from "./element_drawer.ts";
+
+import { platform } from "../platform.ts";
 
 function isGraphicField(value: unknown): value is GraphicField {
   return (
@@ -40,8 +40,9 @@ export function newGraphicFieldDrawer(): ElementDrawer {
       // Render into an offscreen canvas so unset pixels stay transparent
       // and the final drawImage composites with the destination (matching
       // Go's image.NewRGBA + DrawImage source-over behavior).
-      const offscreen = createCanvas(dstW, dstH);
+      const offscreen = platform.createCanvas(dstW, dstH);
       const offCtx = offscreen.getContext("2d");
+      if (offCtx === null) throw new Error("zebrash: failed to acquire 2D context for ^GF");
       const imageData = offCtx.createImageData(dstW, dstH);
       const buf = imageData.data;
 
@@ -72,7 +73,11 @@ export function newGraphicFieldDrawer(): ElementDrawer {
       }
 
       offCtx.putImageData(imageData, 0, 0);
-      ctx.drawImage(offscreen, element.position.x, element.position.y);
+      ctx.drawImage(
+        offscreen as unknown as CanvasImageSource,
+        element.position.x,
+        element.position.y,
+      );
     },
   };
 }

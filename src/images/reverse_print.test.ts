@@ -1,4 +1,5 @@
-import { ImageData, createCanvas } from "@napi-rs/canvas";
+import { platform } from "../platform.ts";
+const createCanvas = platform.createCanvas.bind(platform);
 import { describe, expect, it } from "vitest";
 
 import { reversePrint } from "./reverse_print.ts";
@@ -11,7 +12,7 @@ function solidImage(w: number, h: number, rgba: readonly [number, number, number
     data[i + 2] = rgba[2];
     data[i + 3] = rgba[3];
   }
-  return new ImageData(data, w, h);
+  return platform.createImageData(data, w, h);
 }
 
 describe("reversePrint", () => {
@@ -49,12 +50,12 @@ describe("reversePrint", () => {
 
   it("works with Canvas inputs", () => {
     const mask = createCanvas(2, 2);
-    const mctx = mask.getContext("2d");
+    const mctx = mask.getContext("2d")!;
     mctx.fillStyle = "rgba(0, 0, 0, 1)";
     mctx.fillRect(0, 0, 1, 2);
 
     const dst = createCanvas(2, 2);
-    const dctx = dst.getContext("2d");
+    const dctx = dst.getContext("2d")!;
     dctx.fillStyle = "rgb(0, 0, 0)";
     dctx.fillRect(0, 0, 2, 2);
 

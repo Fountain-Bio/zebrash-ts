@@ -4,9 +4,12 @@ TypeScript port of [ingridhq/zebrash](https://github.com/ingridhq/zebrash) — a
 library that renders [ZPL II](https://en.wikipedia.org/wiki/Zebra_Programming_Language)
 (Zebra printer) labels as PNG images.
 
-The library code itself is pure TypeScript (no WASM, no Go subprocess, no
-CGo). 2D rasterization runs on [`@napi-rs/canvas`](https://github.com/Brooooooklyn/canvas),
-which is a native Skia binding with prebuilt binaries — `npm install` and go.
+Universal: runs on **Node ≥ 20 / Bun** (Skia rasterization via
+[`@napi-rs/canvas`](https://github.com/Brooooooklyn/canvas)) **and the browser**
+(native `OffscreenCanvas` + `FontFace`). Bundlers automatically pick the right
+implementation via the `package.json` `"browser"` field.
+
+The library code itself is pure TypeScript (no WASM, no Go subprocess, no CGo).
 
 > Think of [labelary.com/viewer.html](https://labelary.com/viewer.html), except
 > it's free for commercial use, runs locally, and doesn't ship your customer
@@ -26,9 +29,28 @@ npm install zebrash
 bun add zebrash
 ```
 
-Requires Node.js ≥ 20 (or Bun ≥ 1.0). `@napi-rs/canvas` ships prebuilt Skia
-binaries for macOS / Linux / Windows on x64 and arm64 — no system Cairo or
-build toolchain required.
+**Node / Bun**: requires Node ≥ 20 (or Bun ≥ 1.0). `@napi-rs/canvas` ships
+prebuilt Skia binaries for macOS / Linux / Windows on x64 and arm64 — no
+system Cairo or build toolchain required. Installed automatically as an
+optional peer dep.
+
+**Browser**: bundlers (Vite, webpack, esbuild, Rollup) automatically pick
+the browser entry via the `package.json` `"browser"` field. The four bundled
+TTF fonts are lazy-fetched from jsdelivr on first render — override the base
+URL with `setFontBaseUrl(...)` to self-host (CSP, offline, version-pinning).
+
+```ts
+import { Parser, Drawer, setFontBaseUrl } from "zebrash";
+
+// Optional: serve fonts from your own host instead of jsdelivr.
+setFontBaseUrl("/static/zebrash-fonts/");
+
+const labels = new Parser().parse(zpl);
+const png = await new Drawer().drawLabelAsPng(labels[0]);
+```
+
+`drawLabelAsPng` returns a `Uint8Array` you can hand to `URL.createObjectURL(new Blob([png], { type: "image/png" }))`
+or download with an `<a>` tag.
 
 ## Usage
 

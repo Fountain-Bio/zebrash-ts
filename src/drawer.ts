@@ -1,5 +1,3 @@
-import { type SKRSContext2D, createCanvas } from "@napi-rs/canvas";
-
 import type { ElementDrawer } from "./drawers/element_drawer.ts";
 import type { LabelInfo } from "./elements/index.ts";
 
@@ -13,6 +11,7 @@ import {
   reversePrint,
   zerofill,
 } from "./images/index.ts";
+import { platform } from "./platform.ts";
 
 /**
  * Elements that may opt into reverse-print rendering implement this shape.
@@ -32,7 +31,7 @@ function isReversePrintable(element: unknown): element is ReversePrintable {
 }
 
 /** Fills the entire context with white. Mirrors `gCtx.SetColor(white); gCtx.Clear()`. */
-function fillWhite(ctx: SKRSContext2D, width: number, height: number): void {
+function fillWhite(ctx: CanvasRenderingContext2D, width: number, height: number): void {
   ctx.fillStyle = colorWhite;
   ctx.fillRect(0, 0, width, height);
 }
@@ -62,7 +61,10 @@ export class Drawer {
    *    inverted, redraw onto a label-wide canvas, optionally rotated 180°.
    *  - Encode as monochrome PNG by default, or 8-bit grayscale when requested.
    */
-  async drawLabelAsPng(label: LabelInfo, options: Partial<DrawerOptions> = {}): Promise<Buffer> {
+  async drawLabelAsPng(
+    label: LabelInfo,
+    options: Partial<DrawerOptions> = {},
+  ): Promise<Uint8Array> {
     const opts = withDefaults(options);
 
     const state = new DrawerState();
@@ -75,11 +77,12 @@ export class Drawer {
       imageWidth = Math.min(labelWidth, label.printWidth);
     }
 
-    const canvas = createCanvas(imageWidth, imageHeight);
+    const canvas = platform.createCanvas(imageWidth, imageHeight);
     const ctx = canvas.getContext("2d");
+    if (ctx === null) throw new Error("zebrash: failed to acquire 2D canvas context");
     fillWhite(ctx, imageWidth, imageHeight);
 
-    let reverseCtx: SKRSContext2D | null = null;
+    let reverseCtx: CanvasRenderingContext2D | null = null;
 
     for (const element of label.elements) {
       const reverse = isReversePrintable(element) && element.isReversePrint();
@@ -87,7 +90,9 @@ export class Drawer {
       let targetCtx = ctx;
       if (reverse) {
         if (reverseCtx === null) {
-          reverseCtx = createCanvas(imageWidth, imageHeight).getContext("2d");
+          const rev = platform.createCanvas(imageWidth, imageHeight).getContext("2d");
+          if (rev === null) throw new Error("zebrash: failed to acquire reverse-print 2D context");
+          reverseCtx = rev;
         } else {
           zerofill(reverseCtx.canvas);
         }
@@ -108,8 +113,9 @@ export class Drawer {
     const invertLabel = opts.enableInvertedLabels && label.inverted;
     let finalCtx = ctx;
     if (imageWidth !== labelWidth || invertLabel) {
-      const wider = createCanvas(labelWidth, imageHeight);
+      const wider = platform.createCanvas(labelWidth, imageHeight);
       const wCtx = wider.getContext("2d");
+      if (wCtx === null) throw new Error("zebrash: failed to acquire 2D context for label canvas");
       fillWhite(wCtx, labelWidth, imageHeight);
 
       if (invertLabel) {
@@ -117,7 +123,11 @@ export class Drawer {
         wCtx.scale(-1, -1);
       }
 
-      wCtx.drawImage(canvas, Math.floor((labelWidth - imageWidth) / 2), 0);
+      wCtx.drawImage(
+        canvas as unknown as CanvasImageSource,
+        Math.floor((labelWidth - imageWidth) / 2),
+        0,
+      );
       finalCtx = wCtx;
     }
 

@@ -1,11 +1,5 @@
-import { GlobalFonts } from "@napi-rs/canvas";
-
-import {
-  FontDejavuSansMono,
-  FontDejavuSansMonoBold,
-  FontHelveticaBold,
-  FontZplGS,
-} from "./fonts.ts";
+import { platform } from "../platform.ts";
+import { type FontKey, getEmbeddedFont } from "./fonts.ts";
 
 // Family names are prefixed with "Zebrash" so they cannot collide with any
 // fonts a host system may already have installed.
@@ -18,28 +12,38 @@ export const EmbeddedFontFamilies = {
 
 export type EmbeddedFontFamily = (typeof EmbeddedFontFamilies)[keyof typeof EmbeddedFontFamilies];
 
-let registered = false;
+const familyByKey: Record<FontKey, EmbeddedFontFamily> = {
+  HelveticaBold: EmbeddedFontFamilies.HelveticaBold,
+  DejavuSansMono: EmbeddedFontFamilies.DejavuSansMono,
+  DejavuSansMonoBold: EmbeddedFontFamilies.DejavuSansMonoBold,
+  ZplGS: EmbeddedFontFamilies.ZplGS,
+};
+
+let registerPromise: Promise<typeof EmbeddedFontFamilies> | null = null;
 
 /**
- * Register the four embedded TTF fonts with `@napi-rs/canvas`'s global font
+ * Register the four embedded TTF fonts with the active platform's font
  * registry so subsequent canvas drawing can reference them by family name.
  *
- * Idempotent — repeated calls are no-ops. Returns the family-name → key
- * mapping so callers can pick a family without hard-coding the strings.
+ * - On Node: synchronous file read of bundled TTFs + `GlobalFonts.register`.
+ * - On browser: parallel `fetch` of TTFs from a CDN + `FontFace.load`.
+ *
+ * Idempotent — concurrent and repeat calls reuse the same promise.
  */
-export function registerEmbeddedFonts(): typeof EmbeddedFontFamilies {
-  if (registered) {
-    return EmbeddedFontFamilies;
+export function registerEmbeddedFonts(): Promise<typeof EmbeddedFontFamilies> {
+  if (registerPromise === null) {
+    registerPromise = doRegister();
   }
+  return registerPromise;
+}
 
-  GlobalFonts.register(Buffer.from(FontHelveticaBold), EmbeddedFontFamilies.HelveticaBold);
-  GlobalFonts.register(Buffer.from(FontDejavuSansMono), EmbeddedFontFamilies.DejavuSansMono);
-  GlobalFonts.register(
-    Buffer.from(FontDejavuSansMonoBold),
-    EmbeddedFontFamilies.DejavuSansMonoBold,
+async function doRegister(): Promise<typeof EmbeddedFontFamilies> {
+  const keys: FontKey[] = ["HelveticaBold", "DejavuSansMono", "DejavuSansMonoBold", "ZplGS"];
+  await Promise.all(
+    keys.map(async (key) => {
+      const data = await getEmbeddedFont(key);
+      await platform.registerFont(data, familyByKey[key]);
+    }),
   );
-  GlobalFonts.register(Buffer.from(FontZplGS), EmbeddedFontFamilies.ZplGS);
-
-  registered = true;
   return EmbeddedFontFamilies;
 }

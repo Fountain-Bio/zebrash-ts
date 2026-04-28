@@ -4,6 +4,10 @@ import { describe, expect, it } from "vitest";
 
 import { decodeEscapedString, decodeFontData, decodeGraphicFieldData } from "./decode.ts";
 
+function bytesToHex(bytes: Uint8Array): string {
+  return Array.from(bytes, (b) => b.toString(16).padStart(2, "0")).join("");
+}
+
 describe("decodeGraphicFieldData", () => {
   it("decodes plain hex without RLE", () => {
     const out = decodeGraphicFieldData("DEADBEEF", 4);
@@ -31,7 +35,7 @@ describe("decodeGraphicFieldData", () => {
     // so rowHex=24 and the 23-char line is padded with a trailing comma below.
     const out = decodeGraphicFieldData("gIF,", 12);
     // Expected: 23 Fs + 1 zero = "FFFFFFFFFFFFFFFFFFFFFFF0"
-    expect(out.toString("hex").toUpperCase()).toBe("FFFFFFFFFFFFFFFFFFFFFFF0");
+    expect(bytesToHex(out).toUpperCase()).toBe("FFFFFFFFFFFFFFFFFFFFFFF0");
   });
 
   it("handles ',' (zero-fill remainder of row)", () => {
@@ -67,7 +71,7 @@ describe("decodeGraphicFieldData", () => {
     const compressed = deflateSync(payload);
     const z64 = `:Z64:${compressed.toString("base64")}`;
     const out = decodeGraphicFieldData(z64, payload.length);
-    expect(out.toString("utf8")).toBe("hello world");
+    expect(new TextDecoder().decode(out)).toBe("hello world");
   });
 
   it("rejects malformed hex", () => {

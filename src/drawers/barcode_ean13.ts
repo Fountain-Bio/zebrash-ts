@@ -1,7 +1,5 @@
 // Port of /Users/alancohen/fountain-bio/zebrash/internal/drawers/barcode_ean13.go.
 
-import type { SKRSContext2D } from "@napi-rs/canvas";
-
 import {
   calculateEan13GuardExtension,
   encodeEan13,
@@ -74,7 +72,7 @@ export function newBarcodeEan13Drawer(): ElementDrawer {
  * digits to sit in.
  */
 function paintEan13Bars(
-  ctx: SKRSContext2D,
+  ctx: CanvasRenderingContext2D,
   bits: { length: number; at(i: number): boolean | undefined },
   pos: LabelPosition,
   moduleWidth: number,

@@ -1,6 +1,4 @@
 // Mirrors internal/drawers/graphic_box.go
-import type { SKRSContext2D } from "@napi-rs/canvas";
-
 import type { GraphicBox } from "../elements/graphic_box.ts";
 
 import { type ElementDrawer, setLineColor } from "./element_drawer.ts";
@@ -64,7 +62,13 @@ export function newGraphicBoxDrawer(): ElementDrawer {
   };
 }
 
-function drawRectangle(ctx: SKRSContext2D, x: number, y: number, w: number, h: number): void {
+function drawRectangle(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  w: number,
+  h: number,
+): void {
   ctx.beginPath();
   ctx.moveTo(x, y);
   ctx.lineTo(x + w, y);
@@ -75,7 +79,7 @@ function drawRectangle(ctx: SKRSContext2D, x: number, y: number, w: number, h: n
 }
 
 function drawRoundedRectangle(
-  ctx: SKRSContext2D,
+  ctx: CanvasRenderingContext2D,
   x: number,
   y: number,
   w: number,

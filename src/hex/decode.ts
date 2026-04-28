@@ -1,5 +1,4 @@
-import { Buffer } from "node:buffer";
-import { inflateSync } from "node:zlib";
+import { unzlibSync } from "fflate";
 
 const bInMb = 1024 * 1024;
 const maxEmbeddedImageSizeMb = 3 * bInMb;
@@ -34,7 +33,7 @@ export function decodeEscapedString(value: string, escapeChar: string): string {
 /**
  * DecodeFontData decodes embedded font data from `^DU` / `~DU` style ZPL commands.
  */
-export function decodeFontData(data: string, totalBytes: number): Buffer {
+export function decodeFontData(data: string, totalBytes: number): Uint8Array {
   return decodeFileData(data, totalBytes, maxEmbeddedFontSizeMb);
 }
 
@@ -43,7 +42,7 @@ export function decodeFontData(data: string, totalBytes: number): Buffer {
  * command. `rowBytes` is the per-row byte count from the command parameters; it is used
  * to pace the run-length expansion logic.
  */
-export function decodeGraphicFieldData(data: string, rowBytes: number): Buffer {
+export function decodeGraphicFieldData(data: string, rowBytes: number): Uint8Array {
   return decodeFileData(data, rowBytes, maxEmbeddedImageSizeMb);
 }
 
@@ -89,7 +88,7 @@ const compressCounts: Record<string, number> = {
   z: 400,
 };
 
-function decodeFileData(data: string, rowBytes: number, maxFileSizeMb: number): Buffer {
+function decodeFileData(data: string, rowBytes: number, maxFileSizeMb: number): Uint8Array {
   if (z64Encoded(data)) {
     return decodeZ64(data);
   }
@@ -164,7 +163,7 @@ function decodeFileData(data: string, rowBytes: number, maxFileSizeMb: number): 
   if (!/^[0-9A-Fa-f]*$/.test(hex)) {
     throw new Error("encoding/hex: invalid byte");
   }
-  return Buffer.from(hex, "hex");
+  return hexToBytes(hex);
 }
 
 function validateEmbeddedFileSize(
@@ -185,7 +184,7 @@ function z64Encoded(value: string): boolean {
   return value.startsWith(z64Prefix);
 }
 
-function decodeZ64(value: string): Buffer {
+function decodeZ64(value: string): Uint8Array {
   let trimmed = value.slice(z64Prefix.length);
 
   const idx = trimmed.lastIndexOf(":");
@@ -193,8 +192,26 @@ function decodeZ64(value: string): Buffer {
     trimmed = trimmed.slice(0, idx);
   }
 
-  const dec = Buffer.from(trimmed, "base64");
-  return inflateSync(dec);
+  return unzlibSync(base64ToBytes(trimmed));
+}
+
+/** Universal hex string → Uint8Array. */
+function hexToBytes(hex: string): Uint8Array {
+  const out = new Uint8Array(hex.length / 2);
+  for (let i = 0; i < out.length; i++) {
+    out[i] = Number.parseInt(hex.slice(i * 2, i * 2 + 2), 16);
+  }
+  return out;
+}
+
+/** Universal base64 → Uint8Array using `atob` (Node ≥ 18 + browser). */
+function base64ToBytes(b64: string): Uint8Array {
+  const bin = atob(b64);
+  const out = new Uint8Array(bin.length);
+  for (let i = 0; i < bin.length; i++) {
+    out[i] = bin.charCodeAt(i);
+  }
+  return out;
 }
 
 function escapeRegExp(s: string): string {

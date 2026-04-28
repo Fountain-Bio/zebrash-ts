@@ -4,8 +4,8 @@ import { describe, expect, it } from "vitest";
 import { EmbeddedFontFamilies, registerEmbeddedFonts } from "./register.ts";
 
 describe("registerEmbeddedFonts", () => {
-  it("registers all four embedded font families", () => {
-    registerEmbeddedFonts();
+  it("registers all four embedded font families", async () => {
+    await registerEmbeddedFonts();
 
     expect(GlobalFonts.has(EmbeddedFontFamilies.HelveticaBold)).toBe(true);
     expect(GlobalFonts.has(EmbeddedFontFamilies.DejavuSansMono)).toBe(true);
@@ -13,18 +13,16 @@ describe("registerEmbeddedFonts", () => {
     expect(GlobalFonts.has(EmbeddedFontFamilies.ZplGS)).toBe(true);
   });
 
-  it("is idempotent across repeated calls", () => {
-    expect(() => {
-      registerEmbeddedFonts();
-      registerEmbeddedFonts();
-      registerEmbeddedFonts();
-    }).not.toThrow();
+  it("is idempotent across repeated calls", async () => {
+    await registerEmbeddedFonts();
+    await registerEmbeddedFonts();
+    await registerEmbeddedFonts();
 
     expect(GlobalFonts.has(EmbeddedFontFamilies.HelveticaBold)).toBe(true);
   });
 
-  it("returns the family-name mapping for callers", () => {
-    const families = registerEmbeddedFonts();
+  it("returns the family-name mapping for callers", async () => {
+    const families = await registerEmbeddedFonts();
 
     expect(families).toBe(EmbeddedFontFamilies);
     expect(families.HelveticaBold).toBe("ZebrashHelveticaBold");
@@ -33,8 +31,8 @@ describe("registerEmbeddedFonts", () => {
     expect(families.ZplGS).toBe("ZebrashZplGS");
   });
 
-  it("renders text with a registered font to a non-trivial PNG", () => {
-    const families = registerEmbeddedFonts();
+  it("renders text with a registered font to a non-trivial PNG", async () => {
+    const families = await registerEmbeddedFonts();
 
     const canvas = createCanvas(100, 40);
     const ctx = canvas.getContext("2d");

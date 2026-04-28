@@ -1,4 +1,4 @@
-import type { Canvas, ImageData } from "@napi-rs/canvas";
+import type { PlatformCanvas } from "../platform.ts";
 
 const ALPHA_THRESHOLD = 30;
 
@@ -9,10 +9,13 @@ const ALPHA_THRESHOLD = 30;
  * Mirrors Go `images.reversePrint`: a black-on-transparent mask is XOR'd onto
  * a destination so glyphs/barcodes covering already-drawn ink turn white.
  *
- * Both inputs must match in width and height. A `Canvas` destination is read
+ * Both inputs must match in width and height. A canvas destination is read
  * via `getImageData`, mutated, and written back via `putImageData`.
  */
-export function reversePrint(mask: Canvas | ImageData, dst: Canvas | ImageData): void {
+export function reversePrint(
+  mask: PlatformCanvas | ImageData,
+  dst: PlatformCanvas | ImageData,
+): void {
   const maskImg = asImageData(mask);
   const dstImg = asImageData(dst);
 
@@ -34,15 +37,19 @@ export function reversePrint(mask: Canvas | ImageData, dst: Canvas | ImageData):
   }
 
   if (!isImageData(dst)) {
-    dst.getContext("2d").putImageData(dstImg, 0, 0);
+    const ctx = dst.getContext("2d");
+    if (ctx === null) throw new Error("zebrash: failed to acquire 2D context for reversePrint");
+    ctx.putImageData(dstImg, 0, 0);
   }
 }
 
-function isImageData(value: Canvas | ImageData): value is ImageData {
+function isImageData(value: PlatformCanvas | ImageData): value is ImageData {
   return "data" in value && value.data instanceof Uint8ClampedArray;
 }
 
-function asImageData(target: Canvas | ImageData): ImageData {
+function asImageData(target: PlatformCanvas | ImageData): ImageData {
   if (isImageData(target)) return target;
-  return target.getContext("2d").getImageData(0, 0, target.width, target.height);
+  const ctx = target.getContext("2d");
+  if (ctx === null) throw new Error("zebrash: failed to acquire 2D context for reversePrint");
+  return ctx.getImageData(0, 0, target.width, target.height);
 }

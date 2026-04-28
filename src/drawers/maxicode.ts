@@ -1,8 +1,6 @@
 // Port of /Users/alancohen/fountain-bio/zebrash/internal/drawers/maxicode.go
 // (and the embedded SymbolGrid.Draw() routine from the upstream maxicode lib).
 
-import type { SKRSContext2D } from "@napi-rs/canvas";
-
 import {
   MAXICODE_COLS,
   MAXICODE_ROWS,
@@ -54,7 +52,11 @@ export function newMaxicodeDrawer(): ElementDrawer {
  * Render a Maxicode grid: bullseye + hexagonal modules.
  * Mirrors `SymbolGrid.Draw()` in github.com/ingridhq/maxicode.
  */
-export function drawMaxicodeGrid(ctx: SKRSContext2D, grid: MaxicodeGrid, dpmm: number): void {
+export function drawMaxicodeGrid(
+  ctx: CanvasRenderingContext2D,
+  grid: MaxicodeGrid,
+  dpmm: number,
+): void {
   const centerX = 13.64 * dpmm;
   const centerY = 13.43 * dpmm;
   const innerRadius = 0.85 * dpmm;

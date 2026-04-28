@@ -1,6 +1,6 @@
-import { ImageData } from "@napi-rs/canvas";
 import { describe, expect, it } from "vitest";
 
+import { platform } from "../platform.ts";
 import { scaled } from "./scaled.ts";
 
 function makeImage(width: number, height: number, pixels: ReadonlyArray<readonly number[]>) {
@@ -13,7 +13,7 @@ function makeImage(width: number, height: number, pixels: ReadonlyArray<readonly
     data[base + 2] = px[2] ?? 0;
     data[base + 3] = px[3] ?? 0;
   }
-  return new ImageData(data, width, height);
+  return platform.createImageData(data, width, height);
 }
 
 describe("scaled", () => {

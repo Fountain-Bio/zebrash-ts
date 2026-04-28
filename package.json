@@ -8,7 +8,12 @@
     "src/assets/fonts"
   ],
   "type": "module",
+  "sideEffects": false,
   "main": "./dist/index.js",
+  "browser": {
+    "./dist/platform.js": "./dist/platform-browser.js",
+    "./dist/assets/fonts.js": "./dist/assets/fonts-browser.js"
+  },
   "types": "./dist/index.d.ts",
   "exports": {
     ".": {
@@ -27,7 +32,7 @@
     "test:watch": "vitest"
   },
   "dependencies": {
-    "@napi-rs/canvas": "^0.1.55"
+    "fflate": "^0.8.2"
   },
   "devDependencies": {
     "@types/node": "^20.14.0",
@@ -35,6 +40,14 @@
     "oxlint": "^1.62.0",
     "typescript": "^6.0.0",
     "vitest": "^2.1.0"
+  },
+  "peerDependenciesMeta": {
+    "@napi-rs/canvas": {
+      "optional": true
+    }
+  },
+  "optionalDependencies": {
+    "@napi-rs/canvas": "^0.1.55"
   },
   "engines": {
     "node": ">=20"

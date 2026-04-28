@@ -48,6 +48,29 @@ zebrash-ts/
     └── render-fixture.ts    # CLI: ZPL → PNG, used for visual debugging
 ```
 
+## Platform layer (Node + browser)
+
+The library is universal. Anywhere it touches the JS-engine boundary, it
+goes through `src/platform.ts`:
+
+- **`src/platform/types.ts`** — `Platform` interface with five methods:
+  `createCanvas`, `encodePng`, `loadImage`, `registerFont`, `createImageData`.
+- **`src/platform/node.ts`** — Node implementation using `@napi-rs/canvas`.
+- **`src/platform/browser.ts`** — Browser implementation using
+  `OffscreenCanvas`, `createImageBitmap`, `FontFace`, native `ImageData`.
+- **`src/platform.ts`** — re-exports the Node platform. The
+  `package.json` `"browser"` field swaps this file with `platform-browser.ts`
+  in browser bundles.
+- **`src/assets/fonts.ts`** vs **`src/assets/fonts-browser.ts`** — Node reads
+  bundled TTFs from disk (`fs.readFileSync`); browser lazy-fetches them from
+  a CDN (default jsdelivr). Same swap mechanism.
+- **`src/hex/decode.ts`** uses `unzlibSync` from `fflate` — pure-JS, sync,
+  works on both backends. No `node:zlib` import anywhere.
+
+When adding code that needs a canvas, `ImageData`, font registration, PNG
+encoding, or zlib inflate: import from `./platform.ts` (or `fflate` for
+inflate). Don't import directly from `@napi-rs/canvas` or `node:*`.
+
 ## Stack invariants
 
 - **TypeScript strict + ESM only.** `verbatimModuleSyntax: true`,

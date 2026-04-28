@@ -1,4 +1,4 @@
-import { ImageData } from "@napi-rs/canvas";
+import { platform } from "../platform.ts";
 
 /**
  * Nearest-neighbor scale of an `ImageData` by integer factors on each axis.
@@ -14,7 +14,7 @@ export function scaled(src: ImageData, scaleX: number, scaleY: number): ImageDat
   }
 
   if (scaleX === 1 && scaleY === 1) {
-    return new ImageData(new Uint8ClampedArray(src.data), src.width, src.height);
+    return platform.createImageData(new Uint8ClampedArray(src.data), src.width, src.height);
   }
 
   const dstW = src.width * scaleX;
@@ -34,5 +34,5 @@ export function scaled(src: ImageData, scaleX: number, scaleY: number): ImageDat
     }
   }
 
-  return new ImageData(dst, dstW, dstH);
+  return platform.createImageData(dst, dstW, dstH);
 }

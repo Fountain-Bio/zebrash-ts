@@ -1,7 +1,5 @@
 // Shared painting helpers for the unit-23 barcode drawers.
 
-import type { SKRSContext2D } from "@napi-rs/canvas";
-
 import type { BitMatrix } from "../barcodes/utils/index.js";
 import type { LabelPosition } from "../elements/index.js";
 
@@ -19,7 +17,7 @@ export interface BitSequence {
  * and `at(i): boolean` (BitArray, BitList, boolean[], EncodedCode128, ...).
  */
 export function paintBitArrayBars(
-  ctx: SKRSContext2D,
+  ctx: CanvasRenderingContext2D,
   bits: BitSequence | readonly boolean[],
   pos: LabelPosition,
   moduleWidth: number,
@@ -40,7 +38,7 @@ export function paintBitArrayBars(
  * PDF417, where each row is `rowHeight` tall but each column is 1 module wide).
  */
 export function paintBitMatrixCells(
-  ctx: SKRSContext2D,
+  ctx: CanvasRenderingContext2D,
   matrix: BitMatrix,
   pos: LabelPosition,
   moduleSize: number,
@@ -61,16 +59,16 @@ export function paintBitMatrixCells(
  * Render the barcode's human-readable line below (or above) the bars. Mirrors
  * `applyLineTextToCtx` in the Go drawer.
  */
-export function paintHumanReadableText(
-  ctx: SKRSContext2D,
+export async function paintHumanReadableText(
+  ctx: CanvasRenderingContext2D,
   text: string,
   pos: LabelPosition,
   lineAbove: boolean,
   barWidth: number,
   width: number,
   height: number,
-): void {
-  registerEmbeddedFonts();
+): Promise<void> {
+  await registerEmbeddedFonts();
   const fontSize = Math.max(barWidth, 1) * 10;
   ctx.fillStyle = "#000000";
   ctx.font = `${fontSize}px "${FONT1_NAME}"`;
@@ -91,8 +89,8 @@ export function paintHumanReadableText(
  * line places the first digit to the LEFT of the bars, then 6 digits centered
  * under each half, with the guard bars hanging below them.
  */
-export function paintEan13Text(
-  ctx: SKRSContext2D,
+export async function paintEan13Text(
+  ctx: CanvasRenderingContext2D,
   text: string,
   pos: LabelPosition,
   lineAbove: boolean,
@@ -100,8 +98,8 @@ export function paintEan13Text(
   height: number,
   barWidth: number,
   guardExtension: number,
-): void {
-  registerEmbeddedFonts();
+): Promise<void> {
+  await registerEmbeddedFonts();
   const fontSize = Math.round(width / 13);
   ctx.fillStyle = "#000000";
   ctx.font = `${fontSize}px "${FONT0_NAME}"`;
