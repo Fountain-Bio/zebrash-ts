@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>zebrash · fixture viewer</title>
+    <link rel="stylesheet" href="/src/style.css" />
+  </head>
+  <body>
+    <header>
+      <h1>zebrash <span class="muted">/ fixture viewer</span></h1>
+      <div class="status" id="status">starting…</div>
+    </header>
+
+    <main>
+      <aside>
+        <input type="search" id="filter" placeholder="filter fixtures…" autocomplete="off" />
+        <ul id="fixture-list" class="fixture-list"></ul>
+      </aside>
+
+      <section class="content">
+        <div class="meta">
+          <h2 id="fixture-name">—</h2>
+          <div class="meta-row">
+            <span id="fixture-options" class="pill">default options</span>
+            <span id="fixture-stats" class="pill"></span>
+          </div>
+        </div>
+
+        <div class="panes">
+          <div class="pane">
+            <div class="pane-title">
+              browser render <span id="render-time" class="muted"></span>
+            </div>
+            <div class="image-wrap">
+              <img id="render-img" alt="" />
+            </div>
+          </div>
+          <div class="pane">
+            <div class="pane-title">go reference</div>
+            <div class="image-wrap">
+              <img id="reference-img" alt="" />
+            </div>
+          </div>
+        </div>
+
+        <details class="zpl-source">
+          <summary>ZPL source</summary>
+          <pre id="zpl-source"></pre>
+        </details>
+
+        <details class="log">
+          <summary>log</summary>
+          <pre id="log"></pre>
+        </details>
+      </section>
+    </main>
+
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>

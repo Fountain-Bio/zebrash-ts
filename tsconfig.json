@@ -23,7 +23,7 @@
     "declaration": true,
     "declarationMap": true,
     "sourceMap": true,
-    "types": ["node"]
+    "types": ["node", "vite/client"]
   },
   "include": ["src/**/*.ts", "test/**/*.ts", "scripts/**/*.ts"],
   "exclude": ["dist", "node_modules", ".worktrees"]

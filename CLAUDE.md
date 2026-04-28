@@ -148,10 +148,23 @@ inflate). Don't import directly from `@napi-rs/canvas` or `node:*`.
 
 ## Testing
 
+- **Two projects via `vitest.workspace.ts`:**
+  - `node` — unit tests + `test/golden.test.ts` (uses `@napi-rs/canvas`).
+    Runs by default: `bun run test`.
+  - `browser` — `test/golden.browser.test.ts` runs in a real Chromium under
+    `@vitest/browser` + Playwright. Same fixtures, same thresholds, but
+    rendered via the browser entry of zebrash (OffscreenCanvas + FontFace).
+    Run with `bun run test:browser` (rebuilds `dist/` first).
+  - `bun run test:all` runs both projects after a build.
 - **Golden suite (`test/golden.test.ts`)** auto-discovers every
   `test/fixtures/*.zpl`. Per-fixture options live in `FIXTURE_OPTIONS` (mirrors
   Go's `parser_test.go`). Per-fixture diff overrides live in
-  `FIXTURE_OVERRIDES` (default 5 %).
+  `FIXTURE_OVERRIDES` (default 5 %). The browser suite mirrors both maps.
+- **Why two suites:** Node and browser pixel diffs against the Go reference
+  match within ~0.2 % per fixture (Skia and browser canvas use different
+  rasterizers, but both are close to FreeType). A regression on either path
+  fails its own suite. Without the browser suite, browser-only bugs
+  (font-fetch failures, OffscreenCanvas semantics drift) ship silently.
 - **Adding a new fixture**: drop the `.zpl` and Go-rendered `.png` into
   `test/fixtures/`. The golden suite picks it up on the next run.
 - **Visual debugging**: `bun run scripts/render-fixture.ts test/fixtures/<name>.zpl --out /tmp/x.png`
@@ -159,6 +172,39 @@ inflate). Don't import directly from `@napi-rs/canvas` or `node:*`.
 - **Per-encoder unit tests** live next to the encoder
   (`src/barcodes/code128/encoder.test.ts` etc.). They lock in known bit
   patterns for canonical inputs.
+
+## Browser viewer (`examples/`)
+
+`examples/` is a vite app that renders every fixture in the browser using the
+**built** package output (consumed via `zebrash@file:..`). It's the canonical
+way to eyeball the browser path.
+
+```bash
+bun run build           # rebuild dist/ after source edits
+cd examples
+bun install             # one-time
+bun run dev             # http://127.0.0.1:5173
+```
+
+Side-by-side panes per fixture: live browser render (left) vs the static
+Go-reference PNG from `test/fixtures/<name>.png` (right). URL hash syncs to
+the active fixture for shareable links (`#fedex`, etc.).
+
+Wiring (deliberately plugin-free):
+
+- **No platform-swap plugin needed.** Vite respects the parent `package.json`'s
+  `"browser"` field and substitutes `dist/platform-browser.js` +
+  `dist/assets/fonts-browser.js` automatically.
+- **Fixture loading uses `import.meta.glob`** — `?raw` for the ZPL source,
+  `?url` for the reference PNG. No middleware, no manifest file.
+- **You must run `bun run build` after editing `src/`.** The example consumes
+  `dist/`, not the source tree. (Trade-off: simpler setup that mirrors how npm
+  consumers see the package, at the cost of a manual rebuild step.)
+
+The reference PNGs are static — they were generated **once** by the Go
+`ingridhq/zebrash` test suite and committed to `test/fixtures/`. We do not
+re-run Go anywhere in this repo. To regenerate or add a fixture, capture the
+Go output separately and drop the `.zpl` + `.png` pair into `test/fixtures/`.
 
 ## Things that are subtle
 

@@ -58,9 +58,9 @@ const zpl = await readFile("./label.zpl");
 const labels = new Parser().parse(zpl);
 
 const png = await new Drawer().drawLabelAsPng(labels[0], {
-  labelWidthMm: 101.6,   // 4 in
-  labelHeightMm: 203.2,  // 8 in
-  dpmm: 8,               // 203 dpi
+  labelWidthMm: 101.6, // 4 in
+  labelHeightMm: 203.2, // 8 in
+  dpmm: 8, // 203 dpi
   enableInvertedLabels: true,
   grayscaleOutput: false,
 });
@@ -74,16 +74,16 @@ each.
 
 ## Supported ZPL surface
 
-| Category          | Commands                                                                                                                                                              |
-| ----------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Field positioning | `^FO`, `^FT`, `^FB`, `^FS`, `^FW`, `^FN`, `^FR`, `^FH`, `^FV`, `^FD`                                                                                                  |
-| Label setup       | `^XA`, `^XZ`, `^LH`, `^LR`, `^PW`, `^PO`, `^CC`, `~CT`                                                                                                                |
-| Fonts             | `^A`, `^CF`, `^CW`, `^CI` (charsets 0–13, 27)                                                                                                                         |
-| Graphics          | `^GB`, `^GC`, `^GD`, `^GF`, `^GS`                                                                                                                                     |
-| Templating        | `^DF`, `^XF`, `~DG`, `^XG`, `^IL`                                                                                                                                     |
-| Custom fonts      | `~DU`, font alias via `^CW`                                                                                                                                           |
+| Category          | Commands                                                                                                                                                                          |
+| ----------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Field positioning | `^FO`, `^FT`, `^FB`, `^FS`, `^FW`, `^FN`, `^FR`, `^FH`, `^FV`, `^FD`                                                                                                              |
+| Label setup       | `^XA`, `^XZ`, `^LH`, `^LR`, `^PW`, `^PO`, `^CC`, `~CT`                                                                                                                            |
+| Fonts             | `^A`, `^CF`, `^CW`, `^CI` (charsets 0–13, 27)                                                                                                                                     |
+| Graphics          | `^GB`, `^GC`, `^GD`, `^GF`, `^GS`                                                                                                                                                 |
+| Templating        | `^DF`, `^XF`, `~DG`, `^XG`, `^IL`                                                                                                                                                 |
+| Custom fonts      | `~DU`, font alias via `^CW`                                                                                                                                                       |
 | Barcodes          | `^BC` (Code 128), `^B2` (Interleaved 2 of 5), `^B3` (Code 39), `^B7` (PDF417), `^BD` (Maxicode), `^BE` (EAN-13), `^BO` (Aztec), `^BQ` (QR), `^BX` (Data Matrix), `^BY` (defaults) |
-| Output            | Monochrome PNG (default), 8-bit grayscale, inverted-label compositing, `^FR` reverse-print                                                                            |
+| Output            | Monochrome PNG (default), 8-bit grayscale, inverted-label compositing, `^FR` reverse-print                                                                                        |
 
 ## Architecture
 
@@ -112,11 +112,23 @@ bun install
 bun run typecheck   # tsc --noEmit
 bun run lint        # oxlint
 bun run format      # oxfmt (use format:check in CI)
-bun run test        # vitest: unit + golden suites
+bun run test        # vitest: unit + Node golden suite
+bun run test:browser # vitest in real Chromium: browser golden suite
+bun run test:all    # both projects
 bun run build       # emits dist/
 ```
 
 ### Visual debugging
+
+The `examples/` directory has a vite app that renders every fixture in the
+browser side-by-side with the Go reference. After a build:
+
+```bash
+cd examples && bun install && bun run dev
+# http://127.0.0.1:5173
+```
+
+### Visual debugging (CLI)
 
 Render a fixture to a temp file and inspect it:
 

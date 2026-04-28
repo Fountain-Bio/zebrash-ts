@@ -1,0 +1,249 @@
+:root {
+  --bg: #0f1115;
+  --panel: #161922;
+  --panel-2: #1d2230;
+  --border: #262c3b;
+  --text: #e6e8ee;
+  --muted: #8a92a6;
+  --accent: #6ea8ff;
+  --accent-soft: #1a2a4a;
+  --ok: #6ed18a;
+  --err: #ff6e6e;
+  --warn: #f0c674;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", system-ui, sans-serif;
+  font-size: 14px;
+  height: 100%;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+}
+
+header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 20px;
+  border-bottom: 1px solid var(--border);
+  background: var(--panel);
+}
+
+header h1 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: 0.2px;
+}
+
+.muted {
+  color: var(--muted);
+  font-weight: 400;
+}
+
+.status {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 12px;
+  color: var(--muted);
+  padding: 4px 10px;
+  border-radius: 4px;
+  background: var(--panel-2);
+}
+
+.status.ok {
+  color: var(--ok);
+}
+.status.err {
+  color: var(--err);
+}
+.status.busy {
+  color: var(--warn);
+}
+
+main {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  flex: 1;
+  min-height: 0;
+}
+
+aside {
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid var(--border);
+  background: var(--panel);
+  overflow: hidden;
+}
+
+#filter {
+  margin: 12px;
+  padding: 8px 10px;
+  background: var(--panel-2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text);
+  font: inherit;
+  outline: none;
+}
+
+#filter:focus {
+  border-color: var(--accent);
+}
+
+.fixture-list {
+  list-style: none;
+  margin: 0;
+  padding: 0 0 12px 0;
+  overflow-y: auto;
+  flex: 1;
+}
+
+.fixture-list li {
+  padding: 6px 16px;
+  cursor: pointer;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 12px;
+  color: var(--text);
+  border-left: 2px solid transparent;
+}
+
+.fixture-list li:hover {
+  background: var(--panel-2);
+}
+
+.fixture-list li.active {
+  background: var(--accent-soft);
+  border-left-color: var(--accent);
+  color: white;
+}
+
+.fixture-list li.hidden {
+  display: none;
+}
+
+.content {
+  padding: 20px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.meta h2 {
+  margin: 0 0 8px 0;
+  font-size: 18px;
+  font-weight: 600;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+.meta-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.pill {
+  display: inline-block;
+  padding: 3px 8px;
+  background: var(--panel-2);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  font-size: 11px;
+  color: var(--muted);
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+.panes {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+.pane {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  min-height: 200px;
+}
+
+.pane-title {
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--border);
+  font-size: 12px;
+  color: var(--muted);
+  display: flex;
+  justify-content: space-between;
+}
+
+.image-wrap {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  background: repeating-conic-gradient(#222 0% 25%, #1a1a1a 0% 50%) 50% / 16px 16px;
+  border-radius: 0 0 8px 8px;
+  overflow: auto;
+}
+
+.image-wrap img {
+  max-width: 100%;
+  max-height: 70vh;
+  background: white;
+  image-rendering: pixelated;
+  display: block;
+}
+
+.image-wrap img:not([src]),
+.image-wrap img[src=""] {
+  display: none;
+}
+
+details {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 12px;
+}
+
+details summary {
+  cursor: pointer;
+  font-size: 12px;
+  color: var(--muted);
+  user-select: none;
+}
+
+details[open] summary {
+  margin-bottom: 8px;
+}
+
+details pre {
+  margin: 0;
+  padding: 8px;
+  background: var(--panel-2);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 12px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  color: var(--text);
+  white-space: pre-wrap;
+  word-break: break-all;
+  max-height: 360px;
+  overflow: auto;
+}
