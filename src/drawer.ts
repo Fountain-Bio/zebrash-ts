@@ -14,20 +14,25 @@ import {
 import { platform } from "./platform.ts";
 
 /**
- * Elements that may opt into reverse-print rendering implement this shape.
- * Mirrors the Go `reversePrintable` interface in `drawer.go`.
+ * Element shape carrying the `^FR` reverse-print flag. Mirrors Go's
+ * `reversePrintable` interface in `drawer.go`, but adapted to this port's
+ * data model where `reversePrint` is a `{ value: boolean }` property rather
+ * than a method.
  */
 interface ReversePrintable {
-  isReversePrint(): boolean;
+  reversePrint: { value: boolean };
 }
 
 function isReversePrintable(element: unknown): element is ReversePrintable {
+  if (typeof element !== "object" || element === null) return false;
+  const rp = (element as { reversePrint?: unknown }).reversePrint;
   return (
-    typeof element === "object" &&
-    element !== null &&
-    "isReversePrint" in element &&
-    typeof (element as { isReversePrint: unknown }).isReversePrint === "function"
+    typeof rp === "object" && rp !== null && typeof (rp as { value?: unknown }).value === "boolean"
   );
+}
+
+function isReversePrintActive(element: ReversePrintable): boolean {
+  return element.reversePrint.value === true;
 }
 
 /** Fills the entire context with white. Mirrors `gCtx.SetColor(white); gCtx.Clear()`. */
@@ -85,7 +90,7 @@ export class Drawer {
     let reverseCtx: CanvasRenderingContext2D | null = null;
 
     for (const element of label.elements) {
-      const reverse = isReversePrintable(element) && element.isReversePrint();
+      const reverse = isReversePrintable(element) && isReversePrintActive(element);
 
       let targetCtx = ctx;
       if (reverse) {

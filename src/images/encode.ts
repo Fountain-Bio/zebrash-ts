@@ -20,7 +20,14 @@ export async function encodeMonochrome(canvas: PlatformCanvas): Promise<Uint8Arr
   const pixels = img.data;
 
   for (let i = 0; i < pixels.length; i += 4) {
-    const v = (pixels[i] ?? 0) > MONOCHROME_THRESHOLD ? 255 : 0;
+    // Composite the pixel against an implicit white background — destination-
+    // out clears (e.g. the inner of a rounded ^GB) leave alpha=0 with R=0,
+    // and treating that as black ink would render the cleared region solid
+    // instead of see-through.
+    const a = pixels[i + 3] ?? 0;
+    const r = pixels[i] ?? 0;
+    const composited = (r * a + 255 * (255 - a)) / 255;
+    const v = composited > MONOCHROME_THRESHOLD ? 255 : 0;
     pixels[i] = v;
     pixels[i + 1] = v;
     pixels[i + 2] = v;
@@ -49,7 +56,10 @@ export async function encodeGrayscale(canvas: PlatformCanvas): Promise<Uint8Arra
   const pixels = img.data;
 
   for (let i = 0; i < pixels.length; i += 4) {
-    const y = pixels[i] ?? 0;
+    const a = pixels[i + 3] ?? 0;
+    const r = pixels[i] ?? 0;
+    const y = Math.round((r * a + 255 * (255 - a)) / 255);
+    pixels[i] = y;
     pixels[i + 1] = y;
     pixels[i + 2] = y;
     pixels[i + 3] = 255;
