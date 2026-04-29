@@ -38,14 +38,20 @@ const els = {
   name: document.getElementById("fixture-name"),
   options: document.getElementById("fixture-options"),
   stats: document.getElementById("fixture-stats"),
+  svgStats: document.getElementById("fixture-svg-stats"),
   renderImg: document.getElementById("render-img"),
+  svgObj: document.getElementById("svg-obj"),
+  svgDownload: document.getElementById("svg-download"),
+  svgFontMode: document.getElementById("svg-font-mode"),
   referenceImg: document.getElementById("reference-img"),
   renderTime: document.getElementById("render-time"),
+  svgTime: document.getElementById("svg-time"),
   zplSource: document.getElementById("zpl-source"),
   log: document.getElementById("log"),
 };
 
-let lastObjectUrl = null;
+let lastPngUrl = null;
+let lastSvgUrl = null;
 let activeFixture = null;
 
 function setStatus(text, kind = "") {
@@ -112,10 +118,16 @@ async function selectFixture(name) {
           .map(([k, v]) => `${k}=${v}`)
           .join(" ");
 
-  if (lastObjectUrl) URL.revokeObjectURL(lastObjectUrl);
+  if (lastPngUrl) URL.revokeObjectURL(lastPngUrl);
+  if (lastSvgUrl) URL.revokeObjectURL(lastSvgUrl);
   els.renderImg.removeAttribute("src");
+  els.svgObj.removeAttribute("data");
   els.renderTime.textContent = "";
+  els.svgTime.textContent = "";
   els.stats.textContent = "";
+  els.svgStats.textContent = "";
+  els.svgDownload.hidden = true;
+  els.svgDownload.removeAttribute("href");
 
   try {
     const zpl = await loadZpl(name);
@@ -126,23 +138,58 @@ async function selectFixture(name) {
     logln("labels:", labels.length, "elements[0]:", labels[0]?.elements.length ?? 0);
     if (!labels[0]) throw new Error("no labels parsed");
 
-    const t0 = performance.now();
-    const png = await new Drawer().drawLabelAsPng(labels[0], opts);
-    const ms = performance.now() - t0;
+    const drawer = new Drawer();
 
-    const blob = new Blob([png], { type: "image/png" });
-    lastObjectUrl = URL.createObjectURL(blob);
-    els.renderImg.src = lastObjectUrl;
+    // PNG render — same flow as before.
+    const t0 = performance.now();
+    const png = await drawer.drawLabelAsPng(labels[0], opts);
+    const pngMs = performance.now() - t0;
+
+    const pngBlob = new Blob([png], { type: "image/png" });
+    lastPngUrl = URL.createObjectURL(pngBlob);
+    els.renderImg.src = lastPngUrl;
 
     await new Promise((resolve, reject) => {
       els.renderImg.onload = () => resolve();
-      els.renderImg.onerror = () => reject(new Error("image load failed"));
+      els.renderImg.onerror = () => reject(new Error("PNG image load failed"));
     });
 
-    els.renderTime.textContent = `${ms.toFixed(0)} ms`;
+    els.renderTime.textContent = `${pngMs.toFixed(0)} ms`;
     els.stats.textContent = `${els.renderImg.naturalWidth}×${els.renderImg.naturalHeight} · ${png.byteLength.toLocaleString()} B`;
+    logln("png rendered:", png.byteLength, "bytes in", pngMs.toFixed(0), "ms");
 
-    logln("rendered:", png.byteLength, "bytes in", ms.toFixed(0), "ms");
+    // SVG render — uses the fontEmbed mode the user picked.
+    const fontEmbed = els.svgFontMode.value || "url";
+    const tSvg0 = performance.now();
+    const svg = await drawer.drawLabelAsSvg(labels[0], { ...opts, fontEmbed });
+    const svgMs = performance.now() - tSvg0;
+
+    // <object data="blob:..."> so the browser fetches the SVG as a full
+    // document and honours @font-face url(...) (unlike <img src=...> which
+    // sandboxes external resource loads).
+    const svgBlob = new Blob([svg], { type: "image/svg+xml" });
+    lastSvgUrl = URL.createObjectURL(svgBlob);
+    // Mirror the active fixture's intrinsic aspect ratio onto the <object>
+    // so width/height in CSS scale proportionally — without this, <object>
+    // collapses to a default replaced-element size that ignores the SVG's
+    // viewBox.
+    const aspectMatch = svg.match(/viewBox="\s*0\s+0\s+(\d+(?:\.\d+)?)\s+(\d+(?:\.\d+)?)\s*"/);
+    if (aspectMatch) {
+      const w = Number.parseFloat(aspectMatch[1]);
+      const h = Number.parseFloat(aspectMatch[2]);
+      if (w > 0 && h > 0) {
+        els.svgObj.style.aspectRatio = `${w} / ${h}`;
+      }
+    }
+    els.svgObj.setAttribute("data", lastSvgUrl);
+    els.svgDownload.href = lastSvgUrl;
+    els.svgDownload.download = `${name}.svg`;
+    els.svgDownload.hidden = false;
+
+    els.svgTime.textContent = `${svgMs.toFixed(0)} ms`;
+    els.svgStats.textContent = `svg ${(svg.length / 1024).toFixed(1)} KB · ${fontEmbed}`;
+    logln("svg rendered:", svg.length, "chars in", svgMs.toFixed(0), "ms");
+
     setStatus(`OK · ${name}`, "ok");
   } catch (err) {
     logln("ERROR:", err.stack || err.message || err);
@@ -158,6 +205,16 @@ function main() {
   buildList(fixtures);
   els.filter.addEventListener("input", applyFilter);
   setStatus(`${fixtures.length} fixtures · pick one`, "ok");
+
+  // Re-render the active fixture when the user toggles SVG font mode so they
+  // can compare url / embed / none output side-by-side.
+  els.svgFontMode.addEventListener("change", () => {
+    if (activeFixture) {
+      const current = activeFixture;
+      activeFixture = null; // force selectFixture to do the work
+      selectFixture(current);
+    }
+  });
 
   const initial = location.hash.slice(1);
   selectFixture(fixtures.includes(initial) ? initial : fixtures[0]);

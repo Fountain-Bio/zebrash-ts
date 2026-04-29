@@ -169,8 +169,60 @@ aside {
 
 .panes {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr 1fr 1fr;
   gap: 16px;
+}
+
+@media (max-width: 1100px) {
+  .panes {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+@media (max-width: 700px) {
+  .panes {
+    grid-template-columns: 1fr;
+  }
+}
+
+.pane-title {
+  align-items: center;
+}
+
+.pane-title .download {
+  color: var(--accent);
+  text-decoration: none;
+  font-size: 11px;
+  padding: 2px 6px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  background: var(--panel-2);
+}
+
+.pane-title .download:hover {
+  border-color: var(--accent);
+}
+
+.font-mode {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 8px;
+  background: var(--panel-2);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  font-size: 11px;
+  color: var(--muted);
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+.font-mode select {
+  background: transparent;
+  border: none;
+  color: var(--text);
+  font: inherit;
+  outline: none;
+  cursor: pointer;
 }
 
 .pane {
@@ -212,6 +264,21 @@ aside {
 
 .image-wrap img:not([src]),
 .image-wrap img[src=""] {
+  display: none;
+}
+
+.image-wrap object {
+  /* `<object>` doesn't size like `<img>` — the inner SVG document drives
+   * its layout. JS sets `aspect-ratio` from the active fixture's viewBox;
+   * combined with `max-height: 70vh`, the browser computes the matching
+   * width. */
+  max-width: 100%;
+  height: 70vh;
+  background: white;
+  display: block;
+}
+
+.image-wrap object:not([data]) {
   display: none;
 }
 

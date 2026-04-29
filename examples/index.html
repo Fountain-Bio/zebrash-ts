@@ -24,16 +24,39 @@
           <div class="meta-row">
             <span id="fixture-options" class="pill">default options</span>
             <span id="fixture-stats" class="pill"></span>
+            <span id="fixture-svg-stats" class="pill"></span>
+            <label class="font-mode">
+              SVG fonts:
+              <select id="svg-font-mode">
+                <option value="url" selected>url</option>
+                <option value="embed">embed</option>
+                <option value="none">none</option>
+              </select>
+            </label>
           </div>
         </div>
 
         <div class="panes">
           <div class="pane">
             <div class="pane-title">
-              browser render <span id="render-time" class="muted"></span>
+              browser PNG <span id="render-time" class="muted"></span>
             </div>
             <div class="image-wrap">
               <img id="render-img" alt="" />
+            </div>
+          </div>
+          <div class="pane">
+            <div class="pane-title">
+              browser SVG <span id="svg-time" class="muted"></span>
+              <a id="svg-download" class="download" hidden>download</a>
+            </div>
+            <div class="image-wrap">
+              <!-- <object> instead of <img> so the SVG's @font-face url(...)
+                   rules can fetch from the CDN. Browsers run <img>-loaded
+                   SVG in restricted mode that blocks external resource
+                   loads; <object> renders SVG as a full document with
+                   normal CORS rules. -->
+              <object id="svg-obj" type="image/svg+xml" aria-label="SVG render"></object>
             </div>
           </div>
           <div class="pane">

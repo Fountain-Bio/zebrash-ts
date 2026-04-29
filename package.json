@@ -25,6 +25,7 @@
   },
   "devDependencies": {
     "@napi-rs/canvas": "^0.1.100",
+    "@resvg/resvg-js": "^2.6.2",
     "@types/node": "^24.0.0",
     "@vitest/browser": "^4.0.0",
     "@vitest/browser-playwright": "^4.0.0",
