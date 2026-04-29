@@ -51,6 +51,24 @@ function bumpPackage(pkg: Package, version: string): string {
   const json = JSON.parse(readFileSync(path, "utf8")) as Record<string, unknown>;
   const prev = String(json.version ?? "?");
   json.version = version;
+
+  // Cross-workspace deps must be exact, in-range versions in the published
+  // tarball — npm's workspace:* rewrite is unreliable for scoped packages
+  // (older releases shipped with workspace:* literal in deps, which `bun
+  // install` and other clients can't resolve from outside the source tree).
+  // The canonical fix: keep deps as exact versions in source and let this
+  // script bump them in lockstep with the package version itself.
+  for (const depField of ["dependencies", "devDependencies", "peerDependencies"] as const) {
+    const deps = json[depField] as Record<string, string> | undefined;
+    if (!deps) continue;
+    for (const otherPkg of PACKAGES) {
+      const depName = `@zebrash/${otherPkg}`;
+      if (depName in deps) {
+        deps[depName] = version;
+      }
+    }
+  }
+
   writeFileSync(path, `${JSON.stringify(json, null, 2)}\n`);
   return prev;
 }

@@ -12,7 +12,7 @@
   "scripts": {
     "build": "tsc -b packages/core/tsconfig.build.json packages/node/tsconfig.build.json packages/browser/tsconfig.build.json",
     "build:clean": "tsc -b packages/core/tsconfig.build.json packages/node/tsconfig.build.json packages/browser/tsconfig.build.json --clean",
-    "typecheck": "tsc -b packages/core/tsconfig.build.json packages/node/tsconfig.build.json packages/browser/tsconfig.build.json --noEmit",
+    "typecheck": "tsc -b packages/core/tsconfig.build.json packages/node/tsconfig.build.json packages/browser/tsconfig.build.json",
     "lint": "oxlint",
     "lint:fix": "oxlint --fix",
     "format": "oxfmt",
