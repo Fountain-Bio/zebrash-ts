@@ -29,6 +29,8 @@ export interface DrawerOptions {
   dpmm?: number;
   enableInvertedLabels?: boolean;
   grayscaleOutput?: boolean;
+  /** SVG-only: how to deliver fonts in `drawLabelAsSvg` output. */
+  fontEmbed?: "url" | "embed" | "none";
 }
 
 export interface ParserLike {
@@ -40,6 +42,7 @@ export interface DrawerLike {
     label: LabelInfo,
     options?: DrawerOptions,
   ): Buffer | Uint8Array | Promise<Buffer | Uint8Array>;
+  drawLabelAsSvg?(label: LabelInfo, options?: DrawerOptions): string | Promise<string>;
 }
 
 export interface RenderApi {
@@ -104,6 +107,31 @@ export async function renderZpl(
   return Buffer.isBuffer(png) ? png : Buffer.from(png);
 }
 
+/** Convenience: parse + render the first label in a ZPL fixture as SVG. */
+export async function renderZplAsSvg(
+  zpl: Uint8Array | string,
+  options: DrawerOptions = {},
+): Promise<string> {
+  const api = await loadRenderApi();
+  if (!api) {
+    throw new Error("zebrash render API not yet wired up (Parser/Drawer not exported)");
+  }
+  const parser = new api.Parser();
+  const labels = await parser.parse(zpl);
+  if (labels.length === 0) {
+    throw new Error("no labels parsed from zpl input");
+  }
+  const first = labels[0];
+  if (!first) {
+    throw new Error("first label is undefined");
+  }
+  const drawer = new api.Drawer();
+  if (typeof drawer.drawLabelAsSvg !== "function") {
+    throw new Error("drawLabelAsSvg not exported by @zebrash/node — rebuild required");
+  }
+  return drawer.drawLabelAsSvg(first, options);
+}
+
 // `Image` from @napi-rs/canvas is parameter-typed via the imported value's
 // inference; we keep this helper local to share canvas setup between the two
 // pixelDiff branches without leaking canvas types into the public surface.
@@ -163,6 +191,86 @@ export async function pixelDiff(
     diffPixels,
     totalPixels,
     ratio: totalPixels > 0 ? diffPixels / totalPixels : 0,
+    width,
+    height,
+  };
+}
+
+export interface TiledDiffResult {
+  /** Worst-case ratio across tiles. */
+  worstTileRatio: number;
+  /** Indices of tiles that exceeded the per-tile threshold. */
+  failingTiles: Array<{ tx: number; ty: number; ratio: number }>;
+  /** Overall ratio (same as `pixelDiff` for cross-checking). */
+  overallRatio: number;
+  width: number;
+  height: number;
+}
+
+/**
+ * Per-tile pixel diff. Splits both images into a `tilesX × tilesY` grid and
+ * returns the worst per-tile ratio plus the list of tiles whose ratio
+ * exceeded `failTileRatio`.
+ *
+ * Catches localised regressions that a global ratio hides: e.g. a missing
+ * barcode that's 1/10 of the label area shows as ~10% global diff but ~100%
+ * local diff in the tile that contains it.
+ */
+export async function pixelDiffTiled(
+  a: Buffer | Uint8Array,
+  b: Buffer | Uint8Array,
+  tilesX: number,
+  tilesY: number,
+  threshold = 16,
+): Promise<TiledDiffResult> {
+  const [imgA, imgB] = await Promise.all([loadImage(Buffer.from(a)), loadImage(Buffer.from(b))]);
+  const width = Math.min(imgA.width, imgB.width);
+  const height = Math.min(imgA.height, imgB.height);
+
+  const dataA = imageDataFor(imgA, width, height);
+  const dataB = imageDataFor(imgB, width, height);
+
+  const tileW = Math.floor(width / tilesX);
+  const tileH = Math.floor(height / tilesY);
+
+  let overallDiff = 0;
+  let worstRatio = 0;
+  const failing: Array<{ tx: number; ty: number; ratio: number }> = [];
+
+  for (let ty = 0; ty < tilesY; ty++) {
+    for (let tx = 0; tx < tilesX; tx++) {
+      const x0 = tx * tileW;
+      const y0 = ty * tileH;
+      const x1 = tx === tilesX - 1 ? width : x0 + tileW;
+      const y1 = ty === tilesY - 1 ? height : y0 + tileH;
+
+      let tileDiff = 0;
+      const tilePixels = (x1 - x0) * (y1 - y0);
+
+      for (let y = y0; y < y1; y++) {
+        const rowOffset = y * width * 4;
+        for (let x = x0; x < x1; x++) {
+          const i = rowOffset + x * 4;
+          const dr = Math.abs((dataA[i] ?? 0) - (dataB[i] ?? 0));
+          const dg = Math.abs((dataA[i + 1] ?? 0) - (dataB[i + 1] ?? 0));
+          const db = Math.abs((dataA[i + 2] ?? 0) - (dataB[i + 2] ?? 0));
+          if (dr > threshold || dg > threshold || db > threshold) tileDiff++;
+        }
+      }
+
+      overallDiff += tileDiff;
+      const ratio = tilePixels > 0 ? tileDiff / tilePixels : 0;
+      if (ratio > worstRatio) worstRatio = ratio;
+      // Caller decides what's failing; we just report worst + per-tile.
+      failing.push({ tx, ty, ratio });
+    }
+  }
+
+  const totalPixels = width * height;
+  return {
+    worstTileRatio: worstRatio,
+    failingTiles: failing,
+    overallRatio: totalPixels > 0 ? overallDiff / totalPixels : 0,
     width,
     height,
   };

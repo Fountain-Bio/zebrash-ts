@@ -1,4 +1,10 @@
-export { type FontKey, getEmbeddedFont, setFontBaseUrl } from "./fonts.ts";
+export {
+  type FontKey,
+  getEmbeddedFont,
+  getFontBaseUrl,
+  getFontFilename,
+  setFontBaseUrl,
+} from "./fonts.ts";
 export { EmbeddedFontFamilies, registerEmbeddedFonts } from "./register.ts";
 export type { EmbeddedFontFamily } from "./register.ts";
 

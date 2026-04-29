@@ -25,6 +25,14 @@ export function setFontBaseUrl(url: string): void {
   baseUrl = url.endsWith("/") ? url : `${url}/`;
 }
 
+export function getFontBaseUrl(): string {
+  return baseUrl;
+}
+
+export function getFontFilename(key: FontKey): string {
+  return filenames[key];
+}
+
 const cache = new Map<FontKey, Uint8Array>();
 const inflight = new Map<FontKey, Promise<Uint8Array>>();
 

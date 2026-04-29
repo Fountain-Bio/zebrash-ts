@@ -26,7 +26,12 @@ export default defineConfig({
       {
         test: {
           name: "node",
-          include: ["test/golden.test.ts", "test/e2e.test.ts"],
+          include: [
+            "test/golden.test.ts",
+            "test/e2e.test.ts",
+            "test/svg-golden.test.ts",
+            "test/svg-e2e.test.ts",
+          ],
           exclude: ["**/node_modules/**", "**/dist/**", "**/.worktrees/**"],
           testTimeout: 30_000,
         },

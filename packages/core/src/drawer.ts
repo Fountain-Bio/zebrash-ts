@@ -12,6 +12,9 @@ import {
   zerofill,
 } from "./images/index.ts";
 import { platform } from "./platform.ts";
+import { type SvgElementDrawer, defaultSvgElementDrawers } from "./svg-drawers/index.ts";
+import { SvgEmitter } from "./svg/emitter.ts";
+import { buildFontFaceCss } from "./svg/font_embed.ts";
 
 /**
  * Element shape carrying the `^FR` reverse-print flag. Mirrors Go's
@@ -49,9 +52,18 @@ function fillWhite(ctx: CanvasRenderingContext2D, width: number, height: number)
  */
 export class Drawer {
   private readonly elementDrawers: ElementDrawer[];
+  private svgElementDrawers: SvgElementDrawer[] | null = null;
 
   constructor(elementDrawers?: ElementDrawer[]) {
     this.elementDrawers = elementDrawers ?? defaultElementDrawersLazy();
+  }
+
+  /** Lazy SVG drawer set — only constructed when `drawLabelAsSvg` is called. */
+  private getSvgElementDrawers(): SvgElementDrawer[] {
+    if (this.svgElementDrawers === null) {
+      this.svgElementDrawers = defaultSvgElementDrawers();
+    }
+    return this.svgElementDrawers;
   }
 
   /**
@@ -139,5 +151,111 @@ export class Drawer {
     return opts.grayscaleOutput
       ? encodeGrayscale(finalCtx.canvas)
       : encodeMonochrome(finalCtx.canvas);
+  }
+
+  /**
+   * Renders `label` to an SVG document string according to `options`.
+   *
+   * Behaviour parity with `drawLabelAsPng` for everything geometric:
+   *  - Apply `withDefaults` to the options.
+   *  - Compute `imageWidth = min(labelWidth, label.printWidth)`.
+   *  - Reverse-print elements are wrapped in a
+   *    `<g style="mix-blend-mode: difference">` group, which is
+   *    mathematically equivalent to the XOR composite the PNG path uses
+   *    when the canvas only holds black-on-white (the monochrome case).
+   *  - If the print width is narrower than the label, or the label is
+   *    inverted, content is centred and optionally rotated 180° via outer
+   *    `<g transform>` wrappers — same arithmetic as the canvas pipeline.
+   *
+   * SVG-specific behaviour (controlled by `options.fontEmbed`):
+   *  - `"url"` (default): emits one `@font-face url(...)` per used font,
+   *    pointing at the same CDN base the runtime font loader uses.
+   *  - `"embed"`: base64-inlines the TTF bytes (large, fully self-contained).
+   *  - `"none"`: omits `@font-face` entirely (caller supplies fonts to the
+   *    rasteriser, or the host has them installed).
+   *
+   * `grayscaleOutput` is ignored (PNG-only encoding concern).
+   */
+  async drawLabelAsSvg(label: LabelInfo, options: Partial<DrawerOptions> = {}): Promise<string> {
+    const opts = withDefaults(options);
+
+    const state = new DrawerState();
+
+    const labelWidth = Math.ceil(opts.labelWidthMm * opts.dpmm);
+    const imageHeight = Math.ceil(opts.labelHeightMm * opts.dpmm);
+
+    let imageWidth = labelWidth;
+    if (label.printWidth > 0) {
+      imageWidth = Math.min(labelWidth, label.printWidth);
+    }
+
+    const emitter = new SvgEmitter();
+
+    // White background. SVG needs an explicit rect — `<svg>` itself is
+    // transparent.
+    emitter.rect(0, 0, labelWidth, imageHeight, colorWhite);
+
+    // Mirror the PNG path's outer composition: if `imageWidth < labelWidth`
+    // or the label is inverted, wrap content in groups that translate /
+    // rotate the inner drawing into place.
+    const invertLabel = opts.enableInvertedLabels && label.inverted;
+
+    emitter.save();
+    if (invertLabel) {
+      // Rotate 180° about the canvas centre — equivalent to the canvas
+      // pipeline's `translate(W,H); scale(-1,-1)`.
+      emitter.translate(labelWidth, imageHeight);
+      emitter.scale(-1, -1);
+    }
+    if (imageWidth !== labelWidth) {
+      emitter.translate(Math.floor((labelWidth - imageWidth) / 2), 0);
+    }
+
+    const svgDrawers = this.getSvgElementDrawers();
+
+    let reverseFilterDefined = false;
+
+    for (const element of label.elements) {
+      const reverse = isReversePrintable(element) && isReversePrintActive(element);
+
+      if (reverse) {
+        if (!reverseFilterDefined) {
+          // The canvas reverse-print operation is `dst = 255 - dst` wherever
+          // the element drew (regardless of the colour the element drew in).
+          // To replicate this with SVG blend modes, we map the element's
+          // drawn pixels to white via `feFlood` masked by `SourceAlpha`, then
+          // composite the result with `mix-blend-mode: difference`:
+          //   white over black dst → |255 − 0|   = 255 (white)
+          //   white over white dst → |255 − 255| =   0 (black)
+          // i.e. inversion of dst wherever the element drew. The element
+          // drawers continue to use black ink — the filter handles the
+          // colour swap so no per-drawer change is required.
+          emitter.defineFragment(
+            "zb-reverse",
+            '<filter id="zb-reverse" x="0%" y="0%" width="100%" height="100%">' +
+              '<feFlood flood-color="#ffffff" result="flood"/>' +
+              '<feComposite in="flood" in2="SourceAlpha" operator="in"/>' +
+              "</filter>",
+          );
+          reverseFilterDefined = true;
+        }
+        emitter.pushGroup(
+          'filter="url(#zb-reverse)" style="mix-blend-mode:difference;isolation:auto"',
+        );
+      }
+
+      for (const drawer of svgDrawers) {
+        await drawer.draw(emitter, element, opts, state);
+      }
+
+      if (reverse) {
+        emitter.popGroup();
+      }
+    }
+
+    emitter.restore();
+
+    const fontFaceCss = await buildFontFaceCss(emitter.usedFonts, opts.fontEmbed);
+    return emitter.toSvg(labelWidth, imageHeight, fontFaceCss);
   }
 }

@@ -40,10 +40,23 @@ export async function getEmbeddedFont(key: FontKey): Promise<Uint8Array> {
 }
 
 /**
- * No-op on the Node path — fonts are read from disk relative to the module
- * URL. Provided so the browser-platform-swapped equivalent has a parallel
- * API surface.
+ * URL where the bundled TTFs are mirrored. The Node loader reads fonts
+ * from disk for canvas rendering, but `drawLabelAsSvg` may emit
+ * `@font-face src: url(...)` references — those URLs need to resolve in
+ * whichever browser ultimately views the SVG. Defaults to the same
+ * jsdelivr URL the browser loader uses; override with `setFontBaseUrl` to
+ * point at a self-hosted mirror.
  */
-export function setFontBaseUrl(_url: string): void {
-  // intentionally empty on Node
+let baseUrl = "https://cdn.jsdelivr.net/gh/Fountain-Bio/zebrash-ts@main/src/assets/fonts/";
+
+export function setFontBaseUrl(url: string): void {
+  baseUrl = url.endsWith("/") ? url : `${url}/`;
+}
+
+export function getFontBaseUrl(): string {
+  return baseUrl;
+}
+
+export function getFontFilename(key: FontKey): string {
+  return filenames[key];
 }

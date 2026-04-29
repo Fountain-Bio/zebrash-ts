@@ -2,7 +2,7 @@
 
 A TypeScript port of [ingridhq/zebrash](https://github.com/ingridhq/zebrash) — a
 library that renders [ZPL II](https://en.wikipedia.org/wiki/Zebra_Programming_Language)
-labels (the dialect spoken by Zebra printers) as PNG images.
+labels (the dialect spoken by Zebra printers) as PNG **or SVG**.
 
 Two published packages — pick by runtime:
 
@@ -85,6 +85,44 @@ A single `^XA…^XZ` block produces one `LabelInfo`. Multi-label ZPL that uses
 `^DF`/`^XF` template recall produces several; iterate the array and render
 each.
 
+### SVG output
+
+For an `<svg>` document instead of a PNG buffer, call `drawLabelAsSvg`:
+
+```ts
+const svg = await new Drawer().drawLabelAsSvg(labels[0], {
+  labelWidthMm: 101.6,
+  labelHeightMm: 203.2,
+  dpmm: 8,
+  fontEmbed: "url", // "url" | "embed" | "none"
+});
+```
+
+It returns a `Promise<string>`. Real `<rect>` per barcode module, real
+`<text>` per `^FD` field, and a single embedded `<image>` only for `^GF`
+bitmaps (no other path requires raster).
+
+`fontEmbed` controls how the SVG references the bundled TTFs:
+
+| Mode      | What it emits                                                             | When to use it                                                                                                    |
+| --------- | ------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| `"url"`   | `@font-face src: url("<cdn>/font.ttf")` — same CDN as the runtime loader. | **Default.** Browser embedding; small file size; CDN fetches once and caches.                                     |
+| `"embed"` | `@font-face src: url("data:font/ttf;base64,…")`                           | Offline / PDF-export / portable archive use cases. Adds ~54 KB (Helvetica only) to ~900 KB (DejaVu pair) per SVG. |
+| `"none"`  | `font-family` attribute only, no `@font-face`.                            | Renderer already has the fonts (test harness, host system). Smallest output.                                      |
+
+Approximate sizes for a typical text-heavy label using DejaVu:
+
+| Mode      | SVG size  |
+| --------- | --------- |
+| `"none"`  | ~10–50 KB |
+| `"url"`   | ~10–50 KB |
+| `"embed"` | +900 KB   |
+
+`grayscaleOutput` is ignored for `drawLabelAsSvg` — it's a PNG-encoder
+concern. Reverse-print elements (`^FR`) are wrapped in a
+`<g style="mix-blend-mode: difference">` group, which is mathematically
+equivalent to the XOR composite the PNG path uses for monochrome output.
+
 ## Supported ZPL surface
 
 | Category          | Commands                                                                                                                                                                          |
@@ -96,7 +134,7 @@ each.
 | Templating        | `^DF`, `^XF`, `~DG`, `^XG`, `^IL`                                                                                                                                                 |
 | Custom fonts      | `~DU`, font alias via `^CW`                                                                                                                                                       |
 | Barcodes          | `^BC` (Code 128), `^B2` (Interleaved 2 of 5), `^B3` (Code 39), `^B7` (PDF417), `^BD` (Maxicode), `^BE` (EAN-13), `^BO` (Aztec), `^BQ` (QR), `^BX` (Data Matrix), `^BY` (defaults) |
-| Output            | Monochrome PNG (default), 8-bit grayscale, inverted-label compositing, `^FR` reverse-print                                                                                        |
+| Output            | Monochrome PNG (default), 8-bit grayscale, inverted-label compositing, `^FR` reverse-print, vector SVG (`drawLabelAsSvg`)                                                         |
 
 ## Architecture
 
@@ -110,6 +148,10 @@ The repo is a bun-workspaces monorepo. All engine code lives in `@zebrash/core`:
 - `packages/core/src/parsers/` — one parser per `^XX` command (~30 in total).
 - `packages/core/src/elements/` — typed shapes for each label-element kind.
 - `packages/core/src/drawers/` — paints each element onto a canvas context.
+- `packages/core/src/svg-drawers/` — emits each element as native SVG
+  primitives (parallel to `drawers/`, used by `drawLabelAsSvg`).
+- `packages/core/src/svg/` — `SvgEmitter` (the canvas-context analog) and
+  the `@font-face` builder.
 - `packages/core/src/barcodes/` — encoders for nine barcode symbologies
   (pure data → bit pattern; no canvas dependency).
 - `packages/core/src/images/` — color constants, PNG encoding (monochrome
@@ -160,7 +202,8 @@ open /tmp/amazon.png
 ```
 
 The script accepts `--width-mm`, `--height-mm`, `--dpmm`, `--inverted`,
-`--grayscale`, and `--label-index` (for multi-label ZPL).
+`--grayscale`, `--label-index` (for multi-label ZPL), and `--svg` (with
+optional `--font-embed url|embed|none`) for SVG output.
 
 ### Adding a fixture
 
@@ -173,8 +216,7 @@ the next run. If the canvas needs a non-default size, add an entry to
 ### Releasing
 
 Bump locally; let CI publish via [npm OIDC trusted
-publishing](https://docs.npmjs.com/trusted-publishers) — no long-lived
-`NPM_TOKEN` involved.
+publishing](https://docs.npmjs.com/trusted-publishers)
 
 ```bash
 bun run release 0.2.0

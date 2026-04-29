@@ -20,6 +20,8 @@ interface CliArgs {
   out: string | undefined;
   labelIndex: number;
   options: DrawerOptions;
+  svg: boolean;
+  fontEmbed: "url" | "embed" | "none" | undefined;
 }
 
 function parseArgs(argv: string[]): CliArgs {
@@ -27,6 +29,8 @@ function parseArgs(argv: string[]): CliArgs {
   let input: string | undefined;
   let out: string | undefined;
   let labelIndex = 0;
+  let svg = false;
+  let fontEmbed: "url" | "embed" | "none" | undefined;
   const options: DrawerOptions = {};
 
   for (let i = 0; i < args.length; i++) {
@@ -45,6 +49,14 @@ function parseArgs(argv: string[]): CliArgs {
       options.enableInvertedLabels = true;
     } else if (arg === "--grayscale") {
       options.grayscaleOutput = true;
+    } else if (arg === "--svg") {
+      svg = true;
+    } else if (arg === "--font-embed") {
+      const v = args[++i];
+      if (v !== "url" && v !== "embed" && v !== "none") {
+        throw new Error(`--font-embed must be one of url|embed|none (got "${v ?? ""}")`);
+      }
+      fontEmbed = v;
     } else if (arg === "--help" || arg === "-h") {
       printUsage();
       process.exit(0);
@@ -60,7 +72,7 @@ function parseArgs(argv: string[]): CliArgs {
     throw new Error("missing input zpl path");
   }
 
-  return { input, out, labelIndex, options };
+  return { input, out, labelIndex, options, svg, fontEmbed };
 }
 
 function printUsage(): void {
@@ -76,6 +88,8 @@ function printUsage(): void {
       "  --dpmm <n>            dots per mm (default: 8)",
       "  --inverted            enable inverted-label rendering",
       "  --grayscale           emit 8-bit grayscale instead of monochrome",
+      "  --svg                 emit SVG instead of PNG",
+      "  --font-embed <mode>   url | embed | none  (SVG only; default: url)",
       "  --help, -h            show this help",
       "",
     ].join("\n"),
@@ -83,7 +97,7 @@ function printUsage(): void {
 }
 
 async function main(): Promise<void> {
-  const { input, out, labelIndex, options } = parseArgs(process.argv);
+  const { input, out, labelIndex, options, svg, fontEmbed } = parseArgs(process.argv);
 
   const api = await loadRenderApi();
   if (!api) {
@@ -107,6 +121,23 @@ async function main(): Promise<void> {
   }
 
   const drawer = new api.Drawer();
+
+  if (svg) {
+    if (typeof drawer.drawLabelAsSvg !== "function") {
+      throw new Error("drawLabelAsSvg is not available — rebuild @zebrash/node");
+    }
+    const svgOpts = fontEmbed !== undefined ? { ...options, fontEmbed } : options;
+    const xml = await drawer.drawLabelAsSvg(label, svgOpts);
+    const buffer = Buffer.from(xml, "utf-8");
+    if (out) {
+      writeFileSync(resolve(out), buffer);
+      process.stderr.write(`wrote ${buffer.byteLength} bytes to ${out}\n`);
+    } else {
+      stdout.write(buffer);
+    }
+    return;
+  }
+
   const png = await drawer.drawLabelAsPng(label, options);
   const buffer = Buffer.isBuffer(png) ? png : Buffer.from(png);
 

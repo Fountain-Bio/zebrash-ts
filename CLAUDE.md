@@ -34,12 +34,23 @@ zebrash-ts/
 │   │       ├── parsers/             # one ^XX command parser per file (~30 files)
 │   │       ├── elements/            # typed element shapes
 │   │       │   └── stored_format.ts # RecalledFormat + resolveRecalledField
-│   │       ├── drawers/             # paint each element kind
+│   │       ├── drawers/             # paint each element kind onto canvas (PNG path)
 │   │       │   ├── element_drawer.ts        # ElementDrawer interface + helpers
 │   │       │   ├── text_field.ts            # most complex drawer
 │   │       │   ├── barcode_*.ts             # 1D + 2D barcode painting
 │   │       │   ├── barcode_paint.ts         # shared paint helpers
 │   │       │   └── index.ts                 # defaultElementDrawers()
+│   │       ├── svg-drawers/         # emit each element as SVG (drawLabelAsSvg)
+│   │       │   ├── svg_element_drawer.ts    # SvgElementDrawer interface
+│   │       │   ├── transform.ts             # rotateAbout / scaleAbout / rotateForOrientation
+│   │       │   ├── text_field.ts            # uses platform measurement canvas + emits <text>
+│   │       │   ├── graphic_field.ts         # only raster fallback: <image> with base64 PNG
+│   │       │   ├── barcode_*.ts             # SVG analogues, share barcode_paint_svg.ts
+│   │       │   ├── barcode_paint_svg.ts     # bar/cell/text SVG helpers (run-collapsed rects)
+│   │       │   └── index.ts                 # defaultSvgElementDrawers()
+│   │       ├── svg/                 # SVG infrastructure (no platform deps)
+│   │       │   ├── emitter.ts               # SvgEmitter — pure-string canvas analog
+│   │       │   └── font_embed.ts            # builds @font-face CSS from FontKey set
 │   │       ├── barcodes/            # encoders (data → bit pattern; no canvas)
 │   │       ├── printers/virtual.ts  # VirtualPrinter — state across commands
 │   │       ├── images/              # color, encode, reverse-print
@@ -58,13 +69,15 @@ zebrash-ts/
 │       └── src/index.ts     # re-exports core + setFontBaseUrl
 ├── test/                    # cross-package golden + e2e suites
 │   ├── fixtures/            # 59 .zpl + 62 .png reference pairs from Go suite
-│   ├── golden.test.ts       # imports @zebrash/node, pixel-diffs vs reference
-│   ├── golden.browser.test.ts # imports @zebrash/browser, runs in Chromium
-│   ├── e2e.test.ts          # smoke: every fixture renders without throwing
-│   ├── helpers.ts           # renderZpl, pixelDiff, loadFixture (Node side)
+│   ├── golden.test.ts       # PNG: imports @zebrash/node, pixel-diffs vs reference
+│   ├── golden.browser.test.ts # PNG browser: runs in Chromium via Playwright
+│   ├── svg-golden.test.ts   # SVG: rasterises via @resvg/resvg-js, pixel-diffs vs same fixtures
+│   ├── svg-e2e.test.ts      # smoke: every fixture produces valid SVG
+│   ├── e2e.test.ts          # smoke: every fixture renders to PNG without throwing
+│   ├── helpers.ts           # renderZpl, renderZplAsSvg, pixelDiff, loadFixture
 │   └── browser-helpers.ts   # browser-side pixelDiff
 ├── examples/                # Vite app — workspace member, depends on @zebrash/browser
-├── scripts/render-fixture.ts # CLI: ZPL → PNG (uses @zebrash/node)
+├── scripts/render-fixture.ts # CLI: ZPL → PNG (or → SVG with --svg)
 ├── vitest.config.ts         # `core` / `node` / `browser` projects
 └── docs/solutions/          # YAML-frontmatter learnings for past bugs
 ```
@@ -132,10 +145,18 @@ inflate). Don't import directly from `@napi-rs/canvas` or `node:*` outside
 4. **`^XZ`** flushes accumulated elements into a `LabelInfo`. If a recalled
    format was active (`^XF`), its `resolveElements()` collapses it into the
    final element list.
-5. **`Drawer.drawLabelAsPng(label, opts)`** creates a `@napi-rs/canvas`,
+5. **`Drawer.drawLabelAsPng(label, opts)`** creates a platform canvas,
    iterates `label.elements`, dispatches each to all 14 registered
    `ElementDrawer`s (each one early-returns if `el._kind` doesn't match), and
    PNG-encodes the result.
+6. **`Drawer.drawLabelAsSvg(label, opts)`** is the parallel SVG path. Same
+   element loop, but each element goes through the matching
+   `SvgElementDrawer` (also 14, in the same order) and writes into an
+   `SvgEmitter` buffer. Reverse-print elements are wrapped in a
+   `<g style="mix-blend-mode:difference">` group; inverted labels in a
+   `rotate(180)` group. Only `^GF` (graphic field) falls back to raster —
+   it embeds a base64 PNG via `<image>`. Fonts are referenced according to
+   `opts.fontEmbed` (`"url"` default, `"embed"`, or `"none"`).
 
 ## Critical files (read these first when investigating bugs)
 
@@ -160,6 +181,16 @@ one-liner re-exports — bugs are virtually never there.
 - `packages/core/src/drawers/barcode_paint.ts` — `paintBitArrayBars`, `paintBitMatrixCells`
   (accepts separate moduleW × moduleH for PDF417), `paintEan13Text`,
   `paintHumanReadableText` shared by 1D-barcode drawers.
+- `packages/core/src/svg/emitter.ts` — `SvgEmitter`, the canvas-context
+  analog used by every SVG drawer. Pure string assembly, tracks `usedFonts`
+  for the `@font-face` builder.
+- `packages/core/src/svg-drawers/text_field.ts` — same complexity as the
+  canvas text drawer, plus a per-process measurement canvas (acquired via
+  `platform.createCanvas(1,1)`) so `wordWrap` lands on the same line breaks
+  as the PNG path.
+- `packages/core/src/svg-drawers/graphic_field.ts` — the only SVG drawer
+  that touches `platform`. Re-rasterises the bit-packed `^GF` payload into
+  a canvas, encodes PNG, and embeds it as a base64 `<image>`.
 
 ## Conventions when porting from Go
 
@@ -287,21 +318,40 @@ human-readable text, so they stay synchronous.
 - **Skia vs FreeType drift** is real and unavoidable on glyph edges.
   Aim for ≤ 5 % pixel diff; over that, check for a real bug before
   raising the threshold.
+- **resvg vs Skia drift** is similar but slightly larger on text — the SVG
+  golden suite defaults to ≤ 7 %, with three text-heavy fixtures at 11 %.
+  Above 11 %, investigate before raising.
 - **Canvas vs context** distinction matters: `images/` utilities take a
   `Canvas`, drawers operate on `SKRSContext2D`. Pass `ctx.canvas` when
   bridging.
+- **SVG group balance**: `SvgEmitter.save()`/`restore()` mirrors canvas
+  semantics by counting how many `<g transform=…>` opens have happened
+  since the last `save`, and emitting matching `</g>`s on `restore`. Every
+  `translate`/`rotate`/`scale`/`pushGroup` opens exactly one `<g>`. If you
+  add a new emit method that opens a group, increment `openGroups` so the
+  bookkeeping stays correct.
+- **Reverse-print in SVG** uses `mix-blend-mode: difference` (mathematically
+  XOR for monochrome content), not raster compositing. If the PNG and SVG
+  diverge on a `^FR` field, suspect a non-monochrome value sneaking into
+  the SVG — `difference` only matches XOR for pure black/white.
 
 ## When investigating a rendering bug
 
 1. Render the failing fixture: `bun run scripts/render-fixture.ts test/fixtures/<name>.zpl --out /tmp/x.png`
+   (or `--svg --out /tmp/x.svg` for the SVG path).
 2. Diff visually against `test/fixtures/<name>.png` (Read tool renders PNGs inline).
 3. If TS shows nothing where Go shows something: check element-shape with a
    tiny script that prints `Parser().parse(zpl).elements.map(e => e._kind)` —
    if a `_kind` is missing or unexpected, parser bug; otherwise drawer bug.
 4. If TS shows the wrong shape: trace into the responsible drawer
-   (`packages/core/src/drawers/<kind>.ts`) and compare line-by-line to
-   `../zebrash/internal/drawers/<kind>.go`.
-5. If only pixel-level (subpixel offsets, antialiasing): probably rasterizer
+   (`packages/core/src/drawers/<kind>.ts`, or
+   `packages/core/src/svg-drawers/<kind>.ts` for SVG) and compare
+   line-by-line to `../zebrash/internal/drawers/<kind>.go`.
+5. If PNG looks right but SVG is wrong: the bug is almost always either
+   (a) the SVG drawer's geometry has drifted from its canvas sibling, or
+   (b) `SvgEmitter.save`/`restore` bookkeeping. Check the `<g>` open/close
+   count in the output before suspecting a per-element issue.
+6. If only pixel-level (subpixel offsets, antialiasing): probably rasterizer
    drift — verify by counting the diff pixels' magnitude (low-magnitude
    diffs cluster on glyph edges).
 
