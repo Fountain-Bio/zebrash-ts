@@ -1,6 +1,6 @@
 {
   "name": "@zebrash/browser",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Render ZPL labels to PNG in the browser. Pure TypeScript port of ingridhq/zebrash.",
   "license": "MIT",
   "files": [
