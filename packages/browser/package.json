@@ -1,6 +1,6 @@
 {
   "name": "@zebrash/browser",
-  "version": "0.1.4",
+  "version": "1.0.0",
   "description": "Render ZPL labels to PNG or SVG in the browser. Pure TypeScript port of ingridhq/zebrash. Zero native deps.",
   "keywords": [
     "barcode",
@@ -43,7 +43,7 @@
     }
   },
   "dependencies": {
-    "@zebrash/core": "0.1.4",
+    "@zebrash/core": "1.0.0",
     "fflate": "^0.8.2"
   },
   "engines": {
