@@ -76,6 +76,26 @@ describe("toUnicodeText", () => {
     expect(toUnicodeText("hello", 999)).toBe("hello");
   });
 
+  it("decodes charset 28 as UTF-8 when bytes round-tripped through hex escape", () => {
+    // ^FH^FD ELMABAH_C3_87ES_C4_b0 → hex-decoded into a Latin-1 round-trip,
+    // then ^CI28 should decode the bytes as UTF-8 → Turkish "ELMABAHÇESİ".
+    const text = bytesAsString([
+      0x45, 0x4c, 0x4d, 0x41, 0x42, 0x41, 0x48, 0xc3, 0x87, 0x45, 0x53, 0xc4, 0xb0,
+    ]);
+    expect(toUnicodeText(text, 28)).toBe("ELMABAHÇESİ");
+  });
+
+  it("passes already-decoded Unicode through unchanged for charset 28", () => {
+    // Lone 0xC7 byte is invalid UTF-8 → should fall back to the input.
+    expect(toUnicodeText("Çé", 28)).toBe("Çé");
+  });
+
+  it("short-circuits when any code unit is > 0xff for charset 28", () => {
+    // 'İ' is U+0130 — can't be a single Latin-1 byte, so the byte-decode
+    // attempt is skipped and the input is returned unchanged.
+    expect(toUnicodeText("İ", 28)).toBe("İ");
+  });
+
   it("round-trips ASCII through CP437 helper", () => {
     const original = "ABCabc123";
     const bytes = new Uint8Array(original.length);

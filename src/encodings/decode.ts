@@ -43,7 +43,31 @@ export function toUnicodeText(text: string, charset: number): string {
     return new TextDecoder("windows-1252").decode(stringToBytes(text));
   }
 
+  if (charset === 28) {
+    return decodeUtf8IfBytes(text);
+  }
+
   return text;
+}
+
+// Charset 28 is UTF-8. Go strings are bytes, so the Go reference returns the
+// input unchanged: drawing the UTF-8 bytes "just works." In TS we may receive
+// either real Unicode (from the parser-level UTF-8 decode of raw ZPL bytes) or
+// a Latin-1 round-trip from `decodeEscapedString` (^FH hex escapes), where the
+// JS string's low bytes form a valid UTF-8 sequence. Detect the latter via a
+// strict UTF-8 decode and fall back to the original when the bytes aren't
+// valid UTF-8 (which is the signature of already-decoded Unicode).
+const utf8Strict = new TextDecoder("utf-8", { fatal: true });
+
+function decodeUtf8IfBytes(text: string): string {
+  for (let i = 0; i < text.length; i++) {
+    if (text.charCodeAt(i) > 0xff) return text;
+  }
+  try {
+    return utf8Strict.decode(stringToBytes(text));
+  } catch {
+    return text;
+  }
 }
 
 /** Decode raw bytes from IBM CP437 to a JS (UTF-16) string. */
