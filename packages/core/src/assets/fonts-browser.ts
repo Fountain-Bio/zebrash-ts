@@ -5,9 +5,11 @@
  * the bytes, and returns them as `Uint8Array`. Called via the `package.json`
  * `"browser"` field swap when bundling for the browser.
  *
- * Default base URL serves the fonts directly from the public GitHub repo via
- * jsdelivr. Override via `setFontBaseUrl(...)` to self-host (CSP, offline,
- * version-pinning).
+ * Default base URL serves the fonts from the published `@zebrash/core`
+ * tarball via jsdelivr. The `files` field in core's package.json includes
+ * `src/assets/fonts`, so this path is stable across repo restructures and
+ * doesn't depend on branch state. Override via `setFontBaseUrl(...)` to
+ * self-host (CSP, offline, version-pinning).
  */
 
 export type FontKey = "HelveticaBold" | "DejavuSansMono" | "DejavuSansMonoBold" | "ZplGS";
@@ -19,7 +21,7 @@ const filenames: Record<FontKey, string> = {
   ZplGS: "ZplGSCustom.ttf",
 };
 
-let baseUrl = "https://cdn.jsdelivr.net/gh/Fountain-Bio/zebrash-ts@main/src/assets/fonts/";
+let baseUrl = "https://cdn.jsdelivr.net/npm/@zebrash/core/src/assets/fonts/";
 
 export function setFontBaseUrl(url: string): void {
   baseUrl = url.endsWith("/") ? url : `${url}/`;
