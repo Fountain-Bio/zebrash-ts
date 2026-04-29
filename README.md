@@ -216,8 +216,7 @@ the next run. If the canvas needs a non-default size, add an entry to
 ### Releasing
 
 Bump locally; let CI publish via [npm OIDC trusted
-publishing](https://docs.npmjs.com/trusted-publishers) — no long-lived
-`NPM_TOKEN` involved.
+publishing](https://docs.npmjs.com/trusted-publishers)
 
 ```bash
 bun run release 0.2.0
