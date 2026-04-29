@@ -2,7 +2,14 @@
   "name": "@zebrash/core",
   "version": "0.1.2",
   "description": "Engine for the @zebrash family — pure-TS ZPL parser + renderer. Internal package; consume @zebrash/node or @zebrash/browser.",
+  "homepage": "https://github.com/Fountain-Bio/zebrash-ts#readme",
+  "bugs": "https://github.com/Fountain-Bio/zebrash-ts/issues",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Fountain-Bio/zebrash-ts.git",
+    "directory": "packages/core"
+  },
   "files": [
     "dist/**/*.js",
     "dist/**/*.d.ts",

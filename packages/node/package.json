@@ -2,7 +2,14 @@
   "name": "@zebrash/node",
   "version": "0.1.2",
   "description": "Render ZPL labels to PNG on Node.js. Pure TypeScript port of ingridhq/zebrash.",
+  "homepage": "https://github.com/Fountain-Bio/zebrash-ts#readme",
+  "bugs": "https://github.com/Fountain-Bio/zebrash-ts/issues",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Fountain-Bio/zebrash-ts.git",
+    "directory": "packages/node"
+  },
   "files": [
     "dist/**/*.js",
     "dist/**/*.d.ts",

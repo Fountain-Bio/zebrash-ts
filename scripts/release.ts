@@ -95,7 +95,10 @@ function main(): void {
   for (const pkg of PACKAGES) {
     runQuiet(`git add packages/${pkg}/package.json`);
   }
-  runQuiet(`git commit -m "chore: release ${tag}"`);
+  // `[skip ci]` keeps the version-bump commit from re-triggering CI on
+  // main — release-publish.yml runs on the tag and is the only check
+  // that matters for this commit. CI already ran on the parent SHA.
+  runQuiet(`git commit -m "chore: release ${tag} [skip ci]"`);
   runQuiet(`git tag ${tag}`);
 
   process.stdout.write(`\n✓ committed and tagged ${tag}\n`);
