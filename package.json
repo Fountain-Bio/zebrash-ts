@@ -20,7 +20,8 @@
     "test": "bun run build && vitest run --project core --project node",
     "test:watch": "vitest --project core",
     "test:browser": "bun run build && vitest run --project browser",
-    "test:all": "bun run build && vitest run"
+    "test:all": "bun run build && vitest run",
+    "release": "bun run scripts/release.ts"
   },
   "devDependencies": {
     "@napi-rs/canvas": "^0.1.100",

@@ -170,6 +170,23 @@ the next run. If the canvas needs a non-default size, add an entry to
 `FIXTURE_OPTIONS`, which mirrors the per-fixture options in Go's
 `parser_test.go`.
 
+### Releasing
+
+Bump locally; let CI publish.
+
+```bash
+bun run release 0.2.0
+git push origin main && git push origin v0.2.0
+```
+
+`bun run release <version>` validates semver, refuses to run with a dirty
+tree or off `main`, bumps all three `@zebrash/*` `package.json` files to
+the same version (lockstep), runs `oxfmt`, then commits and tags `vX.Y.Z`.
+It does **not** push — review the commit first, then push the branch and
+tag. The tag push triggers `.github/workflows/release-publish.yml`, which
+rebuilds, runs the full test suite, and `bun publish`es all three packages
+to npm in dependency order with provenance.
+
 ## Pixel-diff tolerance
 
 Skia (used by `@napi-rs/canvas`) and FreeType (used by the Go reference)
