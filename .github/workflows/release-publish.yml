@@ -1,9 +1,9 @@
 name: Release — publish to npm
 
 # Triggered by the tag push from the local `bun run release` script.
-# Builds, runs the full test suite as a sanity gate, then publishes the
-# three @zebrash/* packages to npm via OIDC trusted publishing — no
-# long-lived NPM_TOKEN involved.
+# CI on the underlying main commit gates correctness — this workflow
+# just builds the artifact, sanity-checks the tag, and publishes via
+# OIDC trusted publishing. No long-lived NPM_TOKEN involved.
 #
 # Setup required on npmjs.com (one-time, per package):
 #   Package settings → Trusted publishing → Add publisher
@@ -62,24 +62,8 @@ jobs:
           done
           echo "::notice::all three packages at $tag"
 
-      - name: Cache Playwright browsers
-        uses: actions/cache@v4
-        id: playwright-cache
-        with:
-          path: ~/.cache/ms-playwright
-          key: playwright-${{ runner.os }}-${{ hashFiles('bun.lock') }}
-
-      - name: Install Playwright Chromium
-        if: steps.playwright-cache.outputs.cache-hit != 'true'
-        run: bunx playwright install --with-deps chromium
-
-      - name: Install Playwright system deps
-        if: steps.playwright-cache.outputs.cache-hit == 'true'
-        run: bunx playwright install-deps chromium
-
-      # Sanity gate: full suite passes on the tagged commit before we ship.
-      - name: Run full test suite
-        run: bun run test:all
+      - name: Build all packages
+        run: bun run build
 
       # `npm publish --workspace` rewrites `workspace:*` to the actual
       # version of the workspace package. OIDC publishing is automatic when
