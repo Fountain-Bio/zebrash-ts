@@ -4,7 +4,9 @@
   "description": "Render ZPL labels to PNG in the browser. Pure TypeScript port of ingridhq/zebrash.",
   "license": "MIT",
   "files": [
-    "dist"
+    "dist/**/*.js",
+    "dist/**/*.d.ts",
+    "dist/**/*.d.ts.map"
   ],
   "type": "module",
   "sideEffects": false,

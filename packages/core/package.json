@@ -4,7 +4,9 @@
   "description": "Engine for the @zebrash family — pure-TS ZPL parser + renderer. Internal package; consume @zebrash/node or @zebrash/browser.",
   "license": "MIT",
   "files": [
-    "dist",
+    "dist/**/*.js",
+    "dist/**/*.d.ts",
+    "dist/**/*.d.ts.map",
     "src/assets/fonts"
   ],
   "type": "module",
