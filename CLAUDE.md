@@ -44,8 +44,10 @@ zebrash-ts/
 │   ├── golden.test.ts       # auto-discovers fixtures, pixel-diffs vs reference
 │   ├── e2e.test.ts          # smoke: every fixture renders without throwing
 │   └── helpers.ts           # renderZpl, pixelDiff, loadFixture
-└── scripts/
-    └── render-fixture.ts    # CLI: ZPL → PNG, used for visual debugging
+├── scripts/
+│   └── render-fixture.ts    # CLI: ZPL → PNG, used for visual debugging
+└── docs/solutions/          # YAML-frontmatter learnings for past bugs and
+                             # best practices (module, tags, problem_type)
 ```
 
 ## Platform layer (Node + browser)

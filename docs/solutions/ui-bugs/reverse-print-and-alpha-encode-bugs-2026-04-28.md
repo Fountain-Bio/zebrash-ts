@@ -187,6 +187,21 @@ for (let i = 0; i < pixels.length; i += 4) {
   must first composite against the canvas's clear color. Document the
   invariant alongside the encoder so the next encoder added doesn't
   repeat the bug.
+- **Unit test pinning the predicate per parser.** A table-driven test
+  that runs `isReversePrintable` against a concrete element instance
+  from each parser that sets `reversePrint` (`graphic_box`,
+  `graphic_circle`, `graphic_diagonal_line`, `graphic_field`,
+  `recall_graphics`, `image_load`, `text_field`, `barcode_qr`,
+  `maxicode`, ...) would have caught the original
+  method-vs-property drift at unit level instead of waiting for a
+  browser-only golden fixture. A future rename of `reversePrint` in any
+  one parser would otherwise silently disable reverse-print for that
+  element.
+- **Extract a `compositeOverWhite(r, a)` helper.** The expression
+  `(r * a + 255 * (255 − a)) / 255` is repeated verbatim across
+  `encodeMonochrome` and `encodeGrayscale`. Lifting it into a single
+  helper lets the alpha invariant live in one place and any future
+  encoder pick it up by import rather than by remembering the formula.
 - **Defensive fixture covering both bugs at once.** A regression test
   that puts `^FR` text inside a black `^GB` filled rectangle exercises
   reverse-print, and putting it inside a _rounded_ `^GB` also exercises
