@@ -1,16 +1,17 @@
 // SVG analogue of `drawers/barcode_aztec.ts`.
 
+import type { BitMatrix } from "../barcodes/utils/index.ts";
+import type { BarcodeAztecWithData } from "../elements/index.ts";
+import type { SvgEmitter } from "../svg/emitter.ts";
+import type { SvgElementDrawer } from "./svg_element_drawer.ts";
+
 import {
   AZTEC_DEFAULT_EC_PERCENT,
   AZTEC_DEFAULT_LAYERS,
   encodeAztec,
 } from "../barcodes/aztec/index.ts";
-import type { BitMatrix } from "../barcodes/utils/index.ts";
 import { adjustImageTypeSetPosition } from "../drawers/element_drawer.ts";
-import type { BarcodeAztecWithData } from "../elements/index.ts";
-import type { SvgEmitter } from "../svg/emitter.ts";
 import { paintBitMatrixCellsSvg } from "./barcode_paint_svg.ts";
-import type { SvgElementDrawer } from "./svg_element_drawer.ts";
 import { rotateForOrientation } from "./transform.ts";
 
 const SIZE_FULL_RANGE_OFFSET = 200;

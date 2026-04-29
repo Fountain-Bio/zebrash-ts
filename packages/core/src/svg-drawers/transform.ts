@@ -1,3 +1,5 @@
+import type { SvgEmitter } from "../svg/emitter.ts";
+
 import {
   type FieldOrientation,
   FieldOrientation90,
@@ -6,7 +8,6 @@ import {
   type LabelPosition,
   getFieldOrientationDegrees,
 } from "../elements/index.ts";
-import type { SvgEmitter } from "../svg/emitter.ts";
 
 interface RotatableImage {
   width: number;

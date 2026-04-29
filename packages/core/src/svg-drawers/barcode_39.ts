@@ -1,11 +1,12 @@
 // SVG analogue of `drawers/barcode_39.ts`.
 
-import { encodeCode39 } from "../barcodes/code39/index.ts";
-import { adjustImageTypeSetPosition } from "../drawers/element_drawer.ts";
 import type { Barcode39WithData } from "../elements/index.ts";
 import type { SvgEmitter } from "../svg/emitter.ts";
-import { paintBitArrayBarsSvg, paintHumanReadableTextSvg } from "./barcode_paint_svg.ts";
 import type { SvgElementDrawer } from "./svg_element_drawer.ts";
+
+import { encodeCode39 } from "../barcodes/code39/index.ts";
+import { adjustImageTypeSetPosition } from "../drawers/element_drawer.ts";
+import { paintBitArrayBarsSvg, paintHumanReadableTextSvg } from "./barcode_paint_svg.ts";
 import { rotateForOrientation } from "./transform.ts";
 
 export function newBarcode39SvgDrawer(): SvgElementDrawer {

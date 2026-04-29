@@ -1,9 +1,10 @@
 // SVG analogue of `drawers/graphic_circle.ts`.
 
 import type { GraphicCircle } from "../elements/graphic_circle.ts";
-import { LineColor } from "../elements/line_color.ts";
 import type { SvgEmitter } from "../svg/emitter.ts";
 import type { SvgElementDrawer } from "./svg_element_drawer.ts";
+
+import { LineColor } from "../elements/line_color.ts";
 
 function isGraphicCircle(value: unknown): value is GraphicCircle {
   return (

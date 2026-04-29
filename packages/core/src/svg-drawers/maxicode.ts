@@ -4,6 +4,9 @@
 // `<symbol>` defined in `<defs>`, instead of a `<polygon>` per cell —
 // MaxiCode has 884 modules, so this saves ~80% of the output size.
 
+import type { SvgEmitter } from "../svg/emitter.ts";
+import type { SvgElementDrawer } from "./svg_element_drawer.ts";
+
 import {
   MAXICODE_COLS,
   MAXICODE_ROWS,
@@ -16,8 +19,6 @@ import {
   type MaxicodeWithData,
   getMaxicodeInputData,
 } from "../elements/index.ts";
-import type { SvgEmitter } from "../svg/emitter.ts";
-import type { SvgElementDrawer } from "./svg_element_drawer.ts";
 
 const BLACK = "#000000";
 const HEX_SYMBOL_ID = "zb-mxc-hex";
@@ -80,7 +81,10 @@ function formatHexPoints(w: number, h: number): string {
 
 function roundShort(v: number): string {
   if (Number.isInteger(v)) return v.toString();
-  return v.toFixed(3).replace(/(\.\d*?)0+$/, "$1").replace(/\.$/, "");
+  return v
+    .toFixed(3)
+    .replace(/(\.\d*?)0+$/, "$1")
+    .replace(/\.$/, "");
 }
 
 /**

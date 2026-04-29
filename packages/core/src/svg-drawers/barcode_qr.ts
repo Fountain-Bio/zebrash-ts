@@ -1,14 +1,15 @@
 // SVG analogue of `drawers/barcode_qr.ts`.
 
+import type { SvgEmitter } from "../svg/emitter.ts";
+import type { SvgElementDrawer } from "./svg_element_drawer.ts";
+
 import { type QrEncoderErrorCorrectionLevel, encodeQr } from "../barcodes/qrcode/index.ts";
 import {
   type BarcodeQrWithData,
   type QrErrorCorrectionLevel,
   getQrInputData,
 } from "../elements/index.ts";
-import type { SvgEmitter } from "../svg/emitter.ts";
 import { paintBitMatrixCellsSvg } from "./barcode_paint_svg.ts";
-import type { SvgElementDrawer } from "./svg_element_drawer.ts";
 
 export function newBarcodeQrSvgDrawer(): SvgElementDrawer {
   return {

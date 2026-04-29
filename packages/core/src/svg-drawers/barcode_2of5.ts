@@ -1,11 +1,12 @@
 // SVG analogue of `drawers/barcode_2of5.ts`.
 
-import { encodeInterleaved2of5 } from "../barcodes/twooffive/index.ts";
-import { adjustImageTypeSetPosition } from "../drawers/element_drawer.ts";
 import type { Barcode2of5WithData } from "../elements/index.ts";
 import type { SvgEmitter } from "../svg/emitter.ts";
-import { paintBitArrayBarsSvg, paintHumanReadableTextSvg } from "./barcode_paint_svg.ts";
 import type { SvgElementDrawer } from "./svg_element_drawer.ts";
+
+import { encodeInterleaved2of5 } from "../barcodes/twooffive/index.ts";
+import { adjustImageTypeSetPosition } from "../drawers/element_drawer.ts";
+import { paintBitArrayBarsSvg, paintHumanReadableTextSvg } from "./barcode_paint_svg.ts";
 import { rotateForOrientation } from "./transform.ts";
 
 const NON_DIGIT = /[^0-9]+/g;

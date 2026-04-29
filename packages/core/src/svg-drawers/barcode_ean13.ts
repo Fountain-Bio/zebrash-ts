@@ -1,5 +1,8 @@
 // SVG analogue of `drawers/barcode_ean13.ts`.
 
+import type { SvgEmitter } from "../svg/emitter.ts";
+import type { SvgElementDrawer } from "./svg_element_drawer.ts";
+
 import {
   calculateEan13GuardExtension,
   encodeEan13,
@@ -14,9 +17,7 @@ import {
   FieldOrientation180,
   type LabelPosition,
 } from "../elements/index.ts";
-import type { SvgEmitter } from "../svg/emitter.ts";
 import { paintEan13TextSvg } from "./barcode_paint_svg.ts";
-import type { SvgElementDrawer } from "./svg_element_drawer.ts";
 import { rotateForOrientation } from "./transform.ts";
 
 const BLACK = "#000000";

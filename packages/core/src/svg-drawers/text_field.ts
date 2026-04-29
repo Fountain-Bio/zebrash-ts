@@ -7,6 +7,11 @@
 // with `text-anchor="start"` — that sidesteps any rasteriser-specific
 // interpretation of SVG's anchor / dominant-baseline interactions.
 
+import type { DrawerOptions } from "../drawer-options.ts";
+import type { DrawerState } from "../drawers/drawer_state.ts";
+import type { SvgEmitter } from "../svg/emitter.ts";
+import type { SvgElementDrawer } from "./svg_element_drawer.ts";
+
 import {
   type FontKey,
   FONT_FAMILY_DEJAVU_MONO,
@@ -15,8 +20,6 @@ import {
   FONT_FAMILY_ZPL_GS,
   registerEmbeddedFonts,
 } from "../assets/index.ts";
-import type { DrawerOptions } from "../drawer-options.ts";
-import type { DrawerState } from "../drawers/drawer_state.ts";
 import {
   FieldAlignmentRight,
   FieldOrientation90,
@@ -30,8 +33,6 @@ import {
   type TextField,
 } from "../elements/index.ts";
 import { platform } from "../platform.ts";
-import type { SvgEmitter } from "../svg/emitter.ts";
-import type { SvgElementDrawer } from "./svg_element_drawer.ts";
 import { rotateAbout, scaleAbout } from "./transform.ts";
 
 const FONT_KEY_BY_FAMILY: Record<string, FontKey> = {
@@ -322,7 +323,20 @@ function drawStringWrapped(
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i] ?? "";
     if (align === TextAlignmentJustified && i < lastLine) {
-      drawStringJustified(emitter, ctx, line, cx, cy, lineAx, lineAy, width, fontHeight, family, fontKey, fontSize);
+      drawStringJustified(
+        emitter,
+        ctx,
+        line,
+        cx,
+        cy,
+        lineAx,
+        lineAy,
+        width,
+        fontHeight,
+        family,
+        fontKey,
+        fontSize,
+      );
     } else {
       drawStringAnchored(emitter, ctx, line, cx, cy, lineAx, lineAy, family, fontKey, fontSize);
     }

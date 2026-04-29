@@ -2,9 +2,10 @@
 // `internal/drawers/graphic_box.go`).
 
 import type { GraphicBox } from "../elements/graphic_box.ts";
-import { LineColor } from "../elements/line_color.ts";
 import type { SvgEmitter } from "../svg/emitter.ts";
 import type { SvgElementDrawer } from "./svg_element_drawer.ts";
+
+import { LineColor } from "../elements/line_color.ts";
 
 const COLOR_BLACK = "#000000";
 const COLOR_WHITE = "#ffffff";
@@ -65,9 +66,8 @@ export function newGraphicBoxSvgDrawer(): SvgElementDrawer {
         const r1 = (element.cornerRounding * Math.min(width, height)) / 16;
         const innerW = width - 2 * border;
         const innerH = height - 2 * border;
-        const r2 = innerW > 0 && innerH > 0
-          ? (element.cornerRounding * Math.min(innerW, innerH)) / 16
-          : 0;
+        const r2 =
+          innerW > 0 && innerH > 0 ? (element.cornerRounding * Math.min(innerW, innerH)) / 16 : 0;
         emitter.roundedDonut(
           element.position.x,
           element.position.y,

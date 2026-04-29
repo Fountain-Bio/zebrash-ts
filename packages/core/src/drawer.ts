@@ -12,12 +12,9 @@ import {
   zerofill,
 } from "./images/index.ts";
 import { platform } from "./platform.ts";
+import { type SvgElementDrawer, defaultSvgElementDrawers } from "./svg-drawers/index.ts";
 import { SvgEmitter } from "./svg/emitter.ts";
 import { buildFontFaceCss } from "./svg/font_embed.ts";
-import {
-  type SvgElementDrawer,
-  defaultSvgElementDrawers,
-} from "./svg-drawers/index.ts";
 
 /**
  * Element shape carrying the `^FR` reverse-print flag. Mirrors Go's
@@ -179,10 +176,7 @@ export class Drawer {
    *
    * `grayscaleOutput` is ignored (PNG-only encoding concern).
    */
-  async drawLabelAsSvg(
-    label: LabelInfo,
-    options: Partial<DrawerOptions> = {},
-  ): Promise<string> {
+  async drawLabelAsSvg(label: LabelInfo, options: Partial<DrawerOptions> = {}): Promise<string> {
     const opts = withDefaults(options);
 
     const state = new DrawerState();

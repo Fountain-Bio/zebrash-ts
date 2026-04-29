@@ -1,11 +1,7 @@
-import {
-  type FontKey,
-  getEmbeddedFont,
-  getFontBaseUrl,
-  getFontFilename,
-} from "../assets/fonts.ts";
-import { EmbeddedFontFamilies } from "../assets/register.ts";
 import type { SvgFontEmbedMode } from "../drawer-options.ts";
+
+import { type FontKey, getEmbeddedFont, getFontBaseUrl, getFontFilename } from "../assets/fonts.ts";
+import { EmbeddedFontFamilies } from "../assets/register.ts";
 
 const familyByKey: Record<FontKey, string> = {
   HelveticaBold: EmbeddedFontFamilies.HelveticaBold,

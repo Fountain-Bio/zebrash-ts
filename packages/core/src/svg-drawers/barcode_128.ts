@@ -1,5 +1,8 @@
 // SVG analogue of `drawers/barcode_128.ts`.
 
+import type { SvgEmitter } from "../svg/emitter.ts";
+import type { SvgElementDrawer } from "./svg_element_drawer.ts";
+
 import { ESCAPE_FNC_1, encodeCode128Auto, encodeCode128NoMode } from "../barcodes/code128/index.ts";
 import { adjustImageTypeSetPosition } from "../drawers/element_drawer.ts";
 import {
@@ -8,9 +11,7 @@ import {
   BarcodeModeNo,
   BarcodeModeUcc,
 } from "../elements/index.ts";
-import type { SvgEmitter } from "../svg/emitter.ts";
 import { paintBitArrayBarsSvg, paintHumanReadableTextSvg } from "./barcode_paint_svg.ts";
-import type { SvgElementDrawer } from "./svg_element_drawer.ts";
 import { rotateForOrientation } from "./transform.ts";
 
 const PARENS_AND_SPACES = /[()\s]+/g;

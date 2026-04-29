@@ -4,9 +4,10 @@
 // data URL `<image>`.
 
 import type { GraphicField } from "../elements/graphic_field.ts";
-import { platform } from "../platform.ts";
 import type { SvgEmitter } from "../svg/emitter.ts";
 import type { SvgElementDrawer } from "./svg_element_drawer.ts";
+
+import { platform } from "../platform.ts";
 
 function isGraphicField(value: unknown): value is GraphicField {
   return (

@@ -10,10 +10,10 @@
  * a one-line justification.
  */
 
+import { Resvg, type ResvgRenderOptions } from "@resvg/resvg-js";
 import { existsSync, readdirSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
-import { Resvg, type ResvgRenderOptions } from "@resvg/resvg-js";
 import { describe, expect, it } from "vitest";
 
 import {

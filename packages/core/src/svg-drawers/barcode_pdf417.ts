@@ -1,12 +1,13 @@
 // SVG analogue of `drawers/barcode_pdf417.ts`.
 
-import { encodePdf417, toMatrix as pdf417ToMatrix } from "../barcodes/pdf417/index.ts";
 import type { BitMatrix } from "../barcodes/utils/index.ts";
-import { adjustImageTypeSetPosition } from "../drawers/element_drawer.ts";
 import type { BarcodePdf417WithData } from "../elements/index.ts";
 import type { SvgEmitter } from "../svg/emitter.ts";
-import { paintBitMatrixCellsSvg } from "./barcode_paint_svg.ts";
 import type { SvgElementDrawer } from "./svg_element_drawer.ts";
+
+import { encodePdf417, toMatrix as pdf417ToMatrix } from "../barcodes/pdf417/index.ts";
+import { adjustImageTypeSetPosition } from "../drawers/element_drawer.ts";
+import { paintBitMatrixCellsSvg } from "./barcode_paint_svg.ts";
 import { rotateForOrientation } from "./transform.ts";
 
 function asBitMatrix(rows: boolean[][]): {
@@ -44,7 +45,13 @@ export function newBarcodePdf417SvgDrawer(): SvgElementDrawer {
       emitter.save();
       try {
         rotateForOrientation(emitter, width, height, pos, barcode.orientation);
-        paintBitMatrixCellsSvg(emitter, matrix as unknown as BitMatrix, pos, moduleWidth, moduleHeight);
+        paintBitMatrixCellsSvg(
+          emitter,
+          matrix as unknown as BitMatrix,
+          pos,
+          moduleWidth,
+          moduleHeight,
+        );
       } finally {
         emitter.restore();
       }

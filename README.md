@@ -104,19 +104,19 @@ bitmaps (no other path requires raster).
 
 `fontEmbed` controls how the SVG references the bundled TTFs:
 
-| Mode      | What it emits                                                     | When to use it                                         |
-| --------- | ----------------------------------------------------------------- | ------------------------------------------------------ |
-| `"url"`   | `@font-face src: url("<cdn>/font.ttf")` — same CDN as the runtime loader. | **Default.** Browser embedding; small file size; CDN fetches once and caches. |
-| `"embed"` | `@font-face src: url("data:font/ttf;base64,…")`                   | Offline / PDF-export / portable archive use cases. Adds ~54 KB (Helvetica only) to ~900 KB (DejaVu pair) per SVG. |
-| `"none"`  | `font-family` attribute only, no `@font-face`.                    | Renderer already has the fonts (test harness, host system). Smallest output. |
+| Mode      | What it emits                                                             | When to use it                                                                                                    |
+| --------- | ------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| `"url"`   | `@font-face src: url("<cdn>/font.ttf")` — same CDN as the runtime loader. | **Default.** Browser embedding; small file size; CDN fetches once and caches.                                     |
+| `"embed"` | `@font-face src: url("data:font/ttf;base64,…")`                           | Offline / PDF-export / portable archive use cases. Adds ~54 KB (Helvetica only) to ~900 KB (DejaVu pair) per SVG. |
+| `"none"`  | `font-family` attribute only, no `@font-face`.                            | Renderer already has the fonts (test harness, host system). Smallest output.                                      |
 
 Approximate sizes for a typical text-heavy label using DejaVu:
 
-| Mode     | SVG size       |
-| -------- | -------------- |
-| `"none"` | ~10–50 KB      |
-| `"url"`  | ~10–50 KB      |
-| `"embed"`| +900 KB        |
+| Mode      | SVG size  |
+| --------- | --------- |
+| `"none"`  | ~10–50 KB |
+| `"url"`   | ~10–50 KB |
+| `"embed"` | +900 KB   |
 
 `grayscaleOutput` is ignored for `drawLabelAsSvg` — it's a PNG-encoder
 concern. Reverse-print elements (`^FR`) are wrapped in a

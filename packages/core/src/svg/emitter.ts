@@ -110,14 +110,7 @@ export class SvgEmitter {
     this.body += `<path d="${outer} ${inner}" fill="${fill}" fill-rule="evenodd"/>`;
   }
 
-  roundedRect(
-    x: number,
-    y: number,
-    w: number,
-    h: number,
-    r: number,
-    fill: string,
-  ): void {
+  roundedRect(x: number, y: number, w: number, h: number, r: number, fill: string): void {
     this.body += `<path d="${roundedRectPath(x, y, w, h, r)}" fill="${fill}"/>`;
   }
 
@@ -127,13 +120,7 @@ export class SvgEmitter {
     this.body += `<polygon points="${pts}" fill="${fill}"/>`;
   }
 
-  circleStroke(
-    cx: number,
-    cy: number,
-    r: number,
-    stroke: string,
-    strokeWidth: number,
-  ): void {
+  circleStroke(cx: number, cy: number, r: number, stroke: string, strokeWidth: number): void {
     this.body += `<circle cx="${n(cx)}" cy="${n(cy)}" r="${n(r)}" fill="none" stroke="${stroke}" stroke-width="${n(strokeWidth)}"/>`;
   }
 
@@ -182,8 +169,7 @@ export class SvgEmitter {
     const baseline = opts.baseline ?? "alphabetic";
     // SVG `dominant-baseline: alphabetic` is the canvas default; emit only
     // when overridden so the attribute set stays terse.
-    const baselineAttr =
-      baseline === "alphabetic" ? "" : ` dominant-baseline="${baseline}"`;
+    const baselineAttr = baseline === "alphabetic" ? "" : ` dominant-baseline="${baseline}"`;
     this.body += `<text x="${n(x)}" y="${n(y)}" font-family="${escapeAttr(opts.fontFamily)}" font-size="${n(opts.fontSize)}" fill="${fill}" text-anchor="${anchor}"${baselineAttr}>${escapeText(str)}</text>`;
   }
 

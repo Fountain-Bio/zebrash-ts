@@ -1,12 +1,13 @@
 // SVG analogue of `drawers/barcode_datamatrix.ts`.
 
+import type { SvgEmitter } from "../svg/emitter.ts";
+import type { SvgElementDrawer } from "./svg_element_drawer.ts";
+
 import { SymbolShapeHint } from "../barcodes/datamatrix/encoder/symbol_shape_hint.ts";
 import { encodeDatamatrix } from "../barcodes/datamatrix/index.ts";
 import { adjustImageTypeSetPosition } from "../drawers/element_drawer.ts";
 import { type BarcodeDatamatrixWithData, DatamatrixRatioRectangular } from "../elements/index.ts";
-import type { SvgEmitter } from "../svg/emitter.ts";
 import { paintBitMatrixCellsSvg } from "./barcode_paint_svg.ts";
-import type { SvgElementDrawer } from "./svg_element_drawer.ts";
 import { rotateForOrientation } from "./transform.ts";
 
 const GS_BYTE = String.fromCharCode(29);

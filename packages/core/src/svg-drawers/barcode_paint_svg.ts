@@ -7,14 +7,11 @@
 //   2. Text uses the SVG `<text>` element with a tracked `FontKey` so the
 //      drawer can emit a matching `@font-face` rule once.
 
-import {
-  EmbeddedFontFamilies,
-  FONT0_NAME,
-  FONT1_NAME,
-} from "../assets/index.ts";
 import type { BitMatrix } from "../barcodes/utils/index.ts";
 import type { LabelPosition } from "../elements/index.ts";
 import type { SvgEmitter } from "../svg/emitter.ts";
+
+import { EmbeddedFontFamilies, FONT0_NAME, FONT1_NAME } from "../assets/index.ts";
 
 const BLACK = "#000000";
 

@@ -1,9 +1,10 @@
 // SVG analogue of `drawers/graphic_diagonal_line.ts`.
 
 import type { GraphicDiagonalLine } from "../elements/graphic_diagonal_line.ts";
-import { LineColor } from "../elements/line_color.ts";
 import type { SvgEmitter } from "../svg/emitter.ts";
 import type { SvgElementDrawer } from "./svg_element_drawer.ts";
+
+import { LineColor } from "../elements/line_color.ts";
 
 function isGraphicDiagonalLine(value: unknown): value is GraphicDiagonalLine {
   return (
