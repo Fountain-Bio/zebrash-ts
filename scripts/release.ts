@@ -24,10 +24,6 @@ const ROOT = resolve(HERE, "..");
 const PACKAGES = ["core", "node", "browser"] as const;
 type Package = (typeof PACKAGES)[number];
 
-function run(cmd: string): void {
-  execSync(cmd, { cwd: ROOT, stdio: "inherit" });
-}
-
 function runQuiet(cmd: string): void {
   execSync(cmd, { cwd: ROOT, stdio: ["ignore", "ignore", "inherit"] });
 }
