@@ -1,0 +1,27 @@
+{
+  "name": "@zebrash/node",
+  "version": "0.1.0",
+  "description": "Render ZPL labels to PNG on Node.js. Pure TypeScript port of ingridhq/zebrash.",
+  "license": "MIT",
+  "type": "module",
+  "sideEffects": false,
+  "files": [
+    "dist"
+  ],
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "dependencies": {
+    "@napi-rs/canvas": "^0.1.100",
+    "@zebrash/core": "workspace:*",
+    "fflate": "^0.8.2"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

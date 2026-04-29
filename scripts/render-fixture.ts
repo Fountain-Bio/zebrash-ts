@@ -1,14 +1,12 @@
 #!/usr/bin/env bun
 /**
- * CLI: render a ZPL fixture (or any ZPL file) to PNG using the public API.
+ * CLI: render a ZPL fixture (or any ZPL file) to PNG using @zebrash/node.
  *
  * Usage:
  *   bun run scripts/render-fixture.ts test/fixtures/amazon.zpl > out.png
  *   bun run scripts/render-fixture.ts test/fixtures/amazon.zpl --out /tmp/amazon.png
  *
- * Exits non-zero with a clear error if the public API isn't yet wired up
- * in `src/index.ts` (e.g. ahead of integration of units 1, 6, 7, 8, 9,
- * 20, 21, 22, 23).
+ * Run `bun run build` first — this script imports the built artifact.
  */
 
 import { readFileSync, writeFileSync } from "node:fs";
@@ -90,8 +88,7 @@ async function main(): Promise<void> {
   const api = await loadRenderApi();
   if (!api) {
     throw new Error(
-      "zebrash render API is not wired up yet — Parser/Drawer are not exported from src/index.ts. " +
-        "This script will work once units 1, 6, 7, 8, 9, 20, 21, 22, 23 are integrated.",
+      "@zebrash/node could not be resolved. Run `bun run build` from the repo root first.",
     );
   }
 

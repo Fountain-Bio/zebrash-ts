@@ -6,3 +6,4 @@ coverage/
 .DS_Store
 .vitest-cache/
 test/__screenshots__/
+*.tsbuildinfo

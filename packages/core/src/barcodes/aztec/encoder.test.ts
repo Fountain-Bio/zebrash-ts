@@ -62,7 +62,12 @@ describe("Aztec encoder", () => {
   });
 
   it("encodes a fixture payload from aztec_ec.zpl without error", () => {
-    const fixture = fileURLToPath(new URL("../../../test/fixtures/aztec_ec.zpl", import.meta.url));
+    // Test fixtures live at the repo root (`test/fixtures/`), three levels
+    // above this file's package: `packages/core/src/barcodes/aztec/` → repo
+    // root requires going up five.
+    const fixture = fileURLToPath(
+      new URL("../../../../../test/fixtures/aztec_ec.zpl", import.meta.url),
+    );
     const text = readFileSync(fixture, "utf8");
     // The ^FD payload; multiple identical fields exist but they all carry
     // the same content, so any one suffices.

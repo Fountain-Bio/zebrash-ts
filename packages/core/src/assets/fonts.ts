@@ -1,5 +1,5 @@
 import { readFileSync } from "node:fs";
-import { dirname, join } from "node:path";
+import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
 /**
@@ -19,8 +19,15 @@ const filenames: Record<FontKey, string> = {
   ZplGS: "ZplGSCustom.ttf",
 };
 
+// `import.meta.url` lands at `<pkg>/src/assets/fonts.ts` (vitest source mode),
+// `<pkg>/dist/assets/fonts.js` (built artifact), or
+// `node_modules/@zebrash/core/dist/assets/fonts.js` (published tarball). In
+// all three, the package root is two levels up from `moduleDir`, and the
+// TTFs ship at `<pkg>/src/assets/fonts/` (via `package.json#files`). `tsc`
+// does not copy non-TS assets, so resolving through src/ avoids any need
+// for a postbuild copy step.
 const moduleDir = dirname(fileURLToPath(import.meta.url));
-const fontsDir = join(moduleDir, "fonts");
+const fontsDir = resolve(moduleDir, "../../src/assets/fonts");
 
 const cache = new Map<FontKey, Uint8Array>();
 

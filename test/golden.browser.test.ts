@@ -1,17 +1,17 @@
 /**
  * Browser golden suite. Mirrors `test/golden.test.ts` but executes in a real
  * Chromium under @vitest/browser. Each fixture is rendered through the
- * browser entry of zebrash (OffscreenCanvas + FontFace) and pixel-diffed
- * against the static Go-reference PNG.
+ * browser entry of `@zebrash/browser` (OffscreenCanvas + FontFace) and
+ * pixel-diffed against the static Go-reference PNG.
  *
- * Vite handles the package.json `"browser"` field swap automatically, so
- * `import { Parser, Drawer } from "zebrash"` resolves to the browser-platform
- * implementation. Run `bun run build` in the repo root before this suite —
- * it consumes `dist/`, not source.
+ * Vite traces `@zebrash/browser` → `@zebrash/core`, then reads core's
+ * package.json `"browser"` field to swap `platform.js` → `platform-browser.js`
+ * and `assets/fonts.js` → `assets/fonts-browser.js`. Run `bun run build` in
+ * the repo root before this suite — it consumes built `dist/` directories.
  */
 
 import { describe, expect, it } from "vitest";
-import { Drawer, Parser } from "zebrash";
+import { Drawer, Parser } from "@zebrash/browser";
 
 import { pixelDiff } from "./browser-helpers.ts";
 

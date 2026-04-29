@@ -3,7 +3,7 @@
     "target": "ES2022",
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
-    "lib": ["ES2022", "DOM"],
+    "lib": ["ES2022"],
     "strict": true,
     "noImplicitOverride": true,
     "noUncheckedIndexedAccess": true,
@@ -18,17 +18,13 @@
     "isolatedModules": true,
     "allowImportingTsExtensions": true,
     "rewriteRelativeImportExtensions": true,
-    "noEmit": true,
+    "outDir": "dist",
+    "rootDir": "src",
     "declaration": true,
     "declarationMap": true,
     "sourceMap": true,
-    "types": ["node", "vite/client"]
+    "types": ["node"]
   },
-  "include": ["test/**/*.ts", "scripts/**/*.ts"],
-  "exclude": ["dist", "node_modules", ".worktrees", "packages", "examples"],
-  "references": [
-    { "path": "./packages/core/tsconfig.build.json" },
-    { "path": "./packages/node/tsconfig.build.json" },
-    { "path": "./packages/browser/tsconfig.build.json" }
-  ]
+  "include": ["src/**/*.ts"],
+  "exclude": ["dist", "node_modules"]
 }

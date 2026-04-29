@@ -1,4 +1,4 @@
-import { Parser, Drawer } from "zebrash";
+import { Parser, Drawer } from "@zebrash/browser";
 
 // Vite inlines the fixture set at build time and serves on demand in dev.
 // `?raw` gives ZPL source as a string; `?url` gives the reference PNG path.

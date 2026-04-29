@@ -6,72 +6,95 @@ truth** for any behavioral question — when in doubt, read the Go code first.
 
 ## Quick orientation
 
+This is a bun-workspaces monorepo publishing **three packages**:
+
+- `@zebrash/core` — engine. Parser + drawer + encoders + platform abstraction. Internal: end users should not import directly.
+- `@zebrash/node` — thin Node wrapper. Re-exports core, pulls `@napi-rs/canvas` as a hard dep.
+- `@zebrash/browser` — thin browser wrapper. Re-exports core + `setFontBaseUrl`. Zero native deps.
+
+Both wrappers expose the **same** public API (`Parser`, `Drawer`, `DrawerOptions`, `LabelInfo`, `drawerOptionsWithDefaults`). Pick by runtime, not by feature.
+
 ```
 zebrash-ts/
-├── src/
-│   ├── parser.ts            # public Parser class — ZPL bytes → LabelInfo[]
-│   ├── drawer.ts            # public Drawer class — LabelInfo → PNG bytes
-│   ├── drawer-options.ts    # public DrawerOptions interface
-│   ├── index.ts             # public surface (Parser, Drawer, types)
-│   ├── parsers/             # one ^XX command parser per file (~30 files)
-│   │   ├── command_parser.ts        # CommandParser interface + helpers
-│   │   ├── field_*.ts               # ^FO, ^FT, ^FB, ^FD, ^FS, etc.
-│   │   ├── barcode_*.ts             # ^BC, ^BQ, ^BX, ^B7, etc.
-│   │   ├── graphic_*.ts             # ^GB, ^GC, ^GD, ^GF, ^GS
-│   │   └── index.ts                 # defaultCommandParsers() — full list
-│   ├── elements/            # typed element shapes (TextField, BarcodeQrWithData, ...)
-│   │   ├── stored_format.ts         # RecalledFormat + resolveRecalledField
-│   │   └── *.ts
-│   ├── drawers/             # paint each element kind onto @napi-rs/canvas
-│   │   ├── element_drawer.ts        # ElementDrawer interface + helpers
-│   │   ├── text_field.ts            # ^FD/^FB text rendering (most complex)
-│   │   ├── barcode_*.ts             # 1D + 2D barcode painting
-│   │   ├── graphic_*.ts             # ^GB/^GC/^GD/^GF
-│   │   ├── maxicode.ts              # hexagonal cell painting
-│   │   ├── barcode_paint.ts         # shared paint helpers
-│   │   └── index.ts                 # defaultElementDrawers() — full list
-│   ├── barcodes/            # encoders (data → bit pattern; no canvas)
-│   │   ├── code128/, code39/, twooffive/, ean13/
-│   │   ├── pdf417/, aztec/, datamatrix/, qrcode/, maxicode/
-│   │   └── utils/                   # BitArray, BitMatrix, BitList, GF, Reed-Solomon
-│   ├── printers/virtual.ts  # VirtualPrinter — state across commands
-│   ├── images/              # color, encode (monochrome/grayscale PNG), reverse-print
-│   ├── hex/decode.ts        # ZPL hex + RLE + Z64 decoder for ^GF / ~DG / ~DU
-│   ├── encodings/decode.ts  # ZPL charset → UTF-8 (^CI 0–13, 27)
-│   └── assets/              # bundled TTF fonts + GlobalFonts registration
-├── test/
-│   ├── fixtures/            # 60 .zpl + .png reference pairs from Go suite
-│   ├── golden.test.ts       # auto-discovers fixtures, pixel-diffs vs reference
+├── packages/
+│   ├── core/                # @zebrash/core
+│   │   ├── package.json     # browser-field swap, exports, fflate dep
+│   │   └── src/
+│   │       ├── parser.ts            # public Parser class — ZPL bytes → LabelInfo[]
+│   │       ├── drawer.ts            # public Drawer class — LabelInfo → PNG bytes
+│   │       ├── drawer-options.ts    # public DrawerOptions interface
+│   │       ├── index.ts             # public surface (Parser, Drawer, types)
+│   │       ├── platform.ts          # Node default; "browser" field swaps to platform-browser.ts
+│   │       ├── platform-browser.ts  # Browser variant
+│   │       ├── platform/
+│   │       │   ├── types.ts         # Platform interface
+│   │       │   ├── node.ts          # @napi-rs/canvas backend
+│   │       │   ├── browser.ts       # OffscreenCanvas backend
+│   │       │   └── inflate.ts       # universal (DecompressionStream / fflate)
+│   │       ├── parsers/             # one ^XX command parser per file (~30 files)
+│   │       ├── elements/            # typed element shapes
+│   │       │   └── stored_format.ts # RecalledFormat + resolveRecalledField
+│   │       ├── drawers/             # paint each element kind
+│   │       │   ├── element_drawer.ts        # ElementDrawer interface + helpers
+│   │       │   ├── text_field.ts            # most complex drawer
+│   │       │   ├── barcode_*.ts             # 1D + 2D barcode painting
+│   │       │   ├── barcode_paint.ts         # shared paint helpers
+│   │       │   └── index.ts                 # defaultElementDrawers()
+│   │       ├── barcodes/            # encoders (data → bit pattern; no canvas)
+│   │       ├── printers/virtual.ts  # VirtualPrinter — state across commands
+│   │       ├── images/              # color, encode, reverse-print
+│   │       ├── hex/decode.ts        # ZPL hex + RLE + Z64 decoder
+│   │       ├── encodings/decode.ts  # ZPL charset → UTF-8
+│   │       └── assets/              # font loaders + bundled TTFs
+│   │           ├── fonts.ts                 # Node disk loader
+│   │           ├── fonts-browser.ts         # Browser CDN fetcher (also exports setFontBaseUrl)
+│   │           ├── register.ts              # registerEmbeddedFonts()
+│   │           └── fonts/                   # 4 TTF files (shipped via package.json#files)
+│   ├── node/                # @zebrash/node
+│   │   ├── package.json     # depends on @zebrash/core + @napi-rs/canvas
+│   │   └── src/index.ts     # `export * from "@zebrash/core"`
+│   └── browser/             # @zebrash/browser
+│       ├── package.json     # depends on @zebrash/core only
+│       └── src/index.ts     # re-exports core + setFontBaseUrl
+├── test/                    # cross-package golden + e2e suites
+│   ├── fixtures/            # 59 .zpl + 62 .png reference pairs from Go suite
+│   ├── golden.test.ts       # imports @zebrash/node, pixel-diffs vs reference
+│   ├── golden.browser.test.ts # imports @zebrash/browser, runs in Chromium
 │   ├── e2e.test.ts          # smoke: every fixture renders without throwing
-│   └── helpers.ts           # renderZpl, pixelDiff, loadFixture
-├── scripts/
-│   └── render-fixture.ts    # CLI: ZPL → PNG, used for visual debugging
-└── docs/solutions/          # YAML-frontmatter learnings for past bugs and
-                             # best practices (module, tags, problem_type)
+│   ├── helpers.ts           # renderZpl, pixelDiff, loadFixture (Node side)
+│   └── browser-helpers.ts   # browser-side pixelDiff
+├── examples/                # Vite app — workspace member, depends on @zebrash/browser
+├── scripts/render-fixture.ts # CLI: ZPL → PNG (uses @zebrash/node)
+├── vitest.config.ts         # `core` / `node` / `browser` projects
+└── docs/solutions/          # YAML-frontmatter learnings for past bugs
 ```
 
 ## Platform layer (Node + browser)
 
-The library is universal. Anywhere it touches the JS-engine boundary, it
-goes through `src/platform.ts`:
+The library is universal. All Node/browser divergence lives inside
+`@zebrash/core` and is selected via `package.json#browser` when bundlers
+trace through `@zebrash/browser`'s dep graph into core.
 
-- **`src/platform/types.ts`** — `Platform` interface with five methods:
+- **`packages/core/src/platform/types.ts`** — `Platform` interface with five methods:
   `createCanvas`, `encodePng`, `loadImage`, `registerFont`, `createImageData`.
-- **`src/platform/node.ts`** — Node implementation using `@napi-rs/canvas`.
-- **`src/platform/browser.ts`** — Browser implementation using
+- **`packages/core/src/platform/node.ts`** — Node implementation using `@napi-rs/canvas`.
+- **`packages/core/src/platform/browser.ts`** — Browser implementation using
   `OffscreenCanvas`, `createImageBitmap`, `FontFace`, native `ImageData`.
-- **`src/platform.ts`** — re-exports the Node platform. The
-  `package.json` `"browser"` field swaps this file with `platform-browser.ts`
+- **`packages/core/src/platform.ts`** — re-exports the Node platform. The
+  core package's `"browser"` field swaps this file with `platform-browser.ts`
   in browser bundles.
-- **`src/assets/fonts.ts`** vs **`src/assets/fonts-browser.ts`** — Node reads
-  bundled TTFs from disk (`fs.readFileSync`); browser lazy-fetches them from
-  a CDN (default jsdelivr). Same swap mechanism.
-- **`src/hex/decode.ts`** uses `unzlibSync` from `fflate` — pure-JS, sync,
-  works on both backends. No `node:zlib` import anywhere.
+- **`packages/core/src/assets/fonts.ts`** vs **`packages/core/src/assets/fonts-browser.ts`** —
+  Node reads bundled TTFs from disk (`fs.readFileSync`, anchored at
+  `<pkg>/src/assets/fonts/` so it works in source mode, dist mode, and from
+  a published tarball); browser lazy-fetches them from a CDN (default
+  jsdelivr). Same swap mechanism.
+- **`packages/core/src/platform/inflate.ts`** uses native `DecompressionStream`
+  + `fflate` — pure-JS, works on both backends. No `node:zlib` import anywhere.
 
 When adding code that needs a canvas, `ImageData`, font registration, PNG
 encoding, or zlib inflate: import from `./platform.ts` (or `fflate` for
-inflate). Don't import directly from `@napi-rs/canvas` or `node:*`.
+inflate). Don't import directly from `@napi-rs/canvas` or `node:*` outside
+`packages/core/src/platform/node.ts` and `packages/core/src/assets/fonts.ts`.
 
 ## Stack invariants
 
@@ -116,22 +139,26 @@ inflate). Don't import directly from `@napi-rs/canvas` or `node:*`.
 
 ## Critical files (read these first when investigating bugs)
 
-- `src/parser.ts` — top-level parse loop with `^XA`/`^XZ` and recall handling.
+All engine code lives in `packages/core/src/`. The wrapper packages
+(`packages/node/src/index.ts`, `packages/browser/src/index.ts`) are
+one-liner re-exports — bugs are virtually never there.
+
+- `packages/core/src/parser.ts` — top-level parse loop with `^XA`/`^XZ` and recall handling.
   Mirrors `parser.go` line for line.
-- `src/elements/stored_format.ts` — `RecalledFormat` class + the
+- `packages/core/src/elements/stored_format.ts` — `RecalledFormat` class + the
   `resolveRecalledField` switch over `field.element` kinds (Maxicode, PDF417,
   Code128, EAN13, 2of5, Code39, Aztec, DataMatrix, QR, GraphicSymbol,
   FieldBlock, TextField, default → TextField). Most "element doesn't render"
   bugs trace back here.
-- `src/printers/virtual.ts` — every parser reads/writes this state machine.
+- `packages/core/src/printers/virtual.ts` — every parser reads/writes this state machine.
   When a field comes out wrong, check what state was set just before `^FS`.
-- `src/drawer.ts` — image-width clamping, reverse-print buffer, invert,
+- `packages/core/src/drawer.ts` — image-width clamping, reverse-print buffer, invert,
   grayscale path, final encode. Mirrors `drawer.go`.
-- `src/drawers/text_field.ts` — most complex drawer. Font scaling, orientation,
+- `packages/core/src/drawers/text_field.ts` — most complex drawer. Font scaling, orientation,
   wrap, anchor positioning. Bitmap-emulation TTFs use a 2× width-to-height
   multiplier (justified inline).
-- `src/drawers/barcode_paint.ts` — `paintBitArrayBars`, `paintBitMatrixCells`
-  (now accepts separate moduleW × moduleH for PDF417), `paintEan13Text`,
+- `packages/core/src/drawers/barcode_paint.ts` — `paintBitArrayBars`, `paintBitMatrixCells`
+  (accepts separate moduleW × moduleH for PDF417), `paintEan13Text`,
   `paintHumanReadableText` shared by 1D-barcode drawers.
 
 ## Conventions when porting from Go
@@ -150,27 +177,29 @@ inflate). Don't import directly from `@napi-rs/canvas` or `node:*`.
 
 ## Testing
 
-- **Two projects via `vitest.workspace.ts`:**
-  - `node` — unit tests + `test/golden.test.ts` (uses `@napi-rs/canvas`).
-    Runs by default: `bun run test`.
-  - `browser` — `test/golden.browser.test.ts` runs in a real Chromium under
-    `@vitest/browser` + Playwright. Same fixtures, same thresholds, but
-    rendered via the browser entry of zebrash (OffscreenCanvas + FontFace).
-    Run with `bun run test:browser` (rebuilds `dist/` first).
-  - `bun run test:all` runs both projects after a build.
+- **Three projects in `vitest.config.ts`** (vitest 4 — `test.projects` array):
+  - `core` — unit tests inside `packages/core/src/**/*.test.ts`. Vitest
+    transforms source `.ts` directly; no build needed.
+  - `node` — repo-root `test/golden.test.ts` + `test/e2e.test.ts` against
+    built `@zebrash/node`. Auto-builds via the `bun run test` script.
+  - `browser` — `test/golden.browser.test.ts` against built `@zebrash/browser`,
+    rendered in real Chromium via `@vitest/browser-playwright`.
+- **Run:** `bun run test` (core + node, builds first), `bun run test:browser`
+  (browser only, builds first), `bun run test:all` (everything, builds first).
 - **Golden suite (`test/golden.test.ts`)** auto-discovers every
   `test/fixtures/*.zpl`. Per-fixture options live in `FIXTURE_OPTIONS` (mirrors
   Go's `parser_test.go`). Per-fixture diff overrides live in
   `FIXTURE_OVERRIDES` (default 5 %). The browser suite mirrors both maps.
-- **Why two suites:** Node and browser have _separate_ failure modes. Skia
-  (Node) handles compositing, font registration, and timing differently
-  from the browser canvas. The browser suite catches bugs that look fine on
-  the Node path — most notably the async-await trap in barcode drawers
-  (see "Async-await traps" above) and reverse-print compositing.
-- **Two thresholds per fixture, both must pass:**
+- **Why three suites:** Core unit tests verify encoders + parser logic in
+  isolation. Node and browser have _separate_ failure modes downstream of
+  that — Skia (Node) handles compositing, font registration, and timing
+  differently from the browser canvas. The browser suite catches bugs that
+  look fine on the Node path — most notably the async-await trap in barcode
+  drawers (see "Async-await traps" below) and reverse-print compositing.
+- **Two thresholds per fixture, both must pass** (browser suite):
   - `ratio` (default 5 %) — fraction of all pixels that differ. Same as
     the Node suite.
-  - `inkDeltaRatio` (default 2 %) — symmetric ink-count delta:
+  - `inkDeltaRatio` (default 3 %) — symmetric ink-count delta:
     `|inkA - inkB| / max(inkA, inkB)`. Catches _missing structure_. The
     classic `ratio` metric is dominated by white-on-white matches and only
     moves ~0.3 % when an entire block of text is missing — well below any
@@ -179,22 +208,22 @@ inflate). Don't import directly from `@napi-rs/canvas` or `node:*`.
 - **Adding a new fixture**: drop the `.zpl` and Go-rendered `.png` into
   `test/fixtures/`. The golden suite picks it up on the next run.
 - **Visual debugging**: `bun run scripts/render-fixture.ts test/fixtures/<name>.zpl --out /tmp/x.png`
-  then `open /tmp/x.png`. Compare to `test/fixtures/<name>.png`.
+  then `open /tmp/x.png`. Compare to `test/fixtures/<name>.png`. Run
+  `bun run build` first — the script imports `@zebrash/node`.
 - **Per-encoder unit tests** live next to the encoder
-  (`src/barcodes/code128/encoder.test.ts` etc.). They lock in known bit
-  patterns for canonical inputs.
+  (`packages/core/src/barcodes/code128/encoder.test.ts` etc.). They lock in
+  known bit patterns for canonical inputs.
 
 ## Browser viewer (`examples/`)
 
-`examples/` is a vite app that renders every fixture in the browser using the
-**built** package output (consumed via `zebrash@file:..`). It's the canonical
-way to eyeball the browser path.
+`examples/` is a vite app — a workspace member that depends on
+`@zebrash/browser` via `workspace:*`. It renders every fixture in the
+browser using the **built** package output, side-by-side with the Go
+reference. Canonical way to eyeball the browser path.
 
 ```bash
-bun run build           # rebuild dist/ after source edits
-cd examples
-bun install             # one-time
-bun run dev             # http://127.0.0.1:5173
+bun run build           # rebuild packages/*/dist/ after source edits
+bun run dev --cwd examples   # http://127.0.0.1:5173
 ```
 
 Side-by-side panes per fixture: live browser render (left) vs the static
@@ -203,14 +232,16 @@ the active fixture for shareable links (`#fedex`, etc.).
 
 Wiring (deliberately plugin-free):
 
-- **No platform-swap plugin needed.** Vite respects the parent `package.json`'s
-  `"browser"` field and substitutes `dist/platform-browser.js` +
-  `dist/assets/fonts-browser.js` automatically.
+- **No platform-swap plugin needed.** Vite traces `@zebrash/browser` →
+  `@zebrash/core` and reads core's `"browser"` field, substituting
+  `dist/platform-browser.js` + `dist/assets/fonts-browser.js` automatically.
+- **No `optimizeDeps.exclude` for `@napi-rs/canvas`.** It isn't in the
+  browser package's dep graph at all, so Vite never sees it.
 - **Fixture loading uses `import.meta.glob`** — `?raw` for the ZPL source,
   `?url` for the reference PNG. No middleware, no manifest file.
-- **You must run `bun run build` after editing `src/`.** The example consumes
-  `dist/`, not the source tree. (Trade-off: simpler setup that mirrors how npm
-  consumers see the package, at the cost of a manual rebuild step.)
+- **You must run `bun run build` after editing core source.** The example
+  consumes `packages/browser/dist/` (which transitively reads
+  `packages/core/dist/`), not the source tree.
 
 The reference PNGs are static — they were generated **once** by the Go
 `ingridhq/zebrash` test suite and committed to `test/fixtures/`. We do not
@@ -240,8 +271,8 @@ human-readable text, so they stay synchronous.
 
 - **EAN-13 guard bars** extend below data bars by `guardExtension` so the
   digits sit in the white space between. `paintEan13Bars` in
-  `src/drawers/barcode_ean13.ts` uses `isGuardBar(moduleIndex)` from the
-  encoder to decide each column's height.
+  `packages/core/src/drawers/barcode_ean13.ts` uses `isGuardBar(moduleIndex)`
+  from the encoder to decide each column's height.
 - **PDF417 modules** are `2 px` wide × `rowHeight` px tall (not square) —
   matches Go's `images.NewScaled(barcode, 2, scaleY)`. Use the
   `paintBitMatrixCells(ctx, matrix, pos, moduleWidth, moduleHeight)` 2-size
@@ -268,7 +299,7 @@ human-readable text, so they stay synchronous.
    tiny script that prints `Parser().parse(zpl).elements.map(e => e._kind)` —
    if a `_kind` is missing or unexpected, parser bug; otherwise drawer bug.
 4. If TS shows the wrong shape: trace into the responsible drawer
-   (`src/drawers/<kind>.ts`) and compare line-by-line to
+   (`packages/core/src/drawers/<kind>.ts`) and compare line-by-line to
    `../zebrash/internal/drawers/<kind>.go`.
 5. If only pixel-level (subpixel offsets, antialiasing): probably rasterizer
    drift — verify by counting the diff pixels' magnitude (low-magnitude

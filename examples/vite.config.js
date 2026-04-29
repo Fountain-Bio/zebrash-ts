@@ -11,7 +11,4 @@ export default {
     // Allow serving the fixtures we glob from `../test/fixtures/`.
     fs: { allow: [resolve(HERE, "..")] },
   },
-  // Vite's pre-bundler chokes on the optional native binding even when
-  // unused on the browser path. Belt-and-suspenders.
-  optimizeDeps: { exclude: ["@napi-rs/canvas"] },
 };

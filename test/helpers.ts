@@ -1,12 +1,9 @@
 /**
  * Shared helpers for e2e + golden test suites and the render-fixture script.
  *
- * The public API (Parser, Drawer, DrawerOptions, LabelInfo) lands across units
- * 1, 6, 7, 8, 9, 20, 21, 22, 23. Until those units are wired up in src/index.ts,
- * `loadRenderApi()` returns null and the test suites skip cleanly.
- *
- * TODO(integration): once src/index.ts re-exports the full surface, the
- * type-only fallbacks in this file can be tightened to direct imports.
+ * Imports the public API from `@zebrash/node` (the published wrapper), so the
+ * tests exercise exactly what end users install. Run `bun run build` first —
+ * `@zebrash/node` resolves to `packages/node/dist/`.
  */
 
 import { createCanvas, loadImage } from "@napi-rs/canvas";
@@ -53,13 +50,13 @@ export interface RenderApi {
 let cachedApi: RenderApi | null | undefined;
 
 /**
- * Lazily resolve the public render API from `src/index.ts`. Returns null when
- * either Parser or Drawer is not yet exported (most stub-baseline branches).
+ * Lazily resolve the public render API from `@zebrash/node`. Returns null
+ * only if the package is not built (`bun run build` hasn't run yet).
  */
 export async function loadRenderApi(): Promise<RenderApi | null> {
   if (cachedApi !== undefined) return cachedApi;
   try {
-    const mod = (await import("../src/index.js")) as Partial<RenderApi> & Record<string, unknown>;
+    const mod = (await import("@zebrash/node")) as Partial<RenderApi> & Record<string, unknown>;
     if (typeof mod.Parser === "function" && typeof mod.Drawer === "function") {
       cachedApi = { Parser: mod.Parser, Drawer: mod.Drawer };
     } else {
