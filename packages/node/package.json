@@ -1,6 +1,6 @@
 {
   "name": "@zebrash/node",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "Render ZPL labels to PNG on Node.js. Pure TypeScript port of ingridhq/zebrash.",
   "homepage": "https://github.com/Fountain-Bio/zebrash-ts#readme",
   "bugs": "https://github.com/Fountain-Bio/zebrash-ts/issues",
@@ -27,7 +27,7 @@
   },
   "dependencies": {
     "@napi-rs/canvas": "^0.1.100",
-    "@zebrash/core": "0.1.3",
+    "@zebrash/core": "0.1.4",
     "fflate": "^0.8.2"
   },
   "engines": {

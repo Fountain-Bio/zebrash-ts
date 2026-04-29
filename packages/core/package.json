@@ -1,6 +1,6 @@
 {
   "name": "@zebrash/core",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "Engine for the @zebrash family — pure-TS ZPL parser + renderer. Internal package; consume @zebrash/node or @zebrash/browser.",
   "homepage": "https://github.com/Fountain-Bio/zebrash-ts#readme",
   "bugs": "https://github.com/Fountain-Bio/zebrash-ts/issues",
