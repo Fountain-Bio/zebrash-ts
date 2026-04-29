@@ -172,7 +172,9 @@ the next run. If the canvas needs a non-default size, add an entry to
 
 ### Releasing
 
-Bump locally; let CI publish.
+Bump locally; let CI publish via [npm OIDC trusted
+publishing](https://docs.npmjs.com/trusted-publishers) — no long-lived
+`NPM_TOKEN` involved.
 
 ```bash
 bun run release 0.2.0
@@ -184,8 +186,19 @@ tree or off `main`, bumps all three `@zebrash/*` `package.json` files to
 the same version (lockstep), runs `oxfmt`, then commits and tags `vX.Y.Z`.
 It does **not** push — review the commit first, then push the branch and
 tag. The tag push triggers `.github/workflows/release-publish.yml`, which
-rebuilds, runs the full test suite, and `bun publish`es all three packages
-to npm in dependency order with provenance.
+rebuilds, runs the full test suite, and `npm publish`es all three packages.
+
+**One-time npm setup** — for each of `@zebrash/core`, `@zebrash/node`,
+`@zebrash/browser`:
+
+1. Package settings on npmjs.com → **Trusted publishing → Add publisher**.
+2. Provider: **GitHub Actions**.
+3. Organization or user: `Fountain-Bio` · Repository: `zebrash-ts` ·
+   Workflow filename: `release-publish.yml` · Environment: blank.
+
+If the package doesn't exist on npm yet (first-ever release), publish it
+manually once with your own npm credentials, then register the trusted
+publisher and switch all subsequent releases to the workflow.
 
 ## Pixel-diff tolerance
 
