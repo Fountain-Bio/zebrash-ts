@@ -32,6 +32,6 @@
     "@napi-rs/canvas": "^0.1.100"
   },
   "engines": {
-    "node": ">=20"
+    "node": ">=24"
   }
 }

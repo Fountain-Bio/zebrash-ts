@@ -24,7 +24,7 @@
   },
   "devDependencies": {
     "@napi-rs/canvas": "^0.1.100",
-    "@types/node": "^20.14.0",
+    "@types/node": "^24.0.0",
     "@vitest/browser": "^4.0.0",
     "@vitest/browser-playwright": "^4.0.0",
     "@zebrash/browser": "workspace:*",
@@ -38,6 +38,6 @@
     "vitest": "^4.0.0"
   },
   "engines": {
-    "node": ">=20"
+    "node": ">=24"
   }
 }

@@ -6,7 +6,7 @@ labels (the dialect spoken by Zebra printers) as PNG images.
 
 Two published packages — pick by runtime:
 
-- **`@zebrash/node`** — for Node (≥ 20) and Bun. Rasterizes via
+- **`@zebrash/node`** — for Node (≥ 24) and Bun. Rasterizes via
   [`@napi-rs/canvas`](https://github.com/Brooooooklyn/canvas) (Skia).
 - **`@zebrash/browser`** — for browsers. Uses native `OffscreenCanvas` +
   `FontFace`. Zero native deps.
