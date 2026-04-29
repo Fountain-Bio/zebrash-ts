@@ -1,0 +1,103 @@
+name: Release — publish to npm
+
+# Triggered by the tag push from release-bump.yml. Builds, runs the full
+# test suite as a sanity gate, then publishes all three @zebrash/* packages
+# to npm in dependency order (core → node → browser). Workspace deps
+# declared as `workspace:*` get rewritten to the real version by `bun publish`.
+#
+# Required secrets:
+#   - NPM_TOKEN: npm automation token with publish access to the @zebrash scope.
+
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+permissions:
+  contents: write
+  id-token: write # for npm provenance
+
+jobs:
+  publish:
+    name: Build + publish
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          registry-url: "https://registry.npmjs.org"
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Verify tag matches package versions
+        run: |
+          set -euo pipefail
+          tag="${GITHUB_REF#refs/tags/v}"
+          for pkg in core node browser; do
+            v=$(jq -r .version "packages/$pkg/package.json")
+            if [ "$v" != "$tag" ]; then
+              echo "::error::packages/$pkg/package.json version ($v) does not match tag ($tag)"
+              exit 1
+            fi
+          done
+          echo "::notice::all three packages at $tag"
+
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
+        id: playwright-cache
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('bun.lock') }}
+
+      - name: Install Playwright Chromium
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
+        run: bunx playwright install --with-deps chromium
+
+      - name: Install Playwright system deps
+        if: steps.playwright-cache.outputs.cache-hit == 'true'
+        run: bunx playwright install-deps chromium
+
+      # Sanity gate: full suite passes on the tagged commit before we ship.
+      - name: Run full test suite
+        run: bun run test:all
+
+      # `bun publish` rewrites `workspace:*` to the actual published version
+      # of the dependency. Order matters in case downstream registries reject
+      # before-the-fact resolutions: core first, then the wrappers.
+      - name: Publish @zebrash/core
+        working-directory: packages/core
+        run: bun publish --access public --provenance
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NPM_CONFIG_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Publish @zebrash/node
+        working-directory: packages/node
+        run: bun publish --access public --provenance
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NPM_CONFIG_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Publish @zebrash/browser
+        working-directory: packages/browser
+        run: bun publish --access public --provenance
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          NPM_CONFIG_TOKEN: ${{ secrets.NPM_TOKEN }}
+
+      - name: Create GitHub release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: ${{ github.ref_name }}
+          generate_release_notes: true
+          fail_on_unmatched_files: false

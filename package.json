@@ -4,11 +4,11 @@
   "private": true,
   "description": "Bun workspace root for @zebrash/core, @zebrash/node, @zebrash/browser.",
   "license": "MIT",
-  "type": "module",
   "workspaces": [
     "packages/*",
     "examples"
   ],
+  "type": "module",
   "scripts": {
     "build": "tsc -b packages/core/tsconfig.build.json packages/node/tsconfig.build.json packages/browser/tsconfig.build.json",
     "build:clean": "tsc -b packages/core/tsconfig.build.json packages/node/tsconfig.build.json packages/browser/tsconfig.build.json --clean",

@@ -10,8 +10,8 @@
  * the repo root before this suite — it consumes built `dist/` directories.
  */
 
-import { describe, expect, it } from "vitest";
 import { Drawer, Parser } from "@zebrash/browser";
+import { describe, expect, it } from "vitest";
 
 import { pixelDiff } from "./browser-helpers.ts";
 

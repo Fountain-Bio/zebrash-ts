@@ -1,0 +1,92 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+# Cancel in-progress runs on the same ref when new commits land. Main-branch
+# pushes get their own concurrency group so a fast-following push doesn't
+# kill a release-related run.
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  # Fast static checks + Node golden suite. Single job because lint + fmt +
+  # typecheck are cheap and benefit from running against the same install.
+  ci:
+    name: lint, typecheck, build, test (Node)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      - name: Lint (oxlint)
+        run: bun run lint
+
+      - name: Format check (oxfmt)
+        run: bun run format:check
+
+      - name: Typecheck (tsc -b)
+        run: bun run typecheck
+
+      # `bun run test` builds first, then runs the core unit + node golden
+      # suites. Browser suite runs in the parallel `browser` job below.
+      - name: Test (core + node)
+        run: bun run test
+
+  # Browser golden suite under real Chromium via Playwright. Parallel with
+  # the `ci` job because the Playwright Chromium download dominates wall
+  # time on cold caches.
+  browser:
+    name: test (browser, Chromium)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Install dependencies
+        run: bun install --frozen-lockfile
+
+      # Playwright installs Chromium on first run; cache the download so
+      # subsequent runs only re-download when Playwright bumps. Key on the
+      # exact playwright version pinned in bun.lock.
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
+        id: playwright-cache
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ hashFiles('bun.lock') }}
+
+      - name: Install Playwright Chromium
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
+        run: bunx playwright install --with-deps chromium
+
+      - name: Install Playwright system deps
+        if: steps.playwright-cache.outputs.cache-hit == 'true'
+        run: bunx playwright install-deps chromium
+
+      - name: Test (browser golden suite)
+        run: bun run test:browser

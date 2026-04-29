@@ -3,18 +3,18 @@
   "version": "0.1.0",
   "description": "Engine for the @zebrash family — pure-TS ZPL parser + renderer. Internal package; consume @zebrash/node or @zebrash/browser.",
   "license": "MIT",
-  "type": "module",
-  "sideEffects": false,
   "files": [
     "dist",
     "src/assets/fonts"
   ],
+  "type": "module",
+  "sideEffects": false,
   "main": "./dist/index.js",
-  "types": "./dist/index.d.ts",
   "browser": {
     "./dist/platform.js": "./dist/platform-browser.js",
     "./dist/assets/fonts.js": "./dist/assets/fonts-browser.js"
   },
+  "types": "./dist/index.d.ts",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",

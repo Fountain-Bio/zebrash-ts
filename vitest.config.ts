@@ -1,5 +1,5 @@
-import { defineConfig } from "vitest/config";
 import { playwright } from "@vitest/browser-playwright";
+import { defineConfig } from "vitest/config";
 
 // Three projects:
 //   - `core`    — unit tests inside packages/core/src (uses @napi-rs/canvas

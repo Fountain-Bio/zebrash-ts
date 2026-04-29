@@ -1,0 +1,81 @@
+name: Release — bump versions
+
+# Manual trigger. Bumps all three @zebrash/* packages to the same version
+# (lockstep), commits, tags, pushes. The tag push triggers
+# `release-publish.yml` which actually publishes to npm.
+#
+# Branch protection note: this workflow pushes directly to main using the
+# default GITHUB_TOKEN. If main is protected, either grant the
+# zebrash-ts repo's GITHUB_TOKEN bypass for `release-bot` commits, or
+# replace `secrets.GITHUB_TOKEN` with a PAT/GitHub App token.
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version to release (e.g. 0.2.0). Applied to all three @zebrash/* packages."
+        required: true
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  bump:
+    name: Bump + commit + tag
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          # Need full history to push commits and tags back.
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
+        with:
+          bun-version: latest
+
+      - name: Validate version
+        run: |
+          if [[ ! "${{ inputs.version }}" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.-]+)?$ ]]; then
+            echo "::error::version '${{ inputs.version }}' is not valid semver"
+            exit 1
+          fi
+
+      - name: Bump package.json versions
+        run: |
+          set -euo pipefail
+          for pkg in core node browser; do
+            file="packages/$pkg/package.json"
+            tmp=$(mktemp)
+            jq --arg v "${{ inputs.version }}" '.version = $v' "$file" > "$tmp" && mv "$tmp" "$file"
+            echo "bumped $file -> ${{ inputs.version }}"
+          done
+
+      - name: Verify no other diff before commit
+        run: |
+          # Sanity: the only changed files should be the three package.jsons.
+          diff_files=$(git diff --name-only)
+          expected=$'packages/browser/package.json\npackages/core/package.json\npackages/node/package.json'
+          actual=$(echo "$diff_files" | sort)
+          if [ "$actual" != "$expected" ]; then
+            echo "::error::unexpected files modified during bump:"
+            echo "$diff_files"
+            exit 1
+          fi
+
+      - name: Configure git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Commit, tag, and push
+        run: |
+          set -euo pipefail
+          git add packages/core/package.json packages/node/package.json packages/browser/package.json
+          git commit -m "chore: release v${{ inputs.version }}"
+          git tag "v${{ inputs.version }}"
+          git push origin main
+          git push origin "v${{ inputs.version }}"
+          echo "::notice::pushed v${{ inputs.version }} — release-publish.yml will run on the tag"

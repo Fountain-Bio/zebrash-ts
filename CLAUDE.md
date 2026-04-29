@@ -89,7 +89,7 @@ trace through `@zebrash/browser`'s dep graph into core.
   a published tarball); browser lazy-fetches them from a CDN (default
   jsdelivr). Same swap mechanism.
 - **`packages/core/src/platform/inflate.ts`** uses native `DecompressionStream`
-  + `fflate` — pure-JS, works on both backends. No `node:zlib` import anywhere.
+  - `fflate` — pure-JS, works on both backends. No `node:zlib` import anywhere.
 
 When adding code that needs a canvas, `ImageData`, font registration, PNG
 encoding, or zlib inflate: import from `./platform.ts` (or `fflate` for
