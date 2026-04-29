@@ -109,10 +109,10 @@ function main(): void {
   for (const pkg of PACKAGES) {
     runQuiet(`git add packages/${pkg}/package.json`);
   }
-  // `[skip ci]` keeps the version-bump commit from re-triggering CI on
-  // main — release-publish.yml runs on the tag and is the only check
-  // that matters for this commit. CI already ran on the parent SHA.
-  runQuiet(`git commit -m "chore: release ${tag} [skip ci]"`);
+  // Do NOT add `[skip ci]` here. GitHub applies the skip to *every*
+  // workflow triggered by any push that names this commit — including
+  // the tag push — so it would silently disable release-publish.yml.
+  runQuiet(`git commit -m "chore: release ${tag}"`);
   runQuiet(`git tag ${tag}`);
 
   process.stdout.write(`\n✓ committed and tagged ${tag}\n`);
