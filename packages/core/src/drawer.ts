@@ -145,6 +145,13 @@ export class Drawer {
         Math.floor((labelWidth - imageWidth) / 2),
         0,
       );
+
+      // @napi-rs/canvas's putImageData is affected by the active transform
+      // (spec violation — putImageData should write at raw pixel coords).
+      // encodeMonochrome / encodeGrayscale call putImageData below, so reset
+      // to identity here. No-op in browsers, which already follow the spec.
+      wCtx.setTransform(1, 0, 0, 1, 0, 0);
+
       finalCtx = wCtx;
     }
 
