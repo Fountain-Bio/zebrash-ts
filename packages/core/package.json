@@ -1,6 +1,6 @@
 {
   "name": "@zebrash/core",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Engine for the @zebrash family — pure-TS ZPL parser + renderer. Internal package; consume @zebrash/node or @zebrash/browser.",
   "keywords": [
     "barcode",
