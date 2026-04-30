@@ -199,3 +199,32 @@ describe("browser golden: pixel diff vs Go reference", () => {
     });
   }
 });
+
+describe("^POI inversion (browser)", () => {
+  const baseline = `^XA^PW400^LH0,0^FO50,50^A0N,40,40^FDHELLO^FS^XZ`;
+  const inverted = `^XA^POI^PW400^LH0,0^FO50,50^A0N,40,40^FDHELLO^FS^XZ`;
+  const opts = {
+    labelWidthMm: 50.8,
+    labelHeightMm: 25.4,
+    dpmm: 8,
+    enableInvertedLabels: true,
+  };
+
+  function bytesEqual(a: Uint8Array, b: Uint8Array): boolean {
+    if (a.length !== b.length) return false;
+    for (let i = 0; i < a.length; i++) if (a[i] !== b[i]) return false;
+    return true;
+  }
+
+  it("rotates PNG output 180° when enableInvertedLabels is true", async () => {
+    const drawer = new Drawer();
+    const a = new Parser().parse(baseline)[0];
+    const b = new Parser().parse(inverted)[0];
+    if (!a || !b) throw new Error("parse failed");
+    expect(b.inverted).toBe(true);
+
+    const pngA = await drawer.drawLabelAsPng(a, opts);
+    const pngB = await drawer.drawLabelAsPng(b, opts);
+    expect(bytesEqual(pngA, pngB)).toBe(false);
+  });
+});
