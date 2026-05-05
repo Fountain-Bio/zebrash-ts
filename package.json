@@ -24,7 +24,7 @@
     "release": "bun run scripts/release.ts"
   },
   "devDependencies": {
-    "@napi-rs/canvas": "^0.1.100",
+    "@napi-rs/canvas": "^1.0.0",
     "@resvg/resvg-js": "^2.6.2",
     "@types/node": "^24.0.0",
     "@vitest/browser": "^4.0.0",
