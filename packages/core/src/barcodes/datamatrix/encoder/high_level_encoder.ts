@@ -305,7 +305,7 @@ function getMinimumCount(mins: Uint8Array): number {
 }
 
 export function highLevelEncoder_isDigit(ch: number): boolean {
-  return ch >= 0x30 /* '0' */ && ch <= 0x39 /* '9' */;
+  return ch >= 0x30 /* '0' */ && ch <= 0x39; /* '9' */
 }
 
 export function highLevelEncoder_isExtendedASCII(ch: number): boolean {
@@ -321,7 +321,7 @@ function isNativeC40(ch: number): boolean {
 }
 
 function isNativeText(ch: number): boolean {
-  return ch === 0x20 || (ch >= 0x30 && ch <= 0x39) || (ch >= 0x61 && ch <= 0x7a) /* 'a'..'z' */;
+  return ch === 0x20 || (ch >= 0x30 && ch <= 0x39) || (ch >= 0x61 && ch <= 0x7a); /* 'a'..'z' */
 }
 
 function isNativeX12(ch: number): boolean {
@@ -331,11 +331,11 @@ function isNativeX12(ch: number): boolean {
 }
 
 function isX12TermSep(ch: number): boolean {
-  return ch === 0x0d /* '\r' */ || ch === 0x2a /* '*' */ || ch === 0x3e /* '>' */;
+  return ch === 0x0d /* '\r' */ || ch === 0x2a /* '*' */ || ch === 0x3e; /* '>' */
 }
 
 function isNativeEDIFACT(ch: number): boolean {
-  return ch >= 0x20 /* ' ' */ && ch <= 0x5e /* '^' */;
+  return ch >= 0x20 /* ' ' */ && ch <= 0x5e; /* '^' */
 }
 
 function isSpecialB256(_ch: number): boolean {
