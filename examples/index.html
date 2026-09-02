@@ -3,77 +3,148 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>zebrash · fixture viewer</title>
+    <meta name="description" content="Preview ZPL labels as PNG or SVG locally in your browser." />
+    <title>zebrash · ZPL viewer</title>
     <link rel="stylesheet" href="/src/style.css" />
   </head>
   <body>
-    <header>
-      <h1>zebrash <span class="muted">/ fixture viewer</span></h1>
-      <div class="status" id="status">starting…</div>
+    <header class="site-header">
+      <div>
+        <h1>zebrash <span>/ ZPL viewer</span></h1>
+        <p>Render labels locally in your browser. Your ZPL is never uploaded.</p>
+      </div>
+      <a href="https://github.com/Fountain-Bio/zebrash-ts">View on GitHub</a>
     </header>
 
-    <main>
-      <aside>
-        <input type="search" id="filter" placeholder="filter fixtures…" autocomplete="off" />
-        <ul id="fixture-list" class="fixture-list"></ul>
-      </aside>
-
-      <section class="content">
-        <div class="meta">
-          <h2 id="fixture-name">—</h2>
-          <div class="meta-row">
-            <span id="fixture-options" class="pill">default options</span>
-            <span id="fixture-stats" class="pill"></span>
-            <span id="fixture-svg-stats" class="pill"></span>
-            <label class="font-mode">
-              SVG fonts:
-              <select id="svg-font-mode">
-                <option value="url" selected>url</option>
-                <option value="embed">embed</option>
-                <option value="none">none</option>
-              </select>
-            </label>
+    <main class="workspace">
+      <section class="editor-panel" aria-labelledby="editor-heading">
+        <div class="panel-heading">
+          <div>
+            <h2 id="editor-heading">ZPL source</h2>
+            <span id="source-stats">0 characters</span>
           </div>
+          <label class="example-picker">
+            Example
+            <select id="example-select">
+              <option value="">Custom label</option>
+            </select>
+          </label>
         </div>
 
-        <div class="panes">
-          <div class="pane">
-            <div class="pane-title">browser PNG <span id="render-time" class="muted"></span></div>
-            <div class="image-wrap">
-              <img id="render-img" alt="" />
-            </div>
+        <label class="visually-hidden" for="zpl-input">ZPL source</label>
+        <textarea
+          id="zpl-input"
+          spellcheck="false"
+          autocomplete="off"
+          autocapitalize="off"
+          aria-describedby="editor-help"
+        ></textarea>
+        <p id="editor-help" class="editor-help">
+          Changes render automatically. Press Ctrl/⌘ + Enter to render now.
+        </p>
+
+        <fieldset class="settings">
+          <legend>Label settings</legend>
+          <label>
+            Width
+            <span class="input-with-unit">
+              <input id="label-width" type="number" min="0.1" max="1000" step="0.1" value="101.6" />
+              <span>mm</span>
+            </span>
+          </label>
+          <label>
+            Height
+            <span class="input-with-unit">
+              <input
+                id="label-height"
+                type="number"
+                min="0.1"
+                max="1000"
+                step="0.1"
+                value="203.2"
+              />
+              <span>mm</span>
+            </span>
+          </label>
+          <label>
+            Print density
+            <select id="print-density">
+              <option value="6">6 dpmm (152 dpi)</option>
+              <option value="8" selected>8 dpmm (203 dpi)</option>
+              <option value="12">12 dpmm (300 dpi)</option>
+              <option value="24">24 dpmm (600 dpi)</option>
+            </select>
+          </label>
+          <label>
+            SVG fonts
+            <select id="svg-font-mode">
+              <option value="url" selected>CDN URL</option>
+              <option value="embed">Embedded</option>
+              <option value="none">System fonts</option>
+            </select>
+          </label>
+          <label class="check-setting">
+            <input id="grayscale-output" type="checkbox" />
+            Grayscale PNG
+          </label>
+          <label class="check-setting">
+            <input id="enable-inverted" type="checkbox" checked />
+            Honor inverted labels
+          </label>
+        </fieldset>
+
+        <div class="editor-actions">
+          <button id="render-button" type="button" class="primary">Render label</button>
+          <button id="share-button" type="button">Copy share link</button>
+        </div>
+      </section>
+
+      <section class="preview-panel" aria-labelledby="preview-heading">
+        <div class="preview-toolbar">
+          <div>
+            <h2 id="preview-heading">Preview</h2>
+            <div id="status" class="status" role="status" aria-live="polite">Starting…</div>
           </div>
-          <div class="pane">
-            <div class="pane-title">
-              browser SVG <span id="svg-time" class="muted"></span>
-              <a id="svg-download" class="download" hidden>download</a>
-            </div>
-            <div class="image-wrap">
-              <!-- <object> instead of <img> so the SVG's @font-face url(...)
-                   rules can fetch from the CDN. Browsers run <img>-loaded
-                   SVG in restricted mode that blocks external resource
-                   loads; <object> renders SVG as a full document with
-                   normal CORS rules. -->
-              <object id="svg-obj" type="image/svg+xml" aria-label="SVG render"></object>
-            </div>
-          </div>
-          <div class="pane">
-            <div class="pane-title">go reference</div>
-            <div class="image-wrap">
-              <img id="reference-img" alt="" />
-            </div>
-          </div>
+          <nav class="label-nav" aria-label="Rendered labels">
+            <button id="previous-label" type="button" aria-label="Previous label">Previous</button>
+            <span id="label-position">Label 0 of 0</span>
+            <button id="next-label" type="button" aria-label="Next label">Next</button>
+          </nav>
         </div>
 
-        <details class="zpl-source">
-          <summary>ZPL source</summary>
-          <pre id="zpl-source"></pre>
-        </details>
+        <div id="error-message" class="error-message" role="alert" hidden></div>
 
-        <details class="log">
-          <summary>log</summary>
-          <pre id="log"></pre>
-        </details>
+        <div class="preview-grid">
+          <article class="preview-card">
+            <div class="card-heading">
+              <div>
+                <h3>PNG</h3>
+                <span id="png-stats"></span>
+              </div>
+              <a id="png-download" class="download" hidden>Download PNG</a>
+            </div>
+            <div class="canvas-wrap">
+              <img id="png-preview" alt="Rendered ZPL label as PNG" />
+            </div>
+          </article>
+
+          <article class="preview-card">
+            <div class="card-heading">
+              <div>
+                <h3>SVG</h3>
+                <span id="svg-stats"></span>
+              </div>
+              <a id="svg-download" class="download" hidden>Download SVG</a>
+            </div>
+            <div class="canvas-wrap">
+              <object
+                id="svg-preview"
+                type="image/svg+xml"
+                aria-label="Rendered ZPL label as SVG"
+              ></object>
+            </div>
+          </article>
+        </div>
       </section>
     </main>
 

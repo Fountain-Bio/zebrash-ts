@@ -1,29 +1,45 @@
-# zebrash · fixture viewer
+# zebrash ZPL viewer
 
-Browser-side example app. Renders every ZPL fixture in `test/fixtures/` using
-the same source code that ships in the npm package, side-by-side with the Go
-reference PNG for visual comparison.
+An editor-first browser demo for `@zebrash/browser`. It renders ZPL entirely
+in the browser and supports:
+
+- debounced PNG and SVG previews
+- label size, print density, inversion, grayscale, and SVG font controls
+- navigation through multi-label ZPL
+- PNG and SVG downloads
+- repository fixtures as examples
+- shareable links with the source and settings encoded in the URL fragment
+
+ZPL source never leaves the browser. By default, the renderer fetches its four
+fonts from jsDelivr; label contents are not included in those requests.
+
+## Local development
+
+Build the workspace packages before starting Vite because the example consumes
+their compiled output:
 
 ```bash
-cd examples
-bun install   # or npm install
-bun run dev   # vite at http://127.0.0.1:5173
+bun install
+bun run build
+bun run --cwd examples dev
 ```
 
-Open the URL in any browser. Pick a fixture from the sidebar (or filter by
-name) — the left pane is the live browser render, the right is the Go
-reference. The current fixture is reflected in `location.hash` so you can
-share or bookmark a specific one.
+Open <http://127.0.0.1:5173>.
 
-## How it's wired
+## Production build
 
-- `package.json` depends on `zebrash` via `"file:.."` — the example consumes
-  the same built output (`../dist/`) that npm publishes. Vite picks up the
-  `package.json` `"browser"` field automatically and swaps in the
-  browser-platform entry. **Run `bun run build` in the repo root after editing
-  source.**
-- Fixtures are loaded with vite's `import.meta.glob` from `../test/fixtures/`
-  — `?raw` for the ZPL, `?url` for the reference PNG. No middleware, no
-  manifest file, no symlink.
-- Bundled TTFs are lazy-fetched from jsdelivr on first text render. Override
-  via `setFontBaseUrl()` if you need self-hosted fonts.
+```bash
+bun run build
+bun run --cwd examples build
+```
+
+The static site is written to `examples/dist`. Asset URLs default to the domain
+root. Set `VITE_BASE_PATH` when building for a repository subpath:
+
+```bash
+VITE_BASE_PATH=/zebrash-ts/ bun run --cwd examples build
+```
+
+The `Deploy browser demo` GitHub Actions workflow publishes this directory
+whenever relevant files change on `main`. The repository's Pages source must be
+set to **GitHub Actions** once in the repository settings.

@@ -43,6 +43,9 @@ jobs:
       - name: Typecheck (tsc -b)
         run: bun run typecheck
 
+      - name: Build browser demo
+        run: bun run --cwd examples build
+
       # `bun run test` builds first, then runs the core unit + node golden
       # suites. Browser suite runs in the parallel `browser` job below.
       - name: Test (core + node)
