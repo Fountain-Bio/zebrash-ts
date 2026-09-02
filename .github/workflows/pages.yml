@@ -46,7 +46,7 @@ jobs:
         run: bun run build
 
       - name: Build demo
-        run: bun run build --cwd examples
+        run: bun run --cwd examples build
         env:
           VITE_BASE_PATH: /${{ github.event.repository.name }}/
 

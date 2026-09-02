@@ -21,7 +21,7 @@ their compiled output:
 ```bash
 bun install
 bun run build
-bun run dev --cwd examples
+bun run --cwd examples dev
 ```
 
 Open <http://127.0.0.1:5173>.
@@ -30,14 +30,14 @@ Open <http://127.0.0.1:5173>.
 
 ```bash
 bun run build
-bun run build --cwd examples
+bun run --cwd examples build
 ```
 
 The static site is written to `examples/dist`. Asset URLs default to the domain
 root. Set `VITE_BASE_PATH` when building for a repository subpath:
 
 ```bash
-VITE_BASE_PATH=/zebrash-ts/ bun run build --cwd examples
+VITE_BASE_PATH=/zebrash-ts/ bun run --cwd examples build
 ```
 
 The `Deploy browser demo` GitHub Actions workflow publishes this directory
