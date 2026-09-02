@@ -1,5 +1,7 @@
 import { Drawer, Parser } from "@zebrash/browser";
 
+import { createLabelPdf } from "./pdf.js";
+
 const DEFAULT_OPTIONS = {
   labelWidthMm: 101.6,
   labelHeightMm: 203.2,
@@ -56,6 +58,7 @@ const elements = {
   pngStats: document.getElementById("png-stats"),
   svgStats: document.getElementById("svg-stats"),
   pngDownload: document.getElementById("png-download"),
+  pdfDownload: document.getElementById("pdf-download"),
   svgDownload: document.getElementById("svg-download"),
 };
 
@@ -65,6 +68,7 @@ let renderTimer = null;
 let renderVersion = 0;
 let pngUrl = null;
 let svgUrl = null;
+let pdfPage = null;
 let downloadBaseName = "label";
 let exampleLoadVersion = 0;
 
@@ -149,12 +153,14 @@ function revokePreviewUrls() {
 
 function clearPreviews() {
   revokePreviewUrls();
+  pdfPage = null;
   elements.pngPreview.removeAttribute("src");
   elements.svgPreview.removeAttribute("data");
   elements.pngDownload.removeAttribute("href");
   elements.svgDownload.removeAttribute("href");
   elements.pngDownload.hidden = true;
   elements.svgDownload.hidden = true;
+  elements.pdfDownload.hidden = true;
   elements.pngStats.textContent = "";
   elements.svgStats.textContent = "";
 }
@@ -217,11 +223,20 @@ async function render(resetLabel = false) {
 
     elements.pngPreview.src = pngUrl;
     elements.svgPreview.style.aspectRatio = `${pixelWidth} / ${pixelHeight}`;
+    elements.svgPreview.style.setProperty("--label-ratio", String(pixelWidth / pixelHeight));
     elements.svgPreview.data = svgUrl;
+
+    pdfPage = {
+      blob: pngBlob,
+      widthMm: options.labelWidthMm,
+      heightMm: options.labelHeightMm,
+      filename: `${filename}.pdf`,
+    };
 
     elements.pngDownload.href = pngUrl;
     elements.pngDownload.download = `${filename}.png`;
     elements.pngDownload.hidden = false;
+    elements.pdfDownload.hidden = false;
     elements.svgDownload.href = svgUrl;
     elements.svgDownload.download = `${filename}.svg`;
     elements.svgDownload.hidden = false;
@@ -246,6 +261,43 @@ async function render(resetLabel = false) {
     if (version === renderVersion) {
       elements.renderButton.disabled = false;
     }
+  }
+}
+
+/** Hands the browser a generated file without leaking the object URL. */
+function saveBlob(blob, filename) {
+  const url = URL.createObjectURL(blob);
+  const anchor = document.createElement("a");
+  anchor.href = url;
+  anchor.download = filename;
+  document.body.appendChild(anchor);
+  anchor.click();
+  anchor.remove();
+  // Revoking immediately can cancel the download in some browsers.
+  window.setTimeout(() => URL.revokeObjectURL(url), 60_000);
+}
+
+async function downloadPdf() {
+  if (pdfPage === null) {
+    return;
+  }
+
+  const page = pdfPage;
+  elements.pdfDownload.disabled = true;
+  setStatus("Building PDF…", "busy");
+  try {
+    const pdf = await createLabelPdf([page], { title: page.filename.replace(/\.pdf$/, "") });
+    const blob = new Blob([pdf], { type: "application/pdf" });
+    saveBlob(blob, page.filename);
+    setStatus(
+      `PDF saved · ${page.widthMm} × ${page.heightMm} mm · ${(blob.size / 1024).toFixed(1)} KB`,
+      "ok",
+    );
+  } catch (error) {
+    setError(error);
+    setStatus("Could not build the PDF", "error");
+  } finally {
+    elements.pdfDownload.disabled = false;
   }
 }
 
@@ -456,6 +508,7 @@ function registerEvents() {
 
   elements.renderButton.addEventListener("click", () => render(false));
   elements.shareButton.addEventListener("click", shareCurrentLabel);
+  elements.pdfDownload.addEventListener("click", downloadPdf);
   elements.previousLabel.addEventListener("click", () => {
     if (activeLabelIndex > 0) {
       activeLabelIndex -= 1;

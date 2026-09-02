@@ -6,9 +6,14 @@ in the browser and supports:
 - debounced PNG and SVG previews
 - label size, print density, inversion, grayscale, and SVG font controls
 - navigation through multi-label ZPL
-- PNG and SVG downloads
+- PNG and SVG downloads, plus a PDF export of the previewed label
+- a single-screen layout: the panels fit the viewport and scroll internally
 - repository fixtures as examples
 - shareable links with the source and settings encoded in the URL fragment
+
+The PDF holds the rendered raster on a page sized to the label's physical
+dimensions, so printing it at 100 % scale produces a correctly sized label.
+`src/pdf.js` writes the file directly and has no third-party dependency.
 
 ZPL source never leaves the browser. By default, the renderer fetches its four
 fonts from jsDelivr; label contents are not included in those requests.
