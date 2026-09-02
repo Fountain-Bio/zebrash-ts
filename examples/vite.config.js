@@ -5,6 +5,9 @@ const HERE = dirname(fileURLToPath(import.meta.url));
 
 export default {
   root: HERE,
+  // GitHub Pages supplies its repository subpath during the production build.
+  // Local development and ordinary production builds remain rooted at `/`.
+  base: process.env.VITE_BASE_PATH ?? "/",
   server: {
     port: 5173,
     host: "127.0.0.1",
