@@ -506,6 +506,7 @@ export function EncodeNoMode(content: string): NoModeResult {
         break;
       case "5":
         if (currSet !== CODE_C) {
+          currSet = CODE_C;
           patternsIdx.push(currSet);
         }
         break;
