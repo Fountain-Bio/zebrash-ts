@@ -198,6 +198,57 @@ describe("EncodeNoMode", () => {
     // After START_B and FNC_1 we should see 'A' (33) and 'B' (34)
     expect(out.patternsIdx).toContain(FNC_1);
   });
+
+  it("switches to subset C mid-string via '>5' (ZPL ^BC invocation code)", () => {
+    // ">:=W>548362600001100" ->
+    //   START_B, '=' (29), 'W' (55), then '>5' switches to subset C (99),
+    //   followed by the seven digit pairs 48 36 26 00 00 11 00.
+    // Before this fix, '>5' pushed the current set's own code value (100,
+    // CODE_B) instead of switching, so the trailing digits were each
+    // encoded one-per-symbol in subset B.
+    const out = EncodeNoMode(">:=W>548362600001100");
+    expect(out.patternsIdx).toEqual([
+      START_B,
+      29,
+      55,
+      CODE_C,
+      48,
+      36,
+      26,
+      0,
+      0,
+      11,
+      0,
+      // checksum
+      (START_B +
+        29 * 1 +
+        55 * 2 +
+        CODE_C * 3 +
+        48 * 4 +
+        36 * 5 +
+        26 * 6 +
+        0 * 7 +
+        0 * 8 +
+        11 * 9 +
+        0 * 10) %
+        103,
+      STOP,
+    ]);
+    // 12 regular symbols (11 modules each) + 1 stop symbol (13 modules) = 145.
+    expect(out.bits.length).toBe(145);
+  });
+
+  it("drops a trailing unpaired digit after '>5', matching the Go reference's pairwise loop", () => {
+    // ">5123" switches to subset C, then reads "12" as one digit pair (index
+    // 12). The loop advances two characters per subset-C symbol, so the
+    // trailing odd digit "3" falls past the end of the string and is
+    // silently dropped, the same way the Go implementation's index-driven
+    // loop drops it.
+    const out = EncodeNoMode(">5123");
+    const checksum = (START_B + CODE_C * 1 + 12 * 2) % 103;
+    expect(out.patternsIdx).toEqual([START_B, CODE_C, 12, checksum, STOP]);
+    expect(out.humanReadable).toBe("12");
+  });
 });
 
 describe("Code128 wrapper", () => {
