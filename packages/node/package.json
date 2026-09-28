@@ -43,7 +43,7 @@
     }
   },
   "dependencies": {
-    "@napi-rs/canvas": "1.0.8",
+    "@napi-rs/canvas": "1.0.9",
     "@zebrash/core": "1.0.5",
     "fflate": "^0.8.3"
   },
