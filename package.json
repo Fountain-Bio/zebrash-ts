@@ -27,8 +27,8 @@
     "@napi-rs/canvas": "1.0.9",
     "@resvg/resvg-js": "^2.6.2",
     "@types/node": "^24.0.0",
-    "@vitest/browser": "^5.0.0",
-    "@vitest/browser-playwright": "^5.0.0",
+    "@vitest/browser": "^5.0.2",
+    "@vitest/browser-playwright": "^5.0.2",
     "@zebrash/browser": "workspace:*",
     "@zebrash/core": "workspace:*",
     "@zebrash/node": "workspace:*",
@@ -37,7 +37,7 @@
     "playwright": "^1.61.1",
     "typescript": "^7.0.2",
     "vite": "^8.0.16",
-    "vitest": "^5.0.0"
+    "vitest": "^5.0.2"
   },
   "engines": {
     "node": ">=24"
