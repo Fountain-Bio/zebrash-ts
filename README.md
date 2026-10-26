@@ -46,8 +46,8 @@ setFontBaseUrl("/static/zebrash-fonts/");
 ## Usage
 
 ```ts
-import { readFile, writeFile } from "node:fs/promises";
 import { Parser, Drawer } from "@zebrash/node";
+import { readFile, writeFile } from "node:fs/promises";
 
 const zpl = await readFile("./label.zpl");
 const labels = new Parser().parse(zpl);
